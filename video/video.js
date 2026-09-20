@@ -358,7 +358,7 @@
     if (V.team) {
       var t = V.team;
       var l1 = el('div'); l1.appendChild(document.createTextNode('Đề tài nghiên cứu khoa học · ')); l1.appendChild(el('b', '', t.institution));
-      var names = (t.members || []).map(function (m) { return m.name; }).join(', ');
+      var names = (t.members || []).filter(function (m) { return m.video !== false; }).map(function (m) { return m.name; }).join(', ');
       var l2 = el('div'); l2.appendChild(document.createTextNode('Nhóm thực hiện: ')); l2.appendChild(el('b', '', names));
       credit.appendChild(l1); credit.appendChild(l2);
       if (t.advisor) { var l3 = el('div'); l3.appendChild(document.createTextNode('Giáo viên hướng dẫn: ')); l3.appendChild(el('b', '', t.advisor.name)); credit.appendChild(l3); }
