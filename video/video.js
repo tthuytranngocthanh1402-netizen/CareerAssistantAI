@@ -39,7 +39,7 @@
     return Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
   }
   function getJson(url, fallback) {
-    return fetch(url).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).catch(function () { return fallback; });
+    return fetch(url, { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).catch(function () { return fallback; });
   }
   function svgEl(tag, attrs) {
     var n = document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -443,6 +443,7 @@
   function init(tl, data) {
     TL = tl; V = data;
     stage = document.getElementById('stage'); frame = document.getElementById('frame'); audio = document.getElementById('audio');
+    audio.src = TL.audio + '?v=' + (TL.version || '0');
     startBtn = document.getElementById('startBtn'); startLabel = document.getElementById('startLabel');
     playBtn = document.getElementById('playBtn'); seek = document.getElementById('seek'); timeEl = document.getElementById('time'); muteBtn = document.getElementById('muteBtn');
     build(); resize(); render(0);
