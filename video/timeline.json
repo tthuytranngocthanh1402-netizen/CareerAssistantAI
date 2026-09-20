@@ -1,96 +1,116 @@
 {
-  "audio": "narration.m4a",
-  "version": 1789910852,
-  "duration": 38.766,
+  "audio": "music.m4a",
+  "duration": 68.131,
   "scenes": [
     {
       "id": "mo-dau",
       "sentences": [
         {
           "start": 0.5,
-          "end": 4.865,
-          "text": "CareerAssistantAI – trợ lý AI giúp học sinh chọn nghề."
+          "end": 6.515,
+          "text": "CareerAssistantAI – trợ lý AI đồng hành cùng học sinh trên hành trình chọn nghề."
         }
       ],
       "start": 0.0,
-      "end": 5.365
+      "end": 6.915
     },
     {
       "id": "van-de",
       "sentences": [
         {
-          "start": 5.365,
-          "end": 9.382,
-          "text": "Nhiều em còn phân vân vì chưa hiểu rõ năng lực và thiếu thông tin nghề nghiệp."
+          "start": 7.215,
+          "end": 10.607,
+          "text": "Chọn nghề là quyết định lớn, nhưng nhiều em còn phân vân."
+        },
+        {
+          "start": 10.907,
+          "end": 18.001,
+          "text": "Theo khảo sát, nhiều em chưa biết năng lực của mình ở lĩnh vực nào, thiếu thông tin nghề nghiệp và chưa hiểu rõ sở thích."
         }
       ],
-      "start": 5.365,
-      "end": 9.882
+      "start": 6.915,
+      "end": 18.401
     },
     {
       "id": "khao-sat",
       "sentences": [
         {
-          "start": 9.882,
-          "end": 18.563,
-          "text": "Khảo sát 1.252 học sinh: 38,8% đã xác định rõ định hướng, 40,5% dùng AI thường xuyên."
+          "start": 18.701,
+          "end": 23.841,
+          "text": "Nhóm nghiên cứu đã khảo sát 1.252 học sinh tại 76 trường."
+        },
+        {
+          "start": 24.141,
+          "end": 31.208,
+          "text": "38,8% em đã xác định rõ định hướng nghề nghiệp, 40,5% dùng AI thường xuyên."
         }
       ],
-      "start": 9.882,
-      "end": 19.063
+      "start": 18.401,
+      "end": 31.608
     },
     {
       "id": "so-lieu",
       "sentences": [
         {
-          "start": 19.063,
-          "end": 21.744,
-          "text": "Số liệu trực quan, lọc theo khối và giới tính."
+          "start": 31.908,
+          "end": 36.859,
+          "text": "Số liệu được trình bày bằng biểu đồ trực quan, lọc được theo khối lớp và giới tính."
         }
       ],
-      "start": 19.063,
-      "end": 22.244
+      "start": 31.608,
+      "end": 37.259
     },
     {
       "id": "holland",
       "sentences": [
         {
-          "start": 22.244,
-          "end": 28.378,
-          "text": "Trắc nghiệm Holland 36 câu, chỉ 5 phút, cho bạn mã sở thích, gợi ý ngành và kết quả PDF."
+          "start": 37.559,
+          "end": 44.244,
+          "text": "Học sinh có thể làm trắc nghiệm Holland 36 câu, khoảng 5 phút, để khám phá nhóm sở thích nghề nghiệp."
+        },
+        {
+          "start": 44.544,
+          "end": 50.247,
+          "text": "Kết quả gồm mã Holland, biểu đồ radar, gợi ý ngành và tải về được dạng PDF."
         }
       ],
-      "start": 22.244,
-      "end": 28.878
+      "start": 37.259,
+      "end": 50.647
     },
     {
       "id": "chatbot",
       "sentences": [
         {
-          "start": 28.878,
-          "end": 32.167,
-          "text": "Trợ lý AI giải thích kết quả, nhưng chỉ để tham khảo."
+          "start": 50.947,
+          "end": 55.845,
+          "text": "Trợ lý AI giải thích kết quả và giải đáp thắc mắc về ngành nghề bất cứ lúc nào."
+        },
+        {
+          "start": 56.145,
+          "end": 60.444,
+          "text": "AI chỉ để tham khảo, không thay thế thầy cô và cố vấn hướng nghiệp."
         }
       ],
-      "start": 28.878,
-      "end": 32.667
+      "start": 50.647,
+      "end": 60.844
     },
     {
       "id": "ket",
       "sentences": [
         {
-          "start": 32.667,
-          "end": 34.201,
+          "start": 61.144,
+          "end": 62.859,
           "text": "Hiểu mình, chọn đúng hướng."
         },
         {
-          "start": 34.501,
-          "end": 37.266,
+          "start": 63.159,
+          "end": 66.131,
           "text": "Truy cập careerassistantai.online"
         }
       ],
-      "start": 32.667,
-      "end": 38.766
+      "start": 60.844,
+      "end": 68.131
     }
-  ]
+  ],
+  "version": 1789920884
 }

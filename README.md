@@ -41,18 +41,12 @@ api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commi
 
 ## Video giới thiệu
 
-Trang `video/` là video tự chạy (khoảng 39 giây) gồm 7 cảnh, phụ đề và giọng đọc tiếng Việt. Số liệu trong video đọc trực tiếp từ `data/survey.json`, `data/holland.json`, `data/data.json`.
+Trang `video/` là video tự chạy (khoảng 68 giây) gồm 7 cảnh, phụ đề và **nhạc nền** (không có giọng đọc). Số liệu trong video đọc trực tiếp từ `data/survey.json`, `data/holland.json`, `data/data.json`.
 
-- **Giọng đọc:** macOS chỉ có một giọng tiếng Việt (Linh, giọng nữ), nên giọng nam được tạo bằng cách hạ cao độ và âm sắc (cao độ đo được khoảng 125 Hz). Có thể chỉnh trong mục `voice_settings` của `video/script.json`: `pitch_base` (cao độ), `shift` (độ trầm, nhỏ hơn = trầm và chậm hơn), `say_rate` (tốc độ), `comma_pause_ms`, `gap_sentence`, `gap_scene`, `lead`, `tail` (các quãng nghỉ).
-- **Giọng AI tự nhiên (kiểu podcast):** `ruby tools/tts_cloud.rb --provider openai|azure|google|elevenlabs` (cần API key đặt trong biến môi trường, xem `video/voice/README.md`).
-- **Giọng người thật:** giọng máy khó tự nhiên như người. Nếu thu giọng của bạn theo hướng dẫn trong `video/voice/README.md` (mỗi câu một file `01.m4a`, `02.m4a`...) rồi chạy lại lệnh bên dưới, video sẽ tự dùng giọng đó.
-- Sửa lời thuyết minh trong `video/script.json` (`text` là phụ đề, `tts` là chữ để giọng đọc; viết số bằng chữ và phiên âm từ tiếng Anh cho dễ nghe), rồi tạo lại âm thanh và bảng thời gian (cần macOS):
-
-  ```bash
-  ruby tools/build_video.rb
-  ```
-- Hình ảnh từng cảnh nằm trong `video/video.js`, được điều khiển hoàn toàn theo thời gian của file `narration.m4a` nên tạm dừng và tua luôn khớp.
-- Để có file MP4: mở `video/`, chọn toàn màn hình, quay màn hình (Cmd + Shift + 5), rồi ghép với `video/narration.m4a` trong iMovie hoặc CapCut.
+- **Nhạc nền** là bản nhạc gốc do nhóm tạo bằng code (không dính bản quyền): piano điện, dàn dây, bass, trống nhẹ; bố cục bám theo 7 cảnh (mở đầu nhẹ, cao trào ở trắc nghiệm Holland, kết bằng hợp âm chủ). Tạo lại bằng `ruby tools/build_music.rb` (cần macOS). Chỉnh phong cách trong file này: `INTENSITY` (độ dày nhạc từng cảnh), `TEMPO_RANGE`, `AMP` (âm lượng từng nhạc cụ).
+- Phụ đề và mốc thời gian nằm trong `video/timeline.json`; hình ảnh từng cảnh trong `video/video.js`.
+- Để có file MP4: mở `video/`, chọn toàn màn hình, quay màn hình (Cmd + Shift + 5), rồi ghép với `video/music.m4a` trong iMovie hoặc CapCut.
+- *Tùy chọn:* nếu sau này muốn thêm giọng đọc, có `tools/build_video.rb` (giọng máy), `tools/tts_cloud.rb` (giọng AI) và `video/voice/README.md` (thu giọng thật). Các công cụ này **ghi đè `timeline.json`** theo lời đọc mới, nên sau đó chạy lại `ruby tools/build_music.rb` nếu muốn nhạc nền khớp lại.
 
 ## 2. Chạy thử trên máy
 
