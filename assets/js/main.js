@@ -129,7 +129,7 @@
     team.members.forEach(function (m) { host.appendChild(person(m.name, m.role)); });
     var meta = document.createElement('p');
     meta.className = 'team-meta';
-    meta.appendChild(document.createTextNode(team.institution + ' · Liên hệ: '));
+    meta.appendChild(document.createTextNode('Đơn vị: ' + team.institution + ' · Liên hệ trưởng nhóm nghiên cứu: '));
     var mail = document.createElement('a');
     mail.href = 'mailto:' + team.email;
     mail.textContent = team.email;
