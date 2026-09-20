@@ -9,6 +9,26 @@ Giọng máy khó tự nhiên như người thật. Nếu muốn dùng giọng c
 
 File ghi âm không được đưa lên GitHub (đã nằm trong `.gitignore`); chỉ file `narration.m4a` được tạo ra sẽ lên web.
 
+## Cách khác: giọng AI kiểu podcast (không cần tự thu)
+
+Các dịch vụ đọc văn bản bằng AI cho giọng tiếng Việt rất tự nhiên. Bạn tạo tài khoản, lấy API key, rồi chạy **trong terminal của bạn** (key chỉ nằm trong biến môi trường, không lưu vào file):
+
+```bash
+# Khuyên dùng để thử trước: OpenAI (điều chỉnh được phong cách "người dẫn podcast")
+export OPENAI_API_KEY="..."
+ruby tools/tts_cloud.rb --provider openai --voice ash
+
+# Hoặc Azure (giọng vi-VN-NamMinhNeural, phát âm tiếng Việt rất chuẩn)
+export AZURE_SPEECH_KEY="..." AZURE_SPEECH_REGION="southeastasia"
+ruby tools/tts_cloud.rb --provider azure
+
+# Hoặc Google (vi-VN-Neural2-D) / ElevenLabs
+ruby tools/tts_cloud.rb --provider google
+ruby tools/tts_cloud.rb --provider elevenlabs --voice ID_GIỌNG
+```
+
+Lệnh sẽ tải giọng đọc từng câu, ghép thành `video/narration.m4a` và cập nhật `timeline.json`. Có thể thêm `--speed 1.05` để đọc nhanh hơn, `--voice` để đổi giọng. Toàn bộ 8 câu chỉ khoảng 550 ký tự nên chi phí mỗi lần chạy rất nhỏ. Nếu trong thư mục này đã có file ghi âm giọng thật của bạn, cần thêm `--force` mới thay.
+
 ## Các câu cần đọc
 
 **Cảnh: mo-dau**

@@ -44,6 +44,7 @@ api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commi
 Trang `video/` là video tự chạy (khoảng 39 giây) gồm 7 cảnh, phụ đề và giọng đọc tiếng Việt. Số liệu trong video đọc trực tiếp từ `data/survey.json`, `data/holland.json`, `data/data.json`.
 
 - **Giọng đọc:** macOS chỉ có một giọng tiếng Việt (Linh, giọng nữ), nên giọng nam được tạo bằng cách hạ cao độ và âm sắc (cao độ đo được khoảng 125 Hz). Có thể chỉnh trong mục `voice_settings` của `video/script.json`: `pitch_base` (cao độ), `shift` (độ trầm, nhỏ hơn = trầm và chậm hơn), `say_rate` (tốc độ), `comma_pause_ms`, `gap_sentence`, `gap_scene`, `lead`, `tail` (các quãng nghỉ).
+- **Giọng AI tự nhiên (kiểu podcast):** `ruby tools/tts_cloud.rb --provider openai|azure|google|elevenlabs` (cần API key đặt trong biến môi trường, xem `video/voice/README.md`).
 - **Giọng người thật:** giọng máy khó tự nhiên như người. Nếu thu giọng của bạn theo hướng dẫn trong `video/voice/README.md` (mỗi câu một file `01.m4a`, `02.m4a`...) rồi chạy lại lệnh bên dưới, video sẽ tự dùng giọng đó.
 - Sửa lời thuyết minh trong `video/script.json` (`text` là phụ đề, `tts` là chữ để giọng đọc; viết số bằng chữ và phiên âm từ tiếng Anh cho dễ nghe), rồi tạo lại âm thanh và bảng thời gian (cần macOS):
 
