@@ -94,11 +94,15 @@
 
   /* ---------- Thời gian của cảnh ---------- */
   function sceneInfo(i) {
-    var s = TL.scenes[i];
+    var s = TL.scenes[i], n = s.sentences.length;
+    var first = s.sentences[0].start - s.start, last = s.sentences[n - 1].end - s.start;
+    function sen(k) { return s.sentences[Math.min(k, n - 1)]; }
     return {
-      start: s.start, end: s.end, dur: s.end - s.start,
-      cue: function (k) { return s.sentences[k].start - s.start; },
-      cueEnd: function (k) { return s.sentences[k].end - s.start; }
+      start: s.start, end: s.end, dur: s.end - s.start, n: n,
+      cue: function (k) { return sen(k).start - s.start; },
+      cueEnd: function (k) { return sen(k).end - s.start; },
+      // Thời điểm (giây trong cảnh) ứng với tỷ lệ f (0–1) của toàn bộ lời thuyết minh trong cảnh
+      at: function (f) { return first + f * (last - first); }
     };
   }
 
@@ -137,15 +141,14 @@
       return { c: c, num: num, fill: fill, v: item.v };
     });
     [head, sub, row].forEach(function (n) { root.appendChild(n); });
-    var s2 = info.cue(1), d2 = info.cueEnd(1) - s2;
-    var at = [s2 + d2 * 0.05, s2 + d2 * 0.4, s2 + d2 * 0.7];
+    var at = [info.at(0.02), info.at(0.3), info.at(0.55)];
     return {
       el: root,
       update: function (t) {
         reveal(head, t, 0.2, 0.8); reveal(sub, t, 0.9, 0.7, 16);
         cards.forEach(function (c, i) {
           reveal(c.c, t, at[i], 0.6, 30);
-          var p = ease(prog(t, at[i] + 0.2, at[i] + 1.3));
+          var p = ease(prog(t, at[i] + 0.1, at[i] + 0.9));
           c.num.textContent = fmt1(c.v * p) + '%';
           c.fill.style.width = (c.v * p) + '%';
         });
@@ -164,8 +167,7 @@
       { v: V.decided, dec: 1, suf: '%', label: 'đã xác định rõ định hướng nghề nghiệp' },
       { v: V.ai, dec: 1, suf: '%', label: 'dùng AI thường xuyên' }
     ];
-    var s1 = info.cue(1), d1 = info.cueEnd(1) - s1, d0 = info.cueEnd(0) - info.cue(0);
-    var at = [info.cue(0) + 0.2, info.cue(0) + d0 * 0.7, s1 + d1 * 0.05, s1 + d1 * 0.55];
+    var at = [info.at(0.08), info.at(0.3), info.at(0.52), info.at(0.8)];
     var cards = defs.map(function (d) {
       var c = el('div', 'k-card'); var num = el('div', 'k-num grad', '0'); var lab = el('div', 'k-label', d.label);
       c.appendChild(num); c.appendChild(lab); row.appendChild(c);
@@ -214,16 +216,16 @@
     });
     body.appendChild(filters); body.appendChild(chart);
     win.appendChild(top); win.appendChild(body); root.appendChild(win);
-    var t1 = info.dur * 0.34, t2 = info.dur * 0.64;
+    var t1 = info.dur * 0.4, t2 = info.dur * 0.68;
     return {
       el: root,
       update: function (t) {
-        reveal(win, t, 0.1, 0.8, 30);
-        var g1 = ease(prog(t, t1, t1 + 0.7)), g2 = ease(prog(t, t2, t2 + 0.7));
+        reveal(win, t, 0.05, 0.5, 30);
+        var g1 = ease(prog(t, t1, t1 + 0.5)), g2 = ease(prog(t, t2, t2 + 0.5));
         var gradeIdx = t >= t1 ? 3 : 0, genderIdx = t >= t2 ? 2 : 0;
         chips.grade.forEach(function (c, k) { c.classList.toggle('on', k === gradeIdx); });
         chips.gender.forEach(function (c, k) { c.classList.toggle('on', k === genderIdx); });
-        var grow = ease(prog(t, 0.6, 1.6));
+        var grow = ease(prog(t, 0.3, 1.1));
         var n = lerp(lerp(V.seg.all.n, V.seg.g12.n, g1), V.seg.g12nu.n, g2);
         nEl.textContent = 'Đang xem ' + fmtInt(n) + ' học sinh';
         rows.forEach(function (r, k) {
@@ -267,19 +269,20 @@
     res.appendChild(code); res.appendChild(radarHost); res.appendChild(side);
     stageEl.appendChild(quiz); stageEl.appendChild(res); root.appendChild(stageEl);
 
-    var tb = info.cue(1) - 0.3;
-    var pdfAt = info.cue(1) + (info.cueEnd(1) - info.cue(1)) * 0.72;
+    var tb = info.at(0.4);
+    var pdfAt = info.at(0.86);
     return {
       el: root,
       update: function (t) {
         var qa = 1 - prog(t, tb, tb + 0.5);
-        pose(quiz, Math.min(qa, ease(prog(t, 0.1, 0.7))), 0, 0, 1);
-        var p = prog(t, 0.5, tb - 0.4);
+        pose(quiz, Math.min(qa, ease(prog(t, 0.05, 0.4))), 0, 0, 1);
+        var p = prog(t, 0.2, tb - 0.2);
         var n = 1 + Math.min(35, Math.floor(p * 36));
         cnt.textContent = 'Câu ' + n + ' / 36';
         fill.style.width = (n / 36 * 100) + '%';
-        q.textContent = V.questions[(n - 1) % V.questions.length];
-        var pick = [3, 4, 2, 3, 4, 1][(n - 1) % 6];
+        var qi = Math.floor(t * 2.4);
+        q.textContent = V.questions[qi % V.questions.length];
+        var pick = [3, 4, 2, 3, 4, 1][qi % 6];
         optEls.forEach(function (o, i) { o.classList.toggle('on', i === pick && p > 0); });
         var ra = prog(t, tb + 0.2, tb + 0.8);
         res.style.opacity = ra;
@@ -332,16 +335,16 @@
     root.appendChild(win); root.appendChild(note);
     var Q = 'Mã SIA hợp với ngành nào?';
     var A = 'Mã SIA cho thấy bạn thích giúp đỡ, tìm hiểu và sáng tạo. Bạn có thể tham khảo nhóm ngành Giáo dục, Y tế và Khoa học xã hội.';
-    var noteAt = info.cue(1) + 0.1;
+    var noteAt = Math.max(info.at(0.7), 2.3);
     return {
       el: root,
       update: function (t) {
-        reveal(win, t, 0.1, 0.7, 24);
-        var qn = Math.floor(prog(t, 0.6, 1.9) * Q.length);
+        reveal(win, t, 0.05, 0.5, 24);
+        var qn = Math.floor(prog(t, 0.25, 0.95) * Q.length);
         user.textContent = Q.slice(0, qn); user.style.display = qn > 0 ? '' : 'none';
-        var showDots = t >= 2.2 && t < 3.0;
+        var showDots = t >= 1.0 && t < 1.4;
         dots.style.display = showDots ? '' : 'none';
-        var an = Math.floor(prog(t, 3.0, 3.0 + A.length / 27) * A.length);
+        var an = Math.floor(prog(t, 1.4, 1.4 + A.length / 90) * A.length);
         bot.textContent = A.slice(0, an); bot.style.display = an > 0 ? '' : 'none';
         reveal(note, t, noteAt, 0.6, 20);
       }

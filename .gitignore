@@ -12,3 +12,7 @@ api/config.php
 
 # Dữ liệu trắc nghiệm ẩn danh trên server (không commit)
 api/storage/*.jsonl
+
+# Ghi âm giọng thật (chỉ dùng cục bộ để tạo narration.m4a)
+video/voice/*
+!video/voice/README.md

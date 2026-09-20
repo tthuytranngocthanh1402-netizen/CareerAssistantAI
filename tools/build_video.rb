@@ -9,6 +9,10 @@
 # `say_rate * shift`. Các câu được đọc riêng rồi ghép thành một file duy nhất nên thời điểm bắt đầu từng
 # câu (dùng cho phụ đề và chuyển cảnh) là chính xác.
 #
+# GIỌNG NGƯỜI THẬT: nếu thư mục video/voice/ có đủ file ghi âm cho mọi câu, đặt tên theo thứ tự câu
+# (01.m4a, 02.m4a, ... hoặc .wav/.mp3), script sẽ dùng giọng của bạn thay cho giọng máy (tự cắt khoảng
+# lặng đầu/cuối mỗi file). Danh sách câu cần đọc nằm trong video/voice/README.md.
+#
 # Các thông số (trong video/script.json, mục "voice_settings"):
 #   say_rate        tốc độ của `say` trước khi hạ giọng (mặc định 215)
 #   pitch_base      cao độ nền của `say` (thấp nhất khoảng 30–35; 37 cho giọng nam tự nhiên)
@@ -28,7 +32,15 @@ cfg = {
 }.merge(script['voice_settings'] || {})
 voice = script['voice'] || 'Linh'
 SRC_RATE = 22_050
-EFF_RATE = (SRC_RATE * cfg['shift']).round # tần số lấy mẫu khai báo => giọng trầm hơn
+VOICE_DIR = File.join(ROOT, 'video/voice')
+AUDIO_EXT = %w[.m4a .wav .mp3 .aac .caf .aiff .aif].freeze
+all_sentences = script['scenes'].flat_map { |sc| sc['sentences'] }
+recordings = all_sentences.each_index.map do |i|
+  Dir.glob(File.join(VOICE_DIR, format('%02d.*', i + 1))).find { |p| AUDIO_EXT.include?(File.extname(p).downcase) }
+end
+RECORDED = !all_sentences.empty? && recordings.all?
+# Tần số khai báo thấp hơn => giọng trầm hơn (chỉ áp dụng cho giọng máy)
+EFF_RATE = RECORDED ? SRC_RATE : (SRC_RATE * cfg['shift']).round
 
 def read_wav_pcm(path)
   data = File.binread(path)
@@ -55,6 +67,18 @@ def write_wav(path, pcm)
   File.binwrite(path, header + pcm)
 end
 
+# Cắt khoảng lặng đầu/cuối của bản ghi âm, chừa lại 0,08 giây
+def trim_silence(pcm)
+  samples = pcm.unpack('s<*')
+  peak = samples.map(&:abs).max.to_f
+  return pcm if peak.zero?
+  thr = peak * 0.04
+  first = samples.index { |v| v.abs > thr } || 0
+  last = samples.rindex { |v| v.abs > thr } || samples.size - 1
+  pad = (0.08 * SRC_RATE).round
+  samples[[first - pad, 0].max..[last + pad, samples.size - 1].min].pack('s<*')
+end
+
 def seconds(pcm)
   pcm.bytesize / 2.0 / EFF_RATE
 end
@@ -66,13 +90,21 @@ end
 
 pcm = silence(cfg['lead'])
 scenes = []
+sentence_no = 0
 Dir.mktmpdir('video-audio') do |tmp|
   script['scenes'].each_with_index do |scene, si|
     sentences = []
     scene['sentences'].each_with_index do |s, i|
       wav = File.join(tmp, "s#{si}_#{i}.wav")
-      system('say', '-v', voice, '-r', cfg['say_rate'].to_s, "--data-format=LEI16@#{SRC_RATE}", '-o', wav, speech_text(s['tts'], cfg)) or abort "say lỗi ở câu: #{s['tts']}"
+      if RECORDED
+        src = recordings[sentence_no]
+        system('afconvert', '-f', 'WAVE', '-d', "LEI16@#{SRC_RATE}", '-c', '1', src, wav) or abort "Không đọc được file ghi âm: #{src}"
+      else
+        system('say', '-v', voice, '-r', cfg['say_rate'].to_s, "--data-format=LEI16@#{SRC_RATE}", '-o', wav, speech_text(s['tts'], cfg)) or abort "say lỗi ở câu: #{s['tts']}"
+      end
+      sentence_no += 1
       fmt, body = read_wav_pcm(wav)
+      body = trim_silence(body) if RECORDED
       abort "Định dạng WAV không như mong đợi: #{fmt.inspect}" unless fmt[0] == 1 && fmt[1] == 1 && fmt[2] == SRC_RATE && fmt[5] == 16
       start = seconds(pcm)
       pcm << body
@@ -100,6 +132,6 @@ Dir.mktmpdir('video-audio') do |tmp|
 
   timeline = { 'audio' => 'narration.m4a', 'version' => Time.now.to_i, 'duration' => duration, 'scenes' => scenes }
   File.write(File.join(ROOT, 'video/timeline.json'), JSON.pretty_generate(timeline) + "\n")
-  puts "OK: #{duration} giây, #{scenes.size} cảnh, #{scenes.sum { |s| s['sentences'].size }} câu (shift #{cfg['shift']}, tần số #{EFF_RATE} Hz)"
+  puts "OK: #{duration} giây, #{scenes.size} cảnh, #{scenes.sum { |s| s['sentences'].size }} câu (#{RECORDED ? 'giọng người thật' : "giọng máy, shift #{cfg['shift']}"})"
   scenes.each { |s| puts format('  %-9s %6.2f – %6.2f (%.1fs)', s['id'], s['start'], s['end'], s['end'] - s['start']) }
 end

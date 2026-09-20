@@ -3,21 +3,21 @@
   "voice": "Linh",
   "voice_settings": {
     "say_rate": 235,
-    "pitch_base": 37,
+    "pitch_base": 36,
     "shift": 0.93,
-    "comma_pause_ms": 150,
-    "lead": 0.6,
-    "gap_sentence": 0.35,
-    "gap_scene": 0.7,
-    "tail": 2.0
+    "comma_pause_ms": 120,
+    "lead": 0.5,
+    "gap_sentence": 0.3,
+    "gap_scene": 0.5,
+    "tail": 1.5
   },
   "scenes": [
     {
       "id": "mo-dau",
       "sentences": [
         {
-          "text": "CareerAssistantAI – trợ lý AI đồng hành cùng học sinh trên hành trình chọn nghề.",
-          "tts": "Kơ-ríơ Ơ-sít-tần Ây Ai, trợ lý trí tuệ nhân tạo đồng hành cùng học sinh trên hành trình chọn nghề."
+          "text": "CareerAssistantAI – trợ lý AI giúp học sinh chọn nghề.",
+          "tts": "Kơ-ríơ Ơ-sít-tần Ây Ai, trợ lý trí tuệ nhân tạo giúp học sinh chọn nghề."
         }
       ]
     },
@@ -25,12 +25,8 @@
       "id": "van-de",
       "sentences": [
         {
-          "text": "Chọn nghề là quyết định lớn, nhưng nhiều em còn phân vân.",
-          "tts": "Chọn nghề là quyết định lớn, nhưng nhiều em còn phân vân."
-        },
-        {
-          "text": "Theo khảo sát, nhiều em chưa biết năng lực của mình ở lĩnh vực nào, thiếu thông tin nghề nghiệp và chưa hiểu rõ sở thích.",
-          "tts": "Theo khảo sát, nhiều em chưa biết năng lực của mình ở lĩnh vực nào, thiếu thông tin nghề nghiệp, và chưa hiểu rõ sở thích."
+          "text": "Nhiều em còn phân vân vì chưa hiểu rõ năng lực và thiếu thông tin nghề nghiệp.",
+          "tts": "Nhiều em còn phân vân vì chưa hiểu rõ năng lực và thiếu thông tin nghề nghiệp."
         }
       ]
     },
@@ -38,12 +34,8 @@
       "id": "khao-sat",
       "sentences": [
         {
-          "text": "Nhóm nghiên cứu đã khảo sát 1.252 học sinh tại 76 trường.",
-          "tts": "Nhóm nghiên cứu đã khảo sát một nghìn hai trăm năm mươi hai học sinh tại bảy mươi sáu trường."
-        },
-        {
-          "text": "38,8% em đã xác định rõ định hướng nghề nghiệp, 40,5% dùng AI thường xuyên.",
-          "tts": "Ba mươi tám phẩy tám phần trăm em đã xác định rõ định hướng nghề nghiệp, bốn mươi phẩy năm phần trăm dùng Ây Ai thường xuyên."
+          "text": "Khảo sát 1.252 học sinh: 38,8% đã xác định rõ định hướng, 40,5% dùng AI thường xuyên.",
+          "tts": "Khảo sát một nghìn hai trăm năm mươi hai học sinh: ba mươi tám phẩy tám phần trăm đã xác định rõ định hướng, bốn mươi phẩy năm phần trăm dùng Ây Ai thường xuyên."
         }
       ]
     },
@@ -51,8 +43,8 @@
       "id": "so-lieu",
       "sentences": [
         {
-          "text": "Số liệu được trình bày bằng biểu đồ trực quan, lọc được theo khối lớp và giới tính.",
-          "tts": "Số liệu được trình bày bằng biểu đồ trực quan, lọc được theo khối lớp và giới tính."
+          "text": "Số liệu trực quan, lọc theo khối và giới tính.",
+          "tts": "Số liệu trực quan, lọc theo khối và giới tính."
         }
       ]
     },
@@ -60,12 +52,8 @@
       "id": "holland",
       "sentences": [
         {
-          "text": "Học sinh có thể làm trắc nghiệm Holland 36 câu, khoảng 5 phút, để khám phá nhóm sở thích nghề nghiệp.",
-          "tts": "Học sinh có thể làm trắc nghiệm Hô-lần ba mươi sáu câu, khoảng năm phút, để khám phá nhóm sở thích nghề nghiệp."
-        },
-        {
-          "text": "Kết quả gồm mã Holland, biểu đồ radar, gợi ý ngành và tải về được dạng PDF.",
-          "tts": "Kết quả gồm mã Hô-lần, biểu đồ ra-đa, gợi ý ngành, và tải về được dạng Pi Đi Ép."
+          "text": "Trắc nghiệm Holland 36 câu, chỉ 5 phút, cho bạn mã sở thích, gợi ý ngành và kết quả PDF.",
+          "tts": "Trắc nghiệm Hô-lần ba mươi sáu câu, chỉ năm phút, cho bạn mã sở thích, gợi ý ngành và kết quả Pi Đi Ép."
         }
       ]
     },
@@ -73,12 +61,8 @@
       "id": "chatbot",
       "sentences": [
         {
-          "text": "Trợ lý AI giải thích kết quả và giải đáp thắc mắc về ngành nghề bất cứ lúc nào.",
-          "tts": "Trợ lý Ây Ai giải thích kết quả và giải đáp thắc mắc về ngành nghề bất cứ lúc nào."
-        },
-        {
-          "text": "AI chỉ để tham khảo, không thay thế thầy cô và cố vấn hướng nghiệp.",
-          "tts": "Ây Ai chỉ để tham khảo, không thay thế thầy cô và cố vấn hướng nghiệp."
+          "text": "Trợ lý AI giải thích kết quả, nhưng chỉ để tham khảo.",
+          "tts": "Trợ lý Ây Ai giải thích kết quả, nhưng chỉ để tham khảo."
         }
       ]
     },

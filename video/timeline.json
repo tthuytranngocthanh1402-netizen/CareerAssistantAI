@@ -1,116 +1,96 @@
 {
   "audio": "narration.m4a",
-  "version": 1789910226,
-  "duration": 63.892,
+  "version": 1789910852,
+  "duration": 38.766,
   "scenes": [
     {
       "id": "mo-dau",
       "sentences": [
         {
-          "start": 0.6,
-          "end": 6.175,
-          "text": "CareerAssistantAI – trợ lý AI đồng hành cùng học sinh trên hành trình chọn nghề."
+          "start": 0.5,
+          "end": 4.865,
+          "text": "CareerAssistantAI – trợ lý AI giúp học sinh chọn nghề."
         }
       ],
       "start": 0.0,
-      "end": 6.675
+      "end": 5.365
     },
     {
       "id": "van-de",
       "sentences": [
         {
-          "start": 6.875,
-          "end": 9.992,
-          "text": "Chọn nghề là quyết định lớn, nhưng nhiều em còn phân vân."
-        },
-        {
-          "start": 10.342,
-          "end": 16.841,
-          "text": "Theo khảo sát, nhiều em chưa biết năng lực của mình ở lĩnh vực nào, thiếu thông tin nghề nghiệp và chưa hiểu rõ sở thích."
+          "start": 5.365,
+          "end": 9.382,
+          "text": "Nhiều em còn phân vân vì chưa hiểu rõ năng lực và thiếu thông tin nghề nghiệp."
         }
       ],
-      "start": 6.675,
-      "end": 17.341
+      "start": 5.365,
+      "end": 9.882
     },
     {
       "id": "khao-sat",
       "sentences": [
         {
-          "start": 17.541,
-          "end": 22.332,
-          "text": "Nhóm nghiên cứu đã khảo sát 1.252 học sinh tại 76 trường."
-        },
-        {
-          "start": 22.682,
-          "end": 29.233,
-          "text": "38,8% em đã xác định rõ định hướng nghề nghiệp, 40,5% dùng AI thường xuyên."
+          "start": 9.882,
+          "end": 18.563,
+          "text": "Khảo sát 1.252 học sinh: 38,8% đã xác định rõ định hướng, 40,5% dùng AI thường xuyên."
         }
       ],
-      "start": 17.341,
-      "end": 29.733
+      "start": 9.882,
+      "end": 19.063
     },
     {
       "id": "so-lieu",
       "sentences": [
         {
-          "start": 29.933,
-          "end": 34.511,
-          "text": "Số liệu được trình bày bằng biểu đồ trực quan, lọc được theo khối lớp và giới tính."
+          "start": 19.063,
+          "end": 21.744,
+          "text": "Số liệu trực quan, lọc theo khối và giới tính."
         }
       ],
-      "start": 29.733,
-      "end": 35.011
+      "start": 19.063,
+      "end": 22.244
     },
     {
       "id": "holland",
       "sentences": [
         {
-          "start": 35.211,
-          "end": 41.364,
-          "text": "Học sinh có thể làm trắc nghiệm Holland 36 câu, khoảng 5 phút, để khám phá nhóm sở thích nghề nghiệp."
-        },
-        {
-          "start": 41.714,
-          "end": 46.917,
-          "text": "Kết quả gồm mã Holland, biểu đồ radar, gợi ý ngành và tải về được dạng PDF."
+          "start": 22.244,
+          "end": 28.378,
+          "text": "Trắc nghiệm Holland 36 câu, chỉ 5 phút, cho bạn mã sở thích, gợi ý ngành và kết quả PDF."
         }
       ],
-      "start": 35.011,
-      "end": 47.417
+      "start": 22.244,
+      "end": 28.878
     },
     {
       "id": "chatbot",
       "sentences": [
         {
-          "start": 47.617,
-          "end": 52.191,
-          "text": "Trợ lý AI giải thích kết quả và giải đáp thắc mắc về ngành nghề bất cứ lúc nào."
-        },
-        {
-          "start": 52.541,
-          "end": 56.517,
-          "text": "AI chỉ để tham khảo, không thay thế thầy cô và cố vấn hướng nghiệp."
+          "start": 28.878,
+          "end": 32.167,
+          "text": "Trợ lý AI giải thích kết quả, nhưng chỉ để tham khảo."
         }
       ],
-      "start": 47.417,
-      "end": 57.017
+      "start": 28.878,
+      "end": 32.667
     },
     {
       "id": "ket",
       "sentences": [
         {
-          "start": 57.217,
-          "end": 58.777,
+          "start": 32.667,
+          "end": 34.201,
           "text": "Hiểu mình, chọn đúng hướng."
         },
         {
-          "start": 59.127,
-          "end": 61.892,
+          "start": 34.501,
+          "end": 37.266,
           "text": "Truy cập careerassistantai.online"
         }
       ],
-      "start": 57.017,
-      "end": 63.892
+      "start": 32.667,
+      "end": 38.766
     }
   ]
 }
