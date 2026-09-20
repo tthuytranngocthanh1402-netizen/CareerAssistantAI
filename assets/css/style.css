@@ -111,7 +111,7 @@ a { color: var(--primary-strong); }
 /* ===== App frame ===== */
 .app {
   display: grid;
-  grid-template-columns: 250px minmax(0, 1fr);
+  grid-template-columns: 264px minmax(0, 1fr);
   max-width: 1440px;
   margin: 0 auto;
   background: var(--frame);
@@ -131,7 +131,7 @@ a { color: var(--primary-strong); }
   border-right: 1px solid var(--border);
   overflow-y: auto;
 }
-.brand { display: flex; align-items: center; gap: 10px; padding: 0 10px; margin-bottom: 36px; font-size: 1.45rem; font-weight: 700; letter-spacing: -.02em; color: var(--text); text-decoration: none; }
+.brand { display: flex; align-items: center; gap: 9px; padding: 0 8px; margin-bottom: 36px; font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; color: var(--text); text-decoration: none; }
 .brand b { color: var(--primary); }
 .side-label { margin: 0 0 8px; padding: 0 12px; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .side-nav { display: grid; gap: 4px; margin-bottom: 8px; }

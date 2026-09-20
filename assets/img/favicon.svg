@@ -1,5 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0f766e"/>
-  <path d="M14 42l12-12 8 8 16-18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="50" cy="20" r="5" fill="#5eead4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CareerAssistantAI">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#818cf8"/>
+      <stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <!-- Hộp thoại: trợ lý hội thoại -->
+  <path fill="#fff" d="M22 15H42a7 7 0 0 1 7 7V33a7 7 0 0 1-7 7H31L21 49V40H22a7 7 0 0 1-7-7V22a7 7 0 0 1 7-7Z"/>
+  <!-- Đường đi lên: định hướng nghề nghiệp -->
+  <path fill="none" stroke="#4f46e5" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" d="M21.5 34 29 27l5 4 8-8.5M37 22.5h5v5"/>
+  <!-- Tia sáng: AI -->
+  <path fill="#fde68a" d="M53 5l1.8 4.2L59 11l-4.2 1.8L53 17l-1.8-4.2L47 11l4.2-1.8Z"/>
 </svg>
