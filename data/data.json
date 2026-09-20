@@ -1,67 +1,20 @@
 {
-  "_note": "DỮ LIỆU MẪU – hãy thay bằng số liệu khảo sát thật của đề tài. Cấu trúc giữ nguyên, chỉ sửa giá trị.",
-  "sample": {
-    "n": 320,
-    "source": "Khảo sát sinh viên năm 2–4 tại 5 trường đại học (dữ liệu mẫu)",
-    "period": "Tháng 3–5/2026"
-  },
-  "kpis": [
-    { "value": 320, "suffix": "", "label": "Sinh viên tham gia khảo sát" },
-    { "value": 78, "suffix": "%", "label": "Cho biết định hướng nghề rõ hơn sau khi dùng" },
-    { "value": 42, "suffix": "%", "label": "Giảm thời gian tìm hiểu ngành nghề" },
-    { "value": 4.3, "suffix": "/5", "label": "Điểm hài lòng trung bình", "decimals": 1 }
-  ],
-  "charts": {
-    "beforeAfter": {
-      "title": "Mức độ rõ ràng về định hướng nghề nghiệp",
-      "caption": "Thang điểm tự đánh giá 1–5, trung bình trước và sau khi sử dụng sản phẩm.",
-      "unit": "điểm",
-      "max": 5,
-      "series": ["Trước", "Sau"],
-      "items": [
-        { "label": "Hiểu ngành học", "values": [2.9, 4.1] },
-        { "label": "Biết kỹ năng cần có", "values": [2.6, 4.0] },
-        { "label": "Tự tin chọn nghề", "values": [2.7, 3.9] },
-        { "label": "Lập kế hoạch học tập", "values": [2.4, 3.8] }
-      ]
-    },
-    "needs": {
-      "title": "Nhu cầu hỗ trợ lớn nhất của sinh viên",
-      "caption": "Mỗi sinh viên chọn một nhu cầu quan trọng nhất.",
-      "items": [
-        { "label": "Gợi ý ngành nghề phù hợp", "value": 34 },
-        { "label": "Xây dựng lộ trình kỹ năng", "value": 27 },
-        { "label": "Chuẩn bị CV và phỏng vấn", "value": 21 },
-        { "label": "Thông tin thị trường lao động", "value": 18 }
-      ]
-    },
-    "features": {
-      "title": "Đánh giá các tính năng của sản phẩm",
-      "caption": "Tỷ lệ sinh viên đánh giá “hữu ích” hoặc “rất hữu ích”.",
-      "unit": "%",
-      "items": [
-        { "label": "Trò chuyện tư vấn 24/7", "value": 86 },
-        { "label": "Gợi ý lộ trình kỹ năng", "value": 81 },
-        { "label": "Phản hồi CV", "value": 74 },
-        { "label": "Mô phỏng phỏng vấn", "value": 69 }
-      ]
-    }
-  },
+  "_note": "Nội dung chatbot, góc nhìn và nhóm nghiên cứu. Số liệu khảo sát nằm ở data/survey.json (tạo bằng tools/build_survey.rb). Các trích dẫn học sinh/chuyên gia là NỘI DUNG MẪU, cần thay bằng ý kiến thật.",
   "students": [
     {
       "quote": "Trước đây mình chỉ biết hỏi bạn bè hoặc lướt mạng. Giờ có thể hỏi thẳng trợ lý AI về kỹ năng cần học cho vị trí mình quan tâm và nhận được lộ trình cụ thể.",
       "name": "Nguyễn Minh A.",
-      "role": "Sinh viên năm 3, Công nghệ thông tin"
+      "role": "Học sinh khối 12"
     },
     {
-      "quote": "Phần phản hồi CV giúp mình nhận ra nhiều lỗi mà trước giờ không để ý. Câu trả lời dễ hiểu, không quá học thuật.",
+      "quote": "Phần gợi ý ngành học giúp mình so sánh các ngành nghề rõ hơn. Câu trả lời dễ hiểu, không quá học thuật.",
       "name": "Trần Thu B.",
-      "role": "Sinh viên năm 4, Quản trị kinh doanh"
+      "role": "Học sinh khối 11"
     },
     {
       "quote": "Mình thích việc được hỏi những câu “ngại hỏi” mà không sợ bị đánh giá. Tuy nhiên đôi lúc mình vẫn muốn có thêm ví dụ thực tế từ doanh nghiệp.",
       "name": "Lê Quốc C.",
-      "role": "Sinh viên năm 2, Kỹ thuật cơ khí"
+      "role": "Học sinh khối 10"
     }
   ],
   "experts": [
@@ -76,7 +29,7 @@
       "role": "Trưởng phòng Nhân sự, doanh nghiệp công nghệ"
     },
     {
-      "quote": "Cần lưu ý vấn đề minh bạch và thiên lệch của mô hình. Nên hiển thị rõ nguồn gợi ý và cho sinh viên khả năng phản biện lại kết quả.",
+      "quote": "Cần lưu ý vấn đề minh bạch và thiên lệch của mô hình. Nên hiển thị rõ nguồn gợi ý và cho học sinh khả năng phản biện lại kết quả.",
       "name": "PGS.TS. Vũ Hải G.",
       "role": "Chuyên gia đạo đức và ứng dụng AI trong giáo dục"
     }
@@ -92,45 +45,104 @@
     "fallback": "Mình chưa có câu trả lời chính xác cho câu hỏi này. Bạn thử hỏi về mục tiêu đề tài, tính năng, kết quả khảo sát, bảo mật dữ liệu hoặc nhóm nghiên cứu nhé.",
     "faq": [
       {
-        "keywords": ["de tai", "nghien cuu", "muc tieu", "gioi thieu", "la gi"],
-        "answer": "CareerAssistantAI là đề tài nghiên cứu khoa học xây dựng trợ lý AI hỗ trợ sinh viên định hướng nghề nghiệp: tìm hiểu ngành nghề, xác định kỹ năng cần có, lập lộ trình học tập và chuẩn bị hồ sơ ứng tuyển."
+        "keywords": [
+          "de tai",
+          "nghien cuu",
+          "muc tieu",
+          "gioi thieu",
+          "la gi"
+        ],
+        "answer": "CareerAssistantAI là đề tài nghiên cứu khoa học xây dựng trợ lý AI hỗ trợ học sinh định hướng nghề nghiệp: tìm hiểu ngành nghề, xác định kỹ năng cần có, lập lộ trình học tập và chuẩn bị hồ sơ ứng tuyển."
       },
       {
-        "keywords": ["tinh nang", "chuc nang", "lam duoc gi", "san pham"],
+        "keywords": [
+          "tinh nang",
+          "chuc nang",
+          "lam duoc gi",
+          "san pham"
+        ],
         "answer": "Sản phẩm gồm bốn nhóm tính năng chính: (1) tư vấn hướng nghiệp qua hội thoại 24/7, (2) gợi ý lộ trình kỹ năng, (3) phản hồi CV, (4) mô phỏng phỏng vấn."
       },
       {
-        "keywords": ["ket qua", "khao sat", "so lieu", "thong ke", "hieu qua"],
-        "answer": "Theo dữ liệu mẫu hiện tại: khảo sát 320 sinh viên, 78% cho biết định hướng nghề rõ hơn sau khi sử dụng, điểm hài lòng trung bình 4,3/5. Xem chi tiết ở mục Số liệu."
+        "keywords": [
+          "ket qua",
+          "khao sat",
+          "so lieu",
+          "thong ke",
+          "hieu qua"
+        ],
+        "answer": "Khảo sát 1.252 học sinh THPT khối 10–12 tại 76 trường: 38,8% đã xác định rõ định hướng nghề nghiệp, 40,5% sử dụng AI thường xuyên (hàng ngày hoặc trên 3 lần/tuần) và khoảng 70% quan tâm đến các sản phẩm của đề tài. Xem chi tiết và lọc theo khối, giới tính ở mục Số liệu."
       },
       {
-        "keywords": ["bao mat", "du lieu", "rieng tu", "an toan", "thong tin ca nhan"],
+        "keywords": [
+          "bao mat",
+          "du lieu",
+          "rieng tu",
+          "an toan",
+          "thong tin ca nhan"
+        ],
         "answer": "Nhóm nghiên cứu chỉ thu thập dữ liệu ở mức cần thiết cho nghiên cứu, ẩn danh khi phân tích và không chia sẻ thông tin cá nhân cho bên thứ ba."
       },
       {
-        "keywords": ["nhom", "thanh vien", "giang vien", "huong dan", "lien he", "tac gia"],
+        "keywords": [
+          "nhom",
+          "thanh vien",
+          "giang vien",
+          "huong dan",
+          "lien he",
+          "tac gia"
+        ],
         "answer": "Thông tin nhóm nghiên cứu và giảng viên hướng dẫn được cập nhật ở phần cuối trang. Bạn có thể liên hệ qua email trong mục Liên hệ."
       },
       {
-        "keywords": ["cach dung", "su dung", "bat dau", "huong dan dung"],
+        "keywords": [
+          "cach dung",
+          "su dung",
+          "bat dau",
+          "huong dan dung"
+        ],
         "answer": "Bạn chỉ cần đặt câu hỏi bằng ngôn ngữ tự nhiên, ví dụ: “Mình học Marketing thì nên trau dồi kỹ năng gì?”. Trợ lý sẽ gợi ý và hỏi thêm để hiểu rõ mục tiêu của bạn."
       },
       {
-        "keywords": ["chuyen gia", "sinh vien", "goc nhin", "danh gia", "y kien"],
-        "answer": "Mục Góc nhìn tổng hợp ý kiến của sinh viên và chuyên gia: sinh viên đánh giá cao tính tiện lợi, chuyên gia nhấn mạnh AI nên hỗ trợ chứ không thay thế cố vấn con người."
+        "keywords": [
+          "chuyen gia",
+          "sinh vien",
+          "goc nhin",
+          "danh gia",
+          "y kien",
+          "hoc sinh"
+        ],
+        "answer": "Mục Góc nhìn tổng hợp ý kiến của học sinh và chuyên gia: học sinh đánh giá cao tính tiện lợi, chuyên gia nhấn mạnh AI nên hỗ trợ chứ không thay thế cố vấn con người."
       },
       {
-        "keywords": ["xin chao", "chao", "hello", "hi"],
+        "keywords": [
+          "xin chao",
+          "chao",
+          "hello",
+          "hi"
+        ],
         "answer": "Xin chào! Bạn muốn tìm hiểu điều gì về đề tài?"
       }
     ]
   },
   "team": {
-    "advisor": { "name": "ThS. Trần Tùng Linh", "role": "Giáo viên hướng dẫn" },
+    "advisor": {
+      "name": "ThS. Trần Tùng Linh",
+      "role": "Giáo viên hướng dẫn"
+    },
     "members": [
-      { "name": "Trần Ngọc Thanh Thuỷ", "role": "Trưởng nhóm" },
-      { "name": "Phạm Minh Nhật", "role": "Thành viên" },
-      { "name": "Đoàn Phan Hoàng Vinh", "role": "Hỗ trợ" }
+      {
+        "name": "Trần Ngọc Thanh Thuỷ",
+        "role": "Trưởng nhóm"
+      },
+      {
+        "name": "Phạm Minh Nhật",
+        "role": "Thành viên"
+      },
+      {
+        "name": "Đoàn Phan Hoàng Vinh",
+        "role": "Hỗ trợ"
+      }
     ],
     "institution": "Trường TH, THCS và THPT Việt Úc",
     "email": "tthuytranngocthanh.1402@gmail.com"

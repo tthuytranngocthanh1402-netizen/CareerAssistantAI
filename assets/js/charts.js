@@ -1,4 +1,4 @@
-/* Biểu đồ thuần DOM – không phụ thuộc thư viện. Mọi text dùng textContent. */
+/* Biểu đồ thuần DOM – không phụ thuộc thư viện. Mọi text dùng textContent (không chèn HTML). */
 (function () {
   'use strict';
 
@@ -18,115 +18,108 @@
   }
 
   function num(n, digits) {
-    return (digits === undefined ? String(n) : n.toFixed(digits)).replace('.', ',');
+    return (digits === undefined ? String(n) : Number(n).toFixed(digits)).replace('.', ',');
   }
-
-  function mean(arr) {
-    return arr.reduce(function (s, v) { return s + v; }, 0) / arr.length;
-  }
+  function pct(n) { return num(n, 1) + '%'; }
 
   function header(host, cfg) {
     host.textContent = '';
     host.appendChild(el('h3', { text: cfg.title }));
-    host.appendChild(el('figcaption', { text: cfg.caption }));
+    if (cfg.caption) host.appendChild(el('figcaption', { text: cfg.caption }));
   }
 
-  /* Cột viên thuốc: so sánh trước/sau kèm bảng tóm tắt bên phải */
-  function flow(host, cfg) {
-    host.textContent = '';
-    var title = el('div', {}, [el('h3', { text: cfg.title }), el('figcaption', { text: cfg.caption })]);
-    var legend = el('ul', { class: 'legend' }, [
-      el('li', {}, [el('i', { class: 'dot-ghost' }), document.createTextNode(cfg.series[0])]),
-      el('li', {}, [el('i', { class: 'dot-main' }), document.createTextNode(cfg.series[1])])
+  function noteEnd(host, text) {
+    if (text) host.appendChild(el('figcaption', { class: 'note-end', text: text }));
+  }
+
+  /* Thứ tự giảm dần theo giá trị, giữ chỉ số gốc */
+  function ranked(options, values) {
+    return options.map(function (label, i) { return { label: label, value: values[i], i: i }; })
+      .sort(function (a, b) { return b.value - a.value; });
+  }
+
+  function barRow(label, valueText, value, fillClass) {
+    var fill = el('div', { class: 'bar-fill ' + fillClass });
+    fill.style.setProperty('--w', Math.max(0, Math.min(100, value)) + '%');
+    return el('div', { class: 'bar-row' }, [
+      el('div', { class: 'bar-row-label' }, [el('span', { text: label }), el('span', { text: valueText })]),
+      el('div', { class: 'bar-track' }, [fill])
     ]);
-    host.appendChild(el('div', { class: 'chart-top' }, [title, legend]));
+  }
 
-    var ticks = [];
-    for (var t = 0; t <= cfg.max; t++) ticks.push(el('span', { text: String(t) }));
-    var yaxis = el('div', { class: 'yaxis', 'aria-hidden': 'true' }, ticks);
+  /* Thanh ngang xếp hạng (thang 0–100% để không phóng đại chênh lệch) */
+  function hbars(host, cfg, values) {
+    header(host, cfg);
+    var wrap = el('div', { class: 'bars' });
+    ranked(cfg.options, values).forEach(function (r) {
+      wrap.appendChild(barRow(r.label, pct(r.value), r.value, 'f-indigo'));
+    });
+    host.appendChild(wrap);
+    noteEnd(host, cfg.note);
+  }
 
-    var groups = el('div', { class: 'groups' });
-    groups.style.setProperty('--n', cfg.items.length);
-    cfg.items.forEach(function (item) {
-      var pills = el('div', { class: 'pills' });
-      item.values.forEach(function (v, i) {
-        var pill = el('div', {
-          class: 'pill ' + (i === 0 ? 'pill-before' : 'pill-after'),
-          title: cfg.series[i] + ': ' + num(v, 1) + ' ' + cfg.unit
-        });
-        pill.style.setProperty('--h', (v / cfg.max) * 100 + '%');
-        pills.appendChild(pill);
-      });
-      var summary = item.label + ' – ' + cfg.series.map(function (s, i) { return s + ' ' + num(item.values[i], 1); }).join(', ');
-      groups.appendChild(el('div', { class: 'group' }, [
-        pills,
-        el('div', { class: 'group-label', 'aria-hidden': 'true', text: item.label }),
-        el('span', { class: 'sr-only', text: summary })
+  /* Cặp thanh ngang: so sánh hai chuỗi cho cùng danh mục */
+  function pairs(host, cfg, values) {
+    header(host, cfg);
+    var legend = el('ul', { class: 'legend' }, [
+      el('li', {}, [el('i', { class: 'dot-main' }), document.createTextNode(cfg.series[0])]),
+      el('li', {}, [el('i', { class: 'dot-sky' }), document.createTextNode(cfg.series[1])])
+    ]);
+    host.appendChild(legend);
+    var order = cfg.options.map(function (label, i) { return { label: label, a: values[0][i], b: values[1][i] }; })
+      .sort(function (x, y) { return y.a - x.a; });
+    var wrap = el('div', { class: 'bars bars-pairs' });
+    order.forEach(function (r) {
+      var fa = el('div', { class: 'bar-fill f-indigo' });
+      fa.style.setProperty('--w', r.a + '%');
+      var fb = el('div', { class: 'bar-fill f-sky' });
+      fb.style.setProperty('--w', r.b + '%');
+      wrap.appendChild(el('div', { class: 'bar-row' }, [
+        el('div', { class: 'bar-row-label' }, [el('span', { text: r.label })]),
+        el('div', { class: 'pair-line' }, [el('div', { class: 'bar-track' }, [fa]), el('span', { text: pct(r.a) })]),
+        el('div', { class: 'pair-line' }, [el('div', { class: 'bar-track' }, [fb]), el('span', { text: pct(r.b) })])
       ]));
     });
-
-    var before = mean(cfg.items.map(function (i) { return i.values[0]; }));
-    var after = mean(cfg.items.map(function (i) { return i.values[1]; }));
-    function stat(label, value, cls) {
-      return el('div', { class: 'stat' }, [
-        el('div', { class: 'stat-label', text: label }),
-        el('div', { class: 'stat-value' + (cls ? ' ' + cls : ''), text: value })
-      ]);
-    }
-    var side = el('div', { class: 'flow-side' }, [
-      stat('Trung bình ' + cfg.series[0].toLowerCase(), num(before, 1)),
-      stat('Trung bình ' + cfg.series[1].toLowerCase(), num(after, 1)),
-      stat('Mức tăng', '+' + num(after - before, 1), 'stat-up')
-    ]);
-
-    host.appendChild(el('div', { class: 'flow' }, [
-      el('div', { class: 'flow-plot' }, [yaxis, groups]),
-      side
-    ]));
+    host.appendChild(wrap);
   }
 
-  /* Thanh tiến độ gradient kèm điểm tổng */
-  function health(host, cfg) {
+  /* Thanh tiến độ gradient kèm giá trị trung bình (kiểu "Financial Health") */
+  function meters(host, cfg, values) {
     host.textContent = '';
     host.appendChild(el('h3', { text: cfg.title }));
-
-    var avg = Math.round(mean(cfg.items.map(function (i) { return i.value; })));
-    var tag = avg >= 85 ? 'Rất tốt' : avg >= 70 ? 'Tốt' : avg >= 50 ? 'Khá' : 'Cần cải thiện';
+    var avg = values.reduce(function (s, v) { return s + v; }, 0) / values.length;
     host.appendChild(el('div', { class: 'score' }, [
-      el('span', { class: 'score-star', 'aria-hidden': 'true', text: '⭐' }),
-      el('span', { class: 'score-num', text: avg + '/100' }),
-      el('span', { class: 'score-tag', text: tag })
+      el('span', { class: 'score-num', text: num(avg, 1) + '%' }),
+      el('span', { class: 'score-tag', text: cfg.scoreLabel || '' })
     ]));
-
-    var meters = el('div', { class: 'meters' });
-    cfg.items.forEach(function (item, i) {
+    var wrap = el('div', { class: 'meters' });
+    cfg.options.forEach(function (label, i) {
       var fill = el('div', { class: 'meter-fill m-' + ((i % 4) + 1) });
-      fill.style.setProperty('--w', item.value + '%');
-      meters.appendChild(el('div', {}, [
-        el('div', { class: 'meter-head' }, [el('span', { text: item.label }), el('b', { text: item.value + (cfg.unit || '') })]),
+      fill.style.setProperty('--w', values[i] + '%');
+      wrap.appendChild(el('div', {}, [
+        el('div', { class: 'meter-head' }, [el('span', { text: label }), el('b', { text: pct(values[i]) })]),
         el('div', { class: 'meter-track' }, [fill])
       ]));
     });
-    host.appendChild(meters);
-    host.appendChild(el('figcaption', { class: 'note-end', text: cfg.caption }));
+    host.appendChild(wrap);
+    if (cfg.caption) host.appendChild(el('figcaption', { class: 'note-end', text: cfg.caption }));
   }
 
-  /* Dải phân đoạn bo tròn + chú giải */
-  function strip(host, cfg) {
+  /* Dải phân đoạn bo tròn + chú giải (câu hỏi chọn một đáp án) */
+  function strip(host, cfg, values) {
     header(host, cfg);
-    var total = cfg.items.reduce(function (s, i) { return s + i.value; }, 0);
-    var top = cfg.items.reduce(function (a, b) { return b.value > a.value ? b : a; });
-
-    host.appendChild(el('div', { class: 'big-num', text: Math.round((top.value / total) * 100) + '%' }));
-    host.appendChild(el('div', { class: 'big-sub', text: 'Nhu cầu hàng đầu: ' + top.label }));
+    var topIdx = 0;
+    values.forEach(function (v, i) { if (v > values[topIdx]) topIdx = i; });
+    host.appendChild(el('div', { class: 'big-num', text: pct(values[topIdx]) }));
+    host.appendChild(el('div', { class: 'big-sub', text: 'Nhiều nhất: ' + cfg.options[topIdx] }));
 
     var bar = el('div', { class: 'strip', 'aria-hidden': 'true' });
     var list = el('ul', { class: 'seg-legend' });
-    cfg.items.forEach(function (item, i) {
+    cfg.options.forEach(function (label, i) {
       var seg = el('div', { class: 'seg s-' + ((i % 4) + 1) });
-      seg.style.flex = item.value + ' 1 0';
+      seg.style.flex = Math.max(values[i], 0.4) + ' 1 0';
       bar.appendChild(seg);
-      var li = el('li', {}, [el('span', { text: item.label }), el('b', { text: Math.round((item.value / total) * 100) + '%' })]);
+      var li = el('li', {}, [el('span', { text: label }), el('b', { text: pct(values[i]) })]);
       li.style.setProperty('--seg', SEG_COLORS[i % SEG_COLORS.length]);
       list.appendChild(li);
     });
@@ -134,11 +127,44 @@
     host.appendChild(list);
   }
 
+  /* Cột viên thuốc: phân bố điểm 1–5 của một câu hỏi thang đo */
+  function dist(host, cfg, values) {
+    header(host, cfg);
+    var max = Math.max.apply(null, values);
+    var axisMax = Math.max(10, Math.ceil(max / 10) * 10);
+    var ticks = [];
+    for (var t = 0; t <= 4; t++) ticks.push(el('span', { text: Math.round((axisMax / 4) * t) + '%' }));
+    var yaxis = el('div', { class: 'yaxis', 'aria-hidden': 'true' }, ticks);
+
+    var groups = el('div', { class: 'groups' });
+    groups.style.setProperty('--n', values.length);
+    values.forEach(function (v, i) {
+      var pill = el('div', { class: 'pill pill-after', title: cfg.labels[i] + ': ' + pct(v) });
+      pill.style.setProperty('--h', (v / axisMax) * 100 + '%');
+      groups.appendChild(el('div', { class: 'group' }, [
+        el('div', { class: 'pills' }, [pill]),
+        el('div', { class: 'group-label', text: cfg.labels[i] }),
+        el('div', { class: 'group-val', text: pct(v) })
+      ]));
+    });
+    host.appendChild(el('div', { class: 'flow-plot' }, [yaxis, groups]));
+
+    var total = values.reduce(function (s, v) { return s + v; }, 0) || 1;
+    var mean = values.reduce(function (s, v, i) { return s + v * (i + 1); }, 0) / total;
+    function stat(label, value) {
+      return el('div', { class: 'stat' }, [el('div', { class: 'stat-label', text: label }), el('div', { class: 'stat-value', text: value })]);
+    }
+    host.appendChild(el('div', { class: 'flow-side' }, [
+      stat('Điểm trung bình', num(mean, 2) + '/5'),
+      stat('Chọn mức 4–5', pct(values[3] + values[4])),
+      stat('Chọn mức 1–2', pct(values[0] + values[1]))
+    ]));
+  }
+
   /* Thẻ thông tin mẫu khảo sát */
-  function sample(host, s) {
+  function info(host, title, rows) {
     host.textContent = '';
-    host.appendChild(el('h3', { text: 'Thông tin mẫu khảo sát' }));
-    var rows = [['Cỡ mẫu', 'n = ' + s.n], ['Đối tượng', s.source], ['Thời gian', s.period]];
+    host.appendChild(el('h3', { text: title }));
     var dl = el('dl', { class: 'info-list' });
     rows.forEach(function (r) {
       dl.appendChild(el('div', { class: 'info-row' }, [el('dt', { text: r[0] }), el('dd', { text: r[1] })]));
@@ -147,42 +173,52 @@
   }
 
   /* Đếm số động cho KPI */
+  function showValue(node, target, decimals, suffix) {
+    node.textContent = (decimals ? target.toFixed(decimals).replace('.', ',') : Math.round(target).toLocaleString('vi-VN')) + suffix;
+  }
   function countUp(node, target, decimals, suffix, instant) {
-    function show(v) {
-      node.textContent = (decimals ? v.toFixed(decimals).replace('.', ',') : Math.round(v).toLocaleString('vi-VN')) + suffix;
-    }
-    if (instant) { show(target); return; }
+    if (instant) { showValue(node, target, decimals, suffix); return; }
     var start = null, dur = 1200;
     function step(ts) {
       if (start === null) start = ts;
       var p = Math.min((ts - start) / dur, 1);
-      show(target * (1 - Math.pow(1 - p, 3)));
+      showValue(node, target * (1 - Math.pow(1 - p, 3)), decimals, suffix);
       if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
   }
 
-  function kpis(host, list) {
+  function kpis(host, defs, values) {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var already = host.classList.contains('is-visible');
     host.textContent = '';
-    list.forEach(function (k) {
+    defs.forEach(function (k, i) {
       var value = el('div', { class: 'kpi-value', text: '0' });
-      value.dataset.target = k.value;
+      value.dataset.target = values[i];
       value.dataset.decimals = k.decimals || 0;
       value.dataset.suffix = k.suffix || '';
-      value.setAttribute('aria-label', num(k.value) + (k.suffix || '') + ' ' + k.label);
+      value.setAttribute('aria-label', num(values[i]) + (k.suffix || '') + ' ' + k.label);
       host.appendChild(el('div', { class: 'kpi' }, [el('div', { class: 'kpi-label', text: k.label }), value]));
+      if (already) {
+        value.dataset.done = '1';
+        showValue(value, values[i], k.decimals || 0, k.suffix || '');
+      } else if (reduce) {
+        value.dataset.done = '1';
+        showValue(value, values[i], k.decimals || 0, k.suffix || '');
+      }
     });
   }
 
-  /* Kích hoạt animation đếm số khi phần tử hiện ra (các animation khác do CSS .is-visible đảm nhiệm) */
+  /* Kích hoạt animation đếm số khi phần tử hiện ra (animation khác do CSS .is-visible đảm nhiệm) */
   function reveal(root) {
     root.querySelectorAll('.kpi-value').forEach(function (n) {
       if (n.dataset.done) return;
       n.dataset.done = '1';
-      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      countUp(n, parseFloat(n.dataset.target), parseInt(n.dataset.decimals, 10), n.dataset.suffix, reduce);
+      countUp(n, parseFloat(n.dataset.target), parseInt(n.dataset.decimals, 10), n.dataset.suffix, false);
     });
   }
 
-  window.Charts = { flow: flow, health: health, strip: strip, sample: sample, kpis: kpis, reveal: reveal };
+  window.Charts = {
+    hbars: hbars, pairs: pairs, meters: meters, strip: strip, dist: dist, info: info, kpis: kpis, reveal: reveal, fmt: num, pct: pct
+  };
 })();

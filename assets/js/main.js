@@ -188,27 +188,25 @@
   }
 
   /* ---------- Load data ---------- */
-  function showLoadError() {
+  function showLoadError(file) {
     var msg = document.createElement('p');
     msg.className = 'notice';
-    msg.textContent = 'Không tải được dữ liệu (data/data.json). Hãy mở trang qua máy chủ web thay vì mở trực tiếp file.';
-    document.getElementById('so-lieu').querySelector('.container').appendChild(msg);
+    msg.textContent = 'Không tải được dữ liệu (' + file + '). Hãy mở trang qua máy chủ web thay vì mở trực tiếp file.';
+    document.getElementById('so-lieu').appendChild(msg);
   }
 
-  fetch('data/data.json', { headers: { Accept: 'application/json' } })
-    .then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
+  function getJson(url) {
+    return fetch(url, { headers: { Accept: 'application/json' } }).then(function (r) {
+      if (!r.ok) throw new Error(url + ' – HTTP ' + r.status);
       return r.json();
-    })
-    .then(function (data) {
-      document.getElementById('sampleNote').textContent =
-        'Kết quả khảo sát ' + data.sample.n + ' sinh viên – ' + data.sample.period;
+    });
+  }
 
-      window.Charts.kpis(document.getElementById('kpis'), data.kpis);
-      window.Charts.flow(document.getElementById('chartBeforeAfter'), data.charts.beforeAfter);
-      window.Charts.health(document.getElementById('chartFeatures'), data.charts.features);
-      window.Charts.strip(document.getElementById('chartNeeds'), data.charts.needs);
-      window.Charts.sample(document.getElementById('sampleCard'), data.sample);
+  Promise.all([getJson('data/data.json'), getJson('data/survey.json')])
+    .then(function (res) {
+      var data = res[0], survey = res[1];
+
+      window.Survey.init(survey);
 
       renderQuotes(document.getElementById('panel-students'), data.students);
       renderQuotes(document.getElementById('panel-experts'), data.experts);
@@ -220,7 +218,7 @@
     })
     .catch(function (err) {
       console.error(err);
-      showLoadError();
+      showLoadError('data/data.json, data/survey.json');
       setupScrollSpy();
     });
 })();

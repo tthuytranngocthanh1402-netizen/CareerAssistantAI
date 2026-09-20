@@ -5,3 +5,7 @@ api/config.php
 .claude/
 .DS_Store
 *.log
+
+*.xlsx
+*.xls
+*.csv

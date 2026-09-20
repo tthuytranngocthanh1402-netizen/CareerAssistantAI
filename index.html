@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CareerAssistantAI – Trợ lý AI hướng nghiệp cho sinh viên</title>
-  <meta name="description" content="Đề tài nghiên cứu khoa học: trợ lý AI giúp sinh viên định hướng nghề nghiệp, xây dựng lộ trình kỹ năng và chuẩn bị hồ sơ ứng tuyển.">
+  <title>CareerAssistantAI – Trợ lý AI hướng nghiệp cho học sinh</title>
+  <meta name="description" content="Đề tài nghiên cứu khoa học: trợ lý AI giúp học sinh định hướng nghề nghiệp, xây dựng lộ trình kỹ năng và chuẩn bị hồ sơ ứng tuyển.">
   <meta name="theme-color" content="#4f46e5">
-  <meta property="og:title" content="CareerAssistantAI – Trợ lý AI hướng nghiệp cho sinh viên">
-  <meta property="og:description" content="Sản phẩm của đề tài nghiên cứu khoa học: số liệu khảo sát, góc nhìn sinh viên – chuyên gia và chatbot AI.">
+  <meta property="og:title" content="CareerAssistantAI – Trợ lý AI hướng nghiệp cho học sinh">
+  <meta property="og:description" content="Sản phẩm của đề tài nghiên cứu khoa học: số liệu khảo sát, góc nhìn học sinh – chuyên gia và chatbot AI.">
   <meta property="og:type" content="website">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,7 +68,7 @@
         </button>
       </nav>
 
-      <p class="side-foot">Đề tài nghiên cứu khoa học sinh viên</p>
+      <p class="side-foot">Đề tài nghiên cứu khoa học của học sinh</p>
     </aside>
     <div class="scrim" id="scrim" hidden></div>
 
@@ -105,9 +105,9 @@
 
           <div class="card hero">
             <div class="hero-copy">
-              <p class="eyebrow">Đề tài nghiên cứu khoa học sinh viên</p>
-              <h2>Trợ lý AI đồng hành cùng sinh viên trên hành trình <span class="accent">chọn nghề</span></h2>
-              <p class="lead">Giúp sinh viên hiểu rõ ngành nghề, xác định kỹ năng cần có, xây dựng lộ trình học tập và chuẩn bị hồ sơ ứng tuyển – bằng hội thoại tự nhiên, sẵn sàng 24/7.</p>
+              <p class="eyebrow">Đề tài nghiên cứu khoa học của học sinh</p>
+              <h2>Trợ lý AI đồng hành cùng học sinh trên hành trình <span class="accent">chọn nghề</span></h2>
+              <p class="lead">Giúp học sinh hiểu rõ ngành nghề, xác định kỹ năng cần có, xây dựng lộ trình học tập và chuẩn bị hồ sơ ứng tuyển – bằng hội thoại tự nhiên, sẵn sàng 24/7.</p>
               <div class="cta-row">
                 <a class="btn btn-primary" href="#chatbot">Trò chuyện với AI</a>
                 <a class="btn btn-ghost" href="#so-lieu">Xem số liệu nghiên cứu</a>
@@ -128,12 +128,12 @@
               <ul class="checklist">
                 <li>Thông tin ngành nghề phân tán, khó kiểm chứng.</li>
                 <li>Số lượng cố vấn hướng nghiệp không đủ đáp ứng nhu cầu.</li>
-                <li>Sinh viên ngại hỏi, thiếu công cụ cá nhân hóa lộ trình.</li>
+                <li>Học sinh ngại hỏi, thiếu công cụ cá nhân hóa lộ trình.</li>
               </ul>
             </article>
             <article class="card card-accent">
               <h3>Giải pháp của đề tài</h3>
-              <p class="muted">Một trợ lý AI hội thoại, hiểu bối cảnh của từng sinh viên và đưa ra gợi ý có cơ sở, minh bạch – đóng vai trò hỗ trợ cùng cố vấn con người.</p>
+              <p class="muted">Một trợ lý AI hội thoại, hiểu bối cảnh của từng học sinh và đưa ra gợi ý có cơ sở, minh bạch – đóng vai trò hỗ trợ cùng cố vấn con người.</p>
             </article>
           </div>
 
@@ -167,26 +167,41 @@
             <h2 id="solieu-title" class="page-title">Số liệu thống kê</h2>
             <p class="muted" id="sampleNote">Kết quả khảo sát</p>
           </div>
+
+          <div class="filters" role="group" aria-label="Bộ lọc số liệu">
+            <div class="filter-group" role="group" aria-label="Lọc theo khối">
+              <span class="filter-label">Khối</span>
+              <div class="filter-btns">
+                <button class="filter-btn is-active" type="button" data-filter="grade" data-value="all" aria-pressed="true">Tất cả</button>
+                <button class="filter-btn" type="button" data-filter="grade" data-value="10" aria-pressed="false">Khối 10</button>
+                <button class="filter-btn" type="button" data-filter="grade" data-value="11" aria-pressed="false">Khối 11</button>
+                <button class="filter-btn" type="button" data-filter="grade" data-value="12" aria-pressed="false">Khối 12</button>
+              </div>
+            </div>
+            <div class="filter-group" role="group" aria-label="Lọc theo giới tính">
+              <span class="filter-label">Giới tính</span>
+              <div class="filter-btns">
+                <button class="filter-btn is-active" type="button" data-filter="gender" data-value="all" aria-pressed="true">Tất cả</button>
+                <button class="filter-btn" type="button" data-filter="gender" data-value="nam" aria-pressed="false">Nam</button>
+                <button class="filter-btn" type="button" data-filter="gender" data-value="nu" aria-pressed="false">Nữ</button>
+              </div>
+            </div>
+            <p class="filter-n" id="filterN" aria-live="polite"></p>
+          </div>
+
           <div id="kpis" class="kpis"></div>
-          <div class="dash gap-top">
-            <figure class="card chart" id="chartBeforeAfter"></figure>
-            <figure class="card chart" id="chartFeatures"></figure>
-          </div>
-          <div class="dash-2 gap-top">
-            <figure class="card chart" id="chartNeeds"></figure>
-            <div class="card" id="sampleCard"></div>
-          </div>
-          <p class="notice" role="note">Lưu ý: các số liệu trên là dữ liệu mẫu phục vụ minh họa giao diện, cần được thay bằng kết quả khảo sát thực tế của đề tài.</p>
+          <div id="surveySections"></div>
+          <p class="notice" role="note">Nguồn: khảo sát học sinh THPT của nhóm nghiên cứu. Tỷ lệ % tính trên số học sinh trả lời từng nhóm; các câu hỏi chọn nhiều đáp án nên tổng có thể lớn hơn 100%. Số liệu mô tả kết quả của mẫu khảo sát.</p>
         </section>
 
         <!-- GÓC NHÌN -->
         <section id="goc-nhin" class="page-section" aria-labelledby="gocnhin-title">
           <div class="page-head">
-            <h2 id="gocnhin-title" class="page-title">Góc nhìn sinh viên và chuyên gia</h2>
+            <h2 id="gocnhin-title" class="page-title">Góc nhìn học sinh và chuyên gia</h2>
             <p class="muted">Những ý kiến từ người dùng và chuyên gia về sản phẩm.</p>
           </div>
           <div class="tabs" role="tablist" aria-label="Chọn nhóm góc nhìn">
-            <button role="tab" id="tab-students" aria-controls="panel-students" aria-selected="true" class="tab is-active" type="button">Góc nhìn sinh viên</button>
+            <button role="tab" id="tab-students" aria-controls="panel-students" aria-selected="true" class="tab is-active" type="button">Góc nhìn học sinh</button>
             <button role="tab" id="tab-experts" aria-controls="panel-experts" aria-selected="false" class="tab" type="button" tabindex="-1">Góc nhìn chuyên gia</button>
           </div>
           <div id="panel-students" role="tabpanel" aria-labelledby="tab-students" class="quotes"></div>
@@ -239,6 +254,7 @@
   </a>
 
   <script src="assets/js/charts.js" defer></script>
+  <script src="assets/js/survey.js" defer></script>
   <script src="assets/js/chatbot.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </body>

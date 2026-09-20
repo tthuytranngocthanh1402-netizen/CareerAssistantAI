@@ -1,6 +1,6 @@
 # CareerAssistantAI – Website giới thiệu đề tài NCKH
 
-Website tĩnh (HTML/CSS/JS thuần) gồm 4 mục: **Trang chủ**, **Số liệu thống kê**, **Góc nhìn sinh viên & chuyên gia**, **Chatbot AI**. Chatbot có 2 chế độ:
+Website tĩnh (HTML/CSS/JS thuần) gồm 4 mục: **Trang chủ**, **Số liệu thống kê**, **Góc nhìn học sinh & chuyên gia**, **Chatbot AI**. Chatbot có 2 chế độ:
 
 - **Hỏi đáp có sẵn (FAQ)** – luôn hoạt động, không cần backend.
 - **Trợ lý AI (Claude)** – tự bật khi bạn tạo `api/config.php` với API key trên server.
@@ -10,15 +10,25 @@ Website tĩnh (HTML/CSS/JS thuần) gồm 4 mục: **Trang chủ**, **Số liệ
 ```
 index.html            Trang duy nhất
 assets/               CSS, JS, ảnh
-data/data.json        TOÀN BỘ nội dung có thể chỉnh: số liệu, trích dẫn, FAQ, nhóm nghiên cứu
+data/survey.json      Số liệu khảo sát tổng hợp (tạo bằng tools/build_survey.rb)
+data/data.json        Chatbot FAQ, trích dẫn, nhóm nghiên cứu
+tools/build_survey.rb Script tổng hợp file Excel khảo sát → survey.json
 api/chat.php          Proxy gọi Claude API (giữ API key phía server)
 api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commit)
 .htaccess             HTTPS, header bảo mật, cache (Apache/LiteSpeed của Hostinger)
 ```
 
-## 1. Thay dữ liệu thật
+## 1. Cập nhật dữ liệu
 
-Mở `data/data.json` và thay các giá trị mẫu (số mẫu `n`, KPI, biểu đồ, trích dẫn, FAQ, thông tin nhóm). Giữ nguyên tên trường. Với FAQ, `keywords` viết **không dấu, chữ thường**. Sửa thêm tiêu đề/mô tả trong `index.html` cho khớp đề tài.
+- **Số liệu khảo sát** (`data/survey.json`) được tạo tự động từ file Excel, chỉ chứa số liệu tổng hợp (không có từng phiếu trả lời). Khi có file khảo sát mới:
+
+  ```bash
+  ruby tools/build_survey.rb "/đường/dẫn/KHAOSAT.xlsx" data/survey.json
+  ```
+
+  Script tính sẵn số liệu cho mọi tổ hợp bộ lọc (khối 10/11/12 × nam/nữ). Các biểu đồ, tiêu đề và câu hỏi nằm trong `tools/build_survey.rb` (phần `sections`). **Không commit file `.xlsx` lên GitHub.**
+- **Nội dung khác** (`data/data.json`): chatbot (FAQ), góc nhìn học sinh/chuyên gia (hiện là nội dung mẫu), nhóm nghiên cứu. Với FAQ, `keywords` viết **không dấu, chữ thường**.
+- Sửa thêm tiêu đề/mô tả trong `index.html` cho khớp đề tài.
 
 ## 2. Chạy thử trên máy
 
