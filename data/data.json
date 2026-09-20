@@ -126,13 +126,13 @@
     ]
   },
   "team": {
-    "advisor": { "name": "TS. Họ và tên giảng viên", "role": "Giảng viên hướng dẫn" },
+    "advisor": { "name": "ThS. Trần Tùng Linh", "role": "Giáo viên hướng dẫn" },
     "members": [
-      { "name": "Họ và tên thành viên 1", "role": "Trưởng nhóm" },
-      { "name": "Họ và tên thành viên 2", "role": "Phát triển sản phẩm" },
-      { "name": "Họ và tên thành viên 3", "role": "Khảo sát và phân tích dữ liệu" }
+      { "name": "Trần Ngọc Thanh Thuỷ", "role": "Trưởng nhóm" },
+      { "name": "Phạm Minh Nhật", "role": "Thành viên" },
+      { "name": "Đoàn Phan Hoàng Vinh", "role": "Hỗ trợ" }
     ],
-    "institution": "Tên trường / khoa của bạn",
-    "email": "email@truong.edu.vn"
+    "institution": "Trường TH, THCS và THPT Việt Úc",
+    "email": "tthuytranngocthanh.1402@gmail.com"
   }
 }
