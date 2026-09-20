@@ -1,116 +1,116 @@
 {
   "audio": "narration.m4a",
-  "version": 1789909877,
-  "duration": 76.714,
+  "version": 1789910226,
+  "duration": 63.892,
   "scenes": [
     {
       "id": "mo-dau",
       "sentences": [
         {
-          "start": 0.8,
-          "end": 7.281,
+          "start": 0.6,
+          "end": 6.175,
           "text": "CareerAssistantAI – trợ lý AI đồng hành cùng học sinh trên hành trình chọn nghề."
         }
       ],
       "start": 0.0,
-      "end": 7.781
+      "end": 6.675
     },
     {
       "id": "van-de",
       "sentences": [
         {
-          "start": 8.281,
-          "end": 11.941,
+          "start": 6.875,
+          "end": 9.992,
           "text": "Chọn nghề là quyết định lớn, nhưng nhiều em còn phân vân."
         },
         {
-          "start": 12.441,
-          "end": 20.096,
+          "start": 10.342,
+          "end": 16.841,
           "text": "Theo khảo sát, nhiều em chưa biết năng lực của mình ở lĩnh vực nào, thiếu thông tin nghề nghiệp và chưa hiểu rõ sở thích."
         }
       ],
-      "start": 7.781,
-      "end": 20.596
+      "start": 6.675,
+      "end": 17.341
     },
     {
       "id": "khao-sat",
       "sentences": [
         {
-          "start": 21.096,
-          "end": 26.646,
+          "start": 17.541,
+          "end": 22.332,
           "text": "Nhóm nghiên cứu đã khảo sát 1.252 học sinh tại 76 trường."
         },
         {
-          "start": 27.146,
-          "end": 34.767,
+          "start": 22.682,
+          "end": 29.233,
           "text": "38,8% em đã xác định rõ định hướng nghề nghiệp, 40,5% dùng AI thường xuyên."
         }
       ],
-      "start": 20.596,
-      "end": 35.267
+      "start": 17.341,
+      "end": 29.733
     },
     {
       "id": "so-lieu",
       "sentences": [
         {
-          "start": 35.767,
-          "end": 41.105,
+          "start": 29.933,
+          "end": 34.511,
           "text": "Số liệu được trình bày bằng biểu đồ trực quan, lọc được theo khối lớp và giới tính."
         }
       ],
-      "start": 35.267,
-      "end": 41.605
+      "start": 29.733,
+      "end": 35.011
     },
     {
       "id": "holland",
       "sentences": [
         {
-          "start": 42.105,
-          "end": 49.306,
+          "start": 35.211,
+          "end": 41.364,
           "text": "Học sinh có thể làm trắc nghiệm Holland 36 câu, khoảng 5 phút, để khám phá nhóm sở thích nghề nghiệp."
         },
         {
-          "start": 49.806,
-          "end": 55.96,
+          "start": 41.714,
+          "end": 46.917,
           "text": "Kết quả gồm mã Holland, biểu đồ radar, gợi ý ngành và tải về được dạng PDF."
         }
       ],
-      "start": 41.605,
-      "end": 56.46
+      "start": 35.011,
+      "end": 47.417
     },
     {
       "id": "chatbot",
       "sentences": [
         {
-          "start": 56.96,
-          "end": 62.238,
+          "start": 47.617,
+          "end": 52.191,
           "text": "Trợ lý AI giải thích kết quả và giải đáp thắc mắc về ngành nghề bất cứ lúc nào."
         },
         {
-          "start": 62.738,
-          "end": 67.373,
+          "start": 52.541,
+          "end": 56.517,
           "text": "AI chỉ để tham khảo, không thay thế thầy cô và cố vấn hướng nghiệp."
         }
       ],
-      "start": 56.46,
-      "end": 67.873
+      "start": 47.417,
+      "end": 57.017
     },
     {
       "id": "ket",
       "sentences": [
         {
-          "start": 68.373,
-          "end": 70.218,
+          "start": 57.217,
+          "end": 58.777,
           "text": "Hiểu mình, chọn đúng hướng."
         },
         {
-          "start": 70.718,
-          "end": 73.914,
+          "start": 59.127,
+          "end": 61.892,
           "text": "Truy cập careerassistantai.online"
         }
       ],
-      "start": 67.873,
-      "end": 76.714
+      "start": 57.017,
+      "end": 63.892
     }
   ]
 }

@@ -2,14 +2,14 @@
   "_note": "Kịch bản video. 'text' là phụ đề hiển thị; 'tts' là chữ để giọng đọc đọc (viết lại cách phát âm, số viết bằng chữ). Chỉnh giọng và nhịp trong 'voice_settings'. Sau khi sửa chạy: ruby tools/build_video.rb",
   "voice": "Linh",
   "voice_settings": {
-    "say_rate": 215,
+    "say_rate": 235,
     "pitch_base": 37,
-    "shift": 0.88,
-    "comma_pause_ms": 200,
-    "lead": 0.8,
-    "gap_sentence": 0.5,
-    "gap_scene": 1.0,
-    "tail": 2.8
+    "shift": 0.93,
+    "comma_pause_ms": 150,
+    "lead": 0.6,
+    "gap_sentence": 0.35,
+    "gap_scene": 0.7,
+    "tail": 2.0
   },
   "scenes": [
     {
