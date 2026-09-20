@@ -210,6 +210,7 @@
       window.Holland.init(holland);
 
       renderQuotes(document.getElementById('panel-students'), data.students);
+      renderQuotes(document.getElementById('panel-university'), data.university || []);
       renderQuotes(document.getElementById('panel-experts'), data.experts);
       renderTeam(document.getElementById('team'), data.team);
       window.Chatbot.init(data.chat);

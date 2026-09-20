@@ -17,6 +17,23 @@
       "role": "Học sinh khối 10"
     }
   ],
+  "university": [
+    {
+      "quote": "Hồi lớp 12 mình chọn ngành theo lời khuyên của người thân mà chưa hiểu rõ nghề. Nếu có một công cụ giúp khám phá sở thích và so sánh ngành từ sớm, mình đã bớt phân vân và đỡ mất thời gian.",
+      "name": "Lê Hoàng H.",
+      "role": "Sinh viên năm 2, Quản trị kinh doanh"
+    },
+    {
+      "quote": "Là sinh viên năm cuối, mình thấy AI rất hữu ích để tìm hiểu yêu cầu kỹ năng của vị trí thực tập. Tuy vậy vẫn cần kiểm chứng lại thông tin với người đi trước và doanh nghiệp.",
+      "name": "Phạm Thu T.",
+      "role": "Sinh viên năm 4, Công nghệ thông tin"
+    },
+    {
+      "quote": "Mình từng đổi ngành sau năm nhất vì chọn chưa đúng sở thích. Trắc nghiệm như Holland giúp các bạn học sinh hiểu bản thân hơn, nhưng nên đi kèm trải nghiệm thực tế.",
+      "name": "Nguyễn Anh K.",
+      "role": "Sinh viên năm 3, Truyền thông đa phương tiện"
+    }
+  ],
   "experts": [
     {
       "quote": "Công cụ giúp mở rộng khả năng tiếp cận tư vấn hướng nghiệp trong bối cảnh số lượng cố vấn còn hạn chế. Điều quan trọng là AI nên hỗ trợ chứ không thay thế cố vấn con người.",
