@@ -30,6 +30,15 @@ api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commi
 - **Nội dung khác** (`data/data.json`): chatbot (FAQ), góc nhìn học sinh/chuyên gia (hiện là nội dung mẫu), nhóm nghiên cứu. Với FAQ, `keywords` viết **không dấu, chữ thường**.
 - Sửa thêm tiêu đề/mô tả trong `index.html` cho khớp đề tài.
 
+## Trắc nghiệm Holland
+
+- Bộ 36 câu, mô tả nhóm tính cách và gợi ý ngành nằm trong `data/holland.json` (nhóm tự soạn, **cần giáo viên hướng dẫn duyệt**). Điểm được chấm ngay trên trình duyệt.
+- **Phân tích bằng AI**: dùng `api/chat.php` (chỉ nhận 6 điểm số 6–30, không nhận văn bản tự do). Cần đã bật chatbot AI.
+- **Xuất PDF**: nút "Tải kết quả (PDF)" mở hộp thoại in, chọn "Lưu dưới dạng PDF".
+- **Gửi ẩn danh cho nghiên cứu** (chỉ khi học sinh tích đồng ý): `api/holland.php` ghi vào `api/storage/holland.jsonl` gồm ngày, khối, giới tính (nếu chọn), 6 điểm số. Không lưu tên, IP hay user-agent. Thư mục `api/storage/` bị chặn truy cập từ web và file dữ liệu không được commit.
+- **Tải dữ liệu**: đặt `admin_password` trong `api/config.php`, rồi mở `https://<tên-miền>/api/holland_export.php` (tên đăng nhập `admin`) để tải CSV. Hoặc tải trực tiếp `api/storage/holland.jsonl` qua File Manager của hPanel.
+- Vì đối tượng là học sinh THPT, nên xin phép nhà trường/phụ huynh theo quy định trước khi thu thập dữ liệu.
+
 ## 2. Chạy thử trên máy
 
 Không mở trực tiếp file `index.html` (trình duyệt sẽ chặn đọc `data.json`). Chạy máy chủ tĩnh:

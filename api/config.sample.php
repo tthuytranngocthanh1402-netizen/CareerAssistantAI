@@ -8,6 +8,10 @@ return [
     // Lấy tại https://console.anthropic.com/
     'api_key' => 'DAN_API_KEY_CUA_BAN_VAO_DAY',
 
+    // Mật khẩu để tải kết quả trắc nghiệm Holland ẩn danh (CSV) tại /api/holland_export.php
+    // Tên đăng nhập: admin. Hãy đặt mật khẩu dài, khó đoán.
+    'admin_password' => 'DAT_MAT_KHAU_QUAN_TRI',
+
     'model' => 'claude-haiku-4-5-20251001',
     'max_tokens' => 500,
 

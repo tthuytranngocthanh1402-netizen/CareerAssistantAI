@@ -1,0 +1,93 @@
+{
+  "_note": "Bộ câu hỏi Holland (RIASEC) do nhóm nghiên cứu soạn, cần được giáo viên hướng dẫn duyệt. Mỗi câu thuộc một nhóm (t) và được chấm 1–5; điểm mỗi nhóm = tổng 6 câu (6–30).",
+  "version": "1",
+  "scale": ["Hoàn toàn không thích", "Không thích", "Bình thường", "Thích", "Rất thích"],
+  "consent": "Em đồng ý gửi ẩn danh kết quả (6 điểm số, cùng khối và giới tính nếu em chọn) cho nhóm nghiên cứu để phục vụ nghiên cứu khoa học. Không gửi họ tên, địa chỉ IP hay bất kỳ thông tin nhận dạng nào. Em có thể bỏ qua bước này mà vẫn xem đầy đủ kết quả.",
+  "types": [
+    {
+      "code": "R", "name": "Kỹ thuật", "en": "Realistic",
+      "desc": "Thích làm việc thực tế với đồ vật, máy móc, công cụ, cây cối hoặc hoạt động ngoài trời; ưa cách làm cụ thể và thấy được kết quả rõ ràng.",
+      "traits": ["thực tế", "khéo tay", "kiên trì"],
+      "groups": ["Kỹ thuật – Công nghệ", "Khoa học tự nhiên – Môi trường – Nông nghiệp", "An ninh – Quốc phòng"],
+      "jobs": ["Kỹ sư cơ khí, điện, điện tử", "Kỹ thuật viên ô tô", "Kỹ sư nông nghiệp công nghệ cao"]
+    },
+    {
+      "code": "I", "name": "Nghiên cứu", "en": "Investigative",
+      "desc": "Thích quan sát, phân tích, tìm hiểu nguyên lý và giải quyết vấn đề phức tạp bằng tư duy logic và bằng chứng.",
+      "traits": ["tò mò", "logic", "độc lập"],
+      "groups": ["Khoa học tự nhiên – Môi trường – Nông nghiệp", "Công nghệ thông tin – AI", "Y tế – Sức khỏe"],
+      "jobs": ["Nhà khoa học dữ liệu", "Bác sĩ, dược sĩ", "Nhà nghiên cứu, kỹ sư phần mềm/AI"]
+    },
+    {
+      "code": "A", "name": "Nghệ thuật", "en": "Artistic",
+      "desc": "Thích sáng tạo, biểu đạt ý tưởng riêng qua hình ảnh, chữ viết, âm nhạc hoặc trình diễn; không thích khuôn mẫu cứng nhắc.",
+      "traits": ["sáng tạo", "giàu cảm xúc", "tự do"],
+      "groups": ["Truyền thông – Nghệ thuật – Thiết kế", "Khoa học xã hội – Luật – Nhân văn"],
+      "jobs": ["Nhà thiết kế đồ họa, UX", "Kiến trúc sư", "Nhà báo, biên kịch, đạo diễn"]
+    },
+    {
+      "code": "S", "name": "Xã hội", "en": "Social",
+      "desc": "Thích giúp đỡ, giảng dạy, chăm sóc và làm việc cùng mọi người; coi trọng các mối quan hệ và đóng góp cho cộng đồng.",
+      "traits": ["thân thiện", "biết lắng nghe", "thấu cảm"],
+      "groups": ["Giáo dục", "Y tế – Sức khỏe", "Khoa học xã hội – Luật – Nhân văn"],
+      "jobs": ["Giáo viên", "Nhà tâm lý, công tác xã hội", "Điều dưỡng, chuyên viên nhân sự"]
+    },
+    {
+      "code": "E", "name": "Quản lý – Kinh doanh", "en": "Enterprising",
+      "desc": "Thích dẫn dắt, thuyết phục, tổ chức và theo đuổi mục tiêu lớn; sẵn sàng chấp nhận rủi ro để đạt thành tựu.",
+      "traits": ["chủ động", "tự tin", "có tầm nhìn"],
+      "groups": ["Kinh tế – Kinh doanh", "Du lịch – Dịch vụ – Logistics", "Truyền thông – Nghệ thuật – Thiết kế"],
+      "jobs": ["Quản trị kinh doanh, marketing", "Luật sư", "Khởi nghiệp, quản lý sự kiện"]
+    },
+    {
+      "code": "C", "name": "Nghiệp vụ", "en": "Conventional",
+      "desc": "Thích sự trật tự, chính xác và làm việc theo quy trình rõ ràng; giỏi sắp xếp, quản lý số liệu và hồ sơ.",
+      "traits": ["cẩn thận", "ngăn nắp", "đáng tin cậy"],
+      "groups": ["Kinh tế – Kinh doanh", "Du lịch – Dịch vụ – Logistics", "Công nghệ thông tin – AI"],
+      "jobs": ["Kế toán, kiểm toán", "Chuyên viên ngân hàng, tài chính", "Thống kê, quản trị chuỗi cung ứng"]
+    }
+  ],
+  "questions": [
+    { "t": "R", "q": "Sửa chữa đồ điện tử, xe đạp hoặc xe máy khi bị hỏng." },
+    { "t": "I", "q": "Làm thí nghiệm để kiểm chứng một giả thuyết khoa học." },
+    { "t": "A", "q": "Vẽ, thiết kế hoặc trang trí một sản phẩm theo ý tưởng riêng của mình." },
+    { "t": "S", "q": "Giúp bạn bè giải quyết vấn đề hoặc chia sẻ khi họ buồn." },
+    { "t": "E", "q": "Thuyết phục người khác đồng ý với ý tưởng của mình." },
+    { "t": "C", "q": "Sắp xếp tài liệu, dữ liệu một cách gọn gàng và có hệ thống." },
+
+    { "t": "R", "q": "Lắp ráp mô hình, thiết bị hoặc đồ nội thất theo hướng dẫn." },
+    { "t": "I", "q": "Giải các bài toán hoặc câu đố logic hóc búa." },
+    { "t": "A", "q": "Viết truyện, thơ, kịch bản hoặc sáng tác nhạc." },
+    { "t": "S", "q": "Hướng dẫn, kèm cặp người khác học bài." },
+    { "t": "E", "q": "Đứng ra tổ chức và dẫn dắt một nhóm hoặc câu lạc bộ." },
+    { "t": "C", "q": "Lập bảng tính, ghi chép và theo dõi thu chi." },
+
+    { "t": "R", "q": "Làm việc ngoài trời như trồng cây, chăm sóc vườn hoặc vật nuôi." },
+    { "t": "I", "q": "Tìm hiểu nguyên nhân sâu xa của một hiện tượng tự nhiên hoặc xã hội." },
+    { "t": "A", "q": "Biểu diễn âm nhạc, nhảy múa hoặc diễn xuất trước mọi người." },
+    { "t": "S", "q": "Tham gia hoạt động tình nguyện, giúp đỡ cộng đồng." },
+    { "t": "E", "q": "Bán hàng hoặc gây quỹ cho một hoạt động." },
+    { "t": "C", "q": "Làm việc theo quy trình rõ ràng, từng bước một." },
+
+    { "t": "R", "q": "Sử dụng dụng cụ, máy móc để tạo ra một sản phẩm cụ thể." },
+    { "t": "I", "q": "Đọc sách, bài báo khoa học về những khám phá mới." },
+    { "t": "A", "q": "Chụp ảnh, quay và dựng video theo cách sáng tạo." },
+    { "t": "S", "q": "Lắng nghe và động viên người đang gặp khó khăn." },
+    { "t": "E", "q": "Tranh luận, thuyết trình để bảo vệ quan điểm của mình." },
+    { "t": "C", "q": "Kiểm tra lỗi chính tả hoặc số liệu để mọi thứ thật chính xác." },
+
+    { "t": "R", "q": "Tham gia hoạt động thể chất, thể thao hoặc dã ngoại thực tế." },
+    { "t": "I", "q": "Phân tích số liệu để tìm ra quy luật." },
+    { "t": "A", "q": "Nghĩ ra những ý tưởng độc đáo, khác biệt so với mọi người." },
+    { "t": "S", "q": "Làm việc nhóm và hỗ trợ các thành viên cùng tiến bộ." },
+    { "t": "E", "q": "Lập kế hoạch khởi nghiệp hoặc kinh doanh nhỏ." },
+    { "t": "C", "q": "Lập kế hoạch chi tiết và bám sát lịch trình đã đề ra." },
+
+    { "t": "R", "q": "Tìm hiểu cách máy móc, động cơ hoạt động." },
+    { "t": "I", "q": "Nghiên cứu một chủ đề trong thời gian dài để hiểu thật kỹ." },
+    { "t": "A", "q": "Tham quan bảo tàng, triển lãm hoặc xem phim nghệ thuật." },
+    { "t": "S", "q": "Chăm sóc người lớn tuổi hoặc trẻ nhỏ." },
+    { "t": "E", "q": "Nhận thử thách có rủi ro nhưng có thể mang lại thành tựu lớn." },
+    { "t": "C", "q": "Quản lý sổ sách, hồ sơ và giấy tờ." }
+  ]
+}

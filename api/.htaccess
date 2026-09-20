@@ -2,3 +2,8 @@
 <FilesMatch "^config(\.sample)?\.php$">
   Require all denied
 </FilesMatch>
+
+# Chuyển tiêu đề Authorization cho PHP (dùng cho holland_export.php trên hosting dùng FastCGI)
+<IfModule mod_setenvif.c>
+  SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
+</IfModule>

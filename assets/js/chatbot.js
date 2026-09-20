@@ -9,6 +9,7 @@
   var cfg, logEl, formEl, inputEl, modeEl, suggestEl;
   var aiAvailable = null; // null = chưa biết, true/false = đã kiểm tra
   var history = [];
+  var hollandScores = null; // điểm Holland của học sinh (nếu đã làm trắc nghiệm) để AI trả lời sát hơn
   var busy = false;
 
   function normalize(s) {
@@ -71,7 +72,7 @@
         method: 'POST',
         signal: signal,
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ messages: messages })
+        body: JSON.stringify(hollandScores ? { messages: messages, holland: hollandScores } : { messages: messages })
       });
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
@@ -141,5 +142,8 @@
     checkAi();
   }
 
-  window.Chatbot = { init: init, ask: send };
+  function setHolland(scores) { hollandScores = scores; }
+  function isAi() { return aiAvailable === true; }
+
+  window.Chatbot = { init: init, ask: send, setHolland: setHolland, isAi: isAi };
 })();

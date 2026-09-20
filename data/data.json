@@ -40,10 +40,21 @@
       "Đề tài này nghiên cứu gì?",
       "Sản phẩm có những tính năng nào?",
       "Kết quả khảo sát ra sao?",
-      "Dữ liệu người dùng có được bảo mật không?"
+      "Dữ liệu người dùng có được bảo mật không?",
+      "Trắc nghiệm Holland là gì?"
     ],
     "fallback": "Mình chưa có câu trả lời chính xác cho câu hỏi này. Bạn thử hỏi về mục tiêu đề tài, tính năng, kết quả khảo sát, bảo mật dữ liệu hoặc nhóm nghiên cứu nhé.",
     "faq": [
+      {
+        "keywords": [
+          "holland",
+          "riasec",
+          "trac nghiem",
+          "tinh cach",
+          "so thich"
+        ],
+        "answer": "Trắc nghiệm Holland (RIASEC) chia sở thích nghề nghiệp thành 6 nhóm: Kỹ thuật, Nghiên cứu, Nghệ thuật, Xã hội, Quản lý – Kinh doanh và Nghiệp vụ. Bạn làm bài ở mục Trắc nghiệm Holland (36 câu, khoảng 5 phút) để nhận mã Holland, biểu đồ, gợi ý nhóm ngành và có thể tải kết quả PDF."
+      },
       {
         "keywords": [
           "de tai",

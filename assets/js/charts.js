@@ -51,7 +51,10 @@
   function hbars(host, cfg, values) {
     header(host, cfg);
     var wrap = el('div', { class: 'bars' });
-    ranked(cfg.options, values).forEach(function (r) {
+    var rows = cfg.sort === false
+      ? cfg.options.map(function (label, i) { return { label: label, value: values[i] }; })
+      : ranked(cfg.options, values);
+    rows.forEach(function (r) {
       wrap.appendChild(barRow(r.label, pct(r.value), r.value, 'f-indigo'));
     });
     host.appendChild(wrap);
@@ -81,6 +84,44 @@
       ]));
     });
     host.appendChild(wrap);
+  }
+
+  /* Biểu đồ radar (lục giác Holland): labels[i] là nhãn trục, values[i] trong khoảng 0–100 */
+  function radar(host, labels, values, title) {
+    var NS = "http://www.w3.org/2000/svg";
+    var cx = 150, cy = 150, R = 92, n = labels.length;
+    function mk(tag, attrs) {
+      var node = document.createElementNS(NS, tag);
+      Object.keys(attrs || {}).forEach(function (k) { node.setAttribute(k, attrs[k]); });
+      return node;
+    }
+    function point(i, r) {
+      var a = -Math.PI / 2 + (2 * Math.PI * i) / n;
+      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    }
+    function fix(p) { return p.map(function (v) { return v.toFixed(1); }).join(","); }
+    var svg = mk("svg", { viewBox: "0 0 300 300", class: "radar", role: "img", "aria-label": title || "Biểu đồ radar" });
+    [25, 50, 75, 100].forEach(function (pc) {
+      var pts = labels.map(function (_, i) { return fix(point(i, (R * pc) / 100)); }).join(" ");
+      svg.appendChild(mk("polygon", { points: pts, class: "rd-ring" }));
+    });
+    labels.forEach(function (_, i) {
+      var p = point(i, R);
+      svg.appendChild(mk("line", { x1: cx, y1: cy, x2: p[0].toFixed(1), y2: p[1].toFixed(1), class: "rd-axis" }));
+    });
+    var area = values.map(function (v, i) { return fix(point(i, (R * Math.max(v, 3)) / 100)); }).join(" ");
+    svg.appendChild(mk("polygon", { points: area, class: "rd-area" }));
+    values.forEach(function (v, i) {
+      var p = point(i, (R * Math.max(v, 3)) / 100);
+      svg.appendChild(mk("circle", { cx: p[0].toFixed(1), cy: p[1].toFixed(1), r: 3.5, class: "rd-dot" }));
+    });
+    labels.forEach(function (label, i) {
+      var p = point(i, R + 22);
+      var t = mk("text", { x: p[0].toFixed(1), y: (p[1] + 4).toFixed(1), "text-anchor": "middle", class: "rd-label" });
+      t.textContent = label;
+      svg.appendChild(t);
+    });
+    host.appendChild(svg);
   }
 
   /* Thanh tiến độ gradient kèm giá trị trung bình (kiểu "Financial Health") */
@@ -219,6 +260,6 @@
   }
 
   window.Charts = {
-    hbars: hbars, pairs: pairs, meters: meters, strip: strip, dist: dist, info: info, kpis: kpis, reveal: reveal, fmt: num, pct: pct
+    hbars: hbars, radar: radar, pairs: pairs, meters: meters, strip: strip, dist: dist, info: info, kpis: kpis, reveal: reveal, fmt: num, pct: pct
   };
 })();

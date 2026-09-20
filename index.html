@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260920a">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260920b">
   <script>
     (function () {
       try {
@@ -47,6 +47,10 @@
         <a class="side-link" href="#goc-nhin">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.2 14.4c2 .8 3.3 2.6 3.3 5.6"/></svg>
           <span>Góc nhìn</span>
+        </a>
+        <a class="side-link" href="#trac-nghiem">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>
+          <span>Trắc nghiệm Holland</span>
         </a>
         <a class="side-link" href="#chatbot">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -209,6 +213,15 @@
           <p class="notice" role="note">Các trích dẫn và tên trên là nội dung mẫu, cần thay bằng ý kiến thực tế (có sự đồng ý của người được phỏng vấn).</p>
         </section>
 
+        <!-- TRẮC NGHIỆM HOLLAND -->
+        <section id="trac-nghiem" class="page-section" aria-labelledby="holland-title">
+          <div class="page-head">
+            <h2 id="holland-title" class="page-title">Trắc nghiệm Holland</h2>
+            <p class="muted">Khám phá nhóm sở thích nghề nghiệp của bạn và nhận gợi ý ngành phù hợp.</p>
+          </div>
+          <div id="hollandApp"></div>
+        </section>
+
         <!-- CHATBOT -->
         <section id="chatbot" class="page-section" aria-labelledby="chatbot-title">
           <div class="page-head">
@@ -253,9 +266,10 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   </a>
 
-  <script src="assets/js/charts.js?v=20260920a" defer></script>
-  <script src="assets/js/survey.js?v=20260920a" defer></script>
-  <script src="assets/js/chatbot.js?v=20260920a" defer></script>
-  <script src="assets/js/main.js?v=20260920a" defer></script>
+  <script src="assets/js/charts.js?v=20260920b" defer></script>
+  <script src="assets/js/survey.js?v=20260920b" defer></script>
+  <script src="assets/js/holland.js?v=20260920b" defer></script>
+  <script src="assets/js/chatbot.js?v=20260920b" defer></script>
+  <script src="assets/js/main.js?v=20260920b" defer></script>
 </body>
 </html>

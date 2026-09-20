@@ -203,6 +203,7 @@ main { padding: 32px 32px 8px; }
 .btn-primary:hover { background: var(--primary-strong); }
 .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); }
 .btn-ghost:hover { border-color: var(--primary); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
 .eyebrow { text-transform: uppercase; letter-spacing: .1em; font-size: .74rem; font-weight: 700; color: var(--primary); margin-bottom: .7em; }
 .lead { font-size: 1.05rem; color: var(--muted); }
 .notice { margin: 24px 0 0; padding: 12px 16px; border-left: 4px solid var(--warn); background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--warn); border-radius: 12px; color: var(--muted); font-size: .88rem; }
@@ -381,6 +382,88 @@ main { padding: 32px 32px 8px; }
 .team-meta { grid-column: 1 / -1; color: var(--muted); margin: 4px 0 0; }
 .site-footer { padding: 20px 32px 28px; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--border); }
 .site-footer p { margin: 0; }
+
+/* ===== Trắc nghiệm Holland ===== */
+.holland-intro { max-width: 720px; }
+.holland-intro .btn { margin-top: 8px; }
+.holland-quiz { max-width: 760px; }
+.q-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.q-count { font-size: .88rem; font-weight: 600; color: var(--muted); }
+.link-btn { border: 0; background: none; color: var(--muted); font: inherit; font-size: .85rem; cursor: pointer; text-decoration: underline; }
+.q-track { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-bottom: 26px; }
+.q-fill { height: 100%; width: 0; border-radius: 999px; background: var(--g-indigo-h); transition: width .35s ease; }
+.q-prompt { margin: 0 0 6px; font-size: .88rem; }
+.q-text { font-size: clamp(1.15rem, 2.4vw, 1.5rem); font-weight: 600; line-height: 1.4; min-height: 3.6em; margin-bottom: 18px; outline: none; }
+.q-options { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.q-opt { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 6px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--text); font: inherit; font-size: .8rem; line-height: 1.3; text-align: center; cursor: pointer; }
+.q-opt b { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2); font-size: .95rem; }
+.q-opt:hover { border-color: var(--primary); }
+.q-opt.is-chosen { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, var(--surface)); }
+.q-opt.is-chosen b { background: var(--g-indigo); color: #fff; }
+.q-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.q-nav .muted { margin: 0; }
+
+.holland-result { display: grid; gap: 20px; }
+.res-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.res-head p { margin: 0; }
+.holland-code { font-size: clamp(2.6rem, 7vw, 4rem); font-weight: 800; letter-spacing: .12em; line-height: 1.1; background: linear-gradient(90deg, #6366f1, #a855f7); -webkit-background-clip: text; background-clip: text; color: transparent; margin: 4px 0; }
+.res-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.res-radar { display: flex; flex-direction: column; align-items: center; }
+.res-radar h3 { align-self: flex-start; }
+.radar { width: 100%; max-width: 340px; height: auto; }
+.radar .rd-ring { fill: none; stroke: var(--border); stroke-width: 1; }
+.radar .rd-axis { stroke: var(--border); stroke-width: 1; }
+.radar .rd-area { fill: var(--primary); fill-opacity: .22; stroke: var(--primary); stroke-width: 2; stroke-linejoin: round; }
+.radar .rd-dot { fill: var(--primary); stroke: none; }
+.radar .rd-label { fill: var(--text); stroke: none; font-size: 13px; font-weight: 700; font-family: var(--font); }
+.res-types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.res-type-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.res-type-top h3 { margin: 0; }
+.res-type-top p { margin: 0; }
+.res-badge { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-weight: 800; font-size: 1.2rem; color: #fff; background: var(--g-indigo); flex: none; }
+.chips-static { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips-static span { font-size: .8rem; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); }
+.chips-big span { font-size: .88rem; color: var(--text); border-color: color-mix(in srgb, var(--primary) 35%, var(--border)); background: color-mix(in srgb, var(--primary) 8%, var(--surface)); }
+.mt { margin-top: 20px; }
+.ai-box .ai-out { margin-top: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ai-box .ai-out:empty { display: none; }
+.ai-out.is-loading { color: var(--muted); }
+.ai-out.is-error { color: var(--warn); }
+.consent-box { max-width: 760px; }
+.consent-fields { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 12px; }
+.consent-fields label { font-size: .9rem; color: var(--muted); }
+.consent-fields select { margin-left: 6px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: inherit; }
+.consent-check { display: flex; gap: 10px; align-items: flex-start; font-size: .88rem; color: var(--muted); margin-bottom: 12px; }
+.consent-check input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+
+@media (max-width: 1180px) { .res-types { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .res-grid { grid-template-columns: 1fr; }
+  .q-options { grid-template-columns: 1fr; }
+  .q-opt { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 10px 14px; font-size: .92rem; text-align: left; }
+  .q-text { min-height: 0; }
+}
+
+/* ===== In / lưu PDF kết quả Holland ===== */
+@media print {
+  body.printing-holland { background: #fff; padding: 0; color: #111; }
+  body.printing-holland .sidebar,
+  body.printing-holland .topbar,
+  body.printing-holland .scrim,
+  body.printing-holland .fab,
+  body.printing-holland .site-footer,
+  body.printing-holland .no-print,
+  body.printing-holland .page-section:not(#trac-nghiem),
+  body.printing-holland #trac-nghiem .page-head { display: none !important; }
+  body.printing-holland .app { display: block; box-shadow: none; border-radius: 0; background: #fff; }
+  body.printing-holland .content, body.printing-holland main { padding: 0; background: #fff; }
+  body.printing-holland .card { box-shadow: none; break-inside: avoid; }
+  body.printing-holland .res-types { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.printing-holland .res-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.printing-holland .bar-fill { width: var(--w) !important; transition: none; }
+  body.printing-holland .holland-code { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.printing-holland * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
 
 /* ===== Reveal ===== */
 .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }

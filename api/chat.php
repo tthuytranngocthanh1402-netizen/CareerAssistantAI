@@ -104,10 +104,54 @@ if (!$clean || end($clean)['role'] !== 'user') {
     respond(400, ['error' => 'bad_request']);
 }
 
+// Kết quả trắc nghiệm Holland (tùy chọn): chỉ nhận đúng 6 số nguyên 6–30, không nhận văn bản tự do
+$maxTokens = (int)($config['max_tokens'] ?? 500);
+$hollandBlock = '';
+if (isset($input['holland']) && is_array($input['holland']) && count($input['holland']) === 6) {
+    $scores = [];
+    foreach ($input['holland'] as $v) {
+        if (!is_int($v) && !is_float($v)) {
+            $scores = [];
+            break;
+        }
+        $v = (int)round($v);
+        if ($v < 6 || $v > 30) {
+            $scores = [];
+            break;
+        }
+        $scores[] = $v;
+    }
+    if (count($scores) === 6) {
+        $letters = ['R', 'I', 'A', 'S', 'E', 'C'];
+        $names = ['Kỹ thuật (Realistic)', 'Nghiên cứu (Investigative)', 'Nghệ thuật (Artistic)',
+                  'Xã hội (Social)', 'Quản lý – Kinh doanh (Enterprising)', 'Nghiệp vụ (Conventional)'];
+        $pairs = [];
+        foreach ($scores as $i => $s) {
+            $pairs[] = ['i' => $i, 's' => $s];
+        }
+        usort($pairs, static fn($a, $b) => ($b['s'] <=> $a['s']) ?: ($a['i'] <=> $b['i']));
+        $code = '';
+        foreach (array_slice($pairs, 0, 3) as $p) {
+            $code .= $letters[$p['i']];
+        }
+        $lines = [];
+        foreach ($scores as $i => $s) {
+            $lines[] = $letters[$i] . ' – ' . $names[$i] . ': ' . $s . '/30';
+        }
+        $hollandBlock = "\n\nHọc sinh vừa làm trắc nghiệm sở thích nghề nghiệp Holland (RIASEC, 36 câu, mỗi nhóm từ 6 đến 30 điểm).\n"
+            . "Điểm từng nhóm:\n" . implode("\n", $lines) . "\nMã Holland (3 nhóm cao nhất): " . $code . "\n"
+            . "Khi trả lời: giải thích ngắn gọn ý nghĩa mã Holland này, gợi ý 2–3 nhóm ngành (chọn trong: Kinh tế – Kinh doanh; Y tế – Sức khỏe; "
+            . "Công nghệ thông tin – AI; Kỹ thuật – Công nghệ; Khoa học tự nhiên – Môi trường – Nông nghiệp; Giáo dục; Du lịch – Dịch vụ – Logistics; "
+            . "Truyền thông – Nghệ thuật – Thiết kế; Khoa học xã hội – Luật – Nhân văn; An ninh – Quốc phòng) và vài nghề ví dụ. "
+            . "Nhấn mạnh đây là công cụ khám phá sở thích để tham khảo, không phải kết luận cuối cùng; khuyến khích trao đổi thêm với thầy cô hoặc cố vấn hướng nghiệp.";
+        $maxTokens = max($maxTokens, 700);
+    }
+}
+
 $payload = [
     'model' => (string)($config['model'] ?? 'claude-haiku-4-5-20251001'),
-    'max_tokens' => (int)($config['max_tokens'] ?? 500),
-    'system' => (string)($config['system_prompt'] ?? ''),
+    'max_tokens' => $maxTokens,
+    'system' => (string)($config['system_prompt'] ?? '') . $hollandBlock,
     'messages' => $clean,
 ];
 

@@ -202,11 +202,12 @@
     });
   }
 
-  Promise.all([getJson('data/data.json'), getJson('data/survey.json')])
+  Promise.all([getJson('data/data.json'), getJson('data/survey.json'), getJson('data/holland.json')])
     .then(function (res) {
-      var data = res[0], survey = res[1];
+      var data = res[0], survey = res[1], holland = res[2];
 
       window.Survey.init(survey);
+      window.Holland.init(holland);
 
       renderQuotes(document.getElementById('panel-students'), data.students);
       renderQuotes(document.getElementById('panel-experts'), data.experts);
@@ -218,7 +219,7 @@
     })
     .catch(function (err) {
       console.error(err);
-      showLoadError('data/data.json, data/survey.json');
+      showLoadError('data/data.json, data/survey.json, data/holland.json');
       setupScrollSpy();
     });
 })();
