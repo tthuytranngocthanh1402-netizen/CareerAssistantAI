@@ -158,7 +158,7 @@
 
   /* ---------- Nav highlight + chat fab ---------- */
   function setupScrollSpy() {
-    var links = Array.prototype.slice.call(nav.querySelectorAll('a.side-link'));
+    var links = Array.prototype.slice.call(nav.querySelectorAll('a.side-link[href^="#"]'));
     var fab = document.getElementById('chatFab');
     var crumb = document.getElementById('crumb');
     var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });

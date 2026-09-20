@@ -1,0 +1,90 @@
+{
+  "_note": "Kịch bản video. 'text' là phụ đề hiển thị; 'tts' là chữ để giọng đọc đọc (viết lại cách phát âm, số viết bằng chữ). Sửa xong chạy: ruby tools/build_video.rb",
+  "voice": "Linh",
+  "scenes": [
+    {
+      "id": "mo-dau",
+      "sentences": [
+        {
+          "text": "CareerAssistantAI – trợ lý AI đồng hành cùng học sinh trên hành trình chọn nghề.",
+          "tts": "Kơ-ríơ Ơ-sít-tần Ây Ai, trợ lý trí tuệ nhân tạo đồng hành cùng học sinh trên hành trình chọn nghề."
+        }
+      ]
+    },
+    {
+      "id": "van-de",
+      "sentences": [
+        {
+          "text": "Chọn nghề là quyết định lớn, nhưng nhiều em còn phân vân.",
+          "tts": "Chọn nghề là quyết định lớn, nhưng nhiều em còn phân vân."
+        },
+        {
+          "text": "Theo khảo sát, nhiều em chưa biết năng lực của mình ở lĩnh vực nào, thiếu thông tin nghề nghiệp và chưa hiểu rõ sở thích.",
+          "tts": "Theo khảo sát, nhiều em chưa biết năng lực của mình ở lĩnh vực nào, thiếu thông tin nghề nghiệp, và chưa hiểu rõ sở thích."
+        }
+      ]
+    },
+    {
+      "id": "khao-sat",
+      "sentences": [
+        {
+          "text": "Nhóm nghiên cứu đã khảo sát 1.252 học sinh tại 76 trường.",
+          "tts": "Nhóm nghiên cứu đã khảo sát một nghìn hai trăm năm mươi hai học sinh tại bảy mươi sáu trường."
+        },
+        {
+          "text": "38,8% em đã xác định rõ định hướng nghề nghiệp, 40,5% dùng AI thường xuyên.",
+          "tts": "Ba mươi tám phẩy tám phần trăm em đã xác định rõ định hướng nghề nghiệp, bốn mươi phẩy năm phần trăm dùng Ây Ai thường xuyên."
+        }
+      ]
+    },
+    {
+      "id": "so-lieu",
+      "sentences": [
+        {
+          "text": "Số liệu được trình bày bằng biểu đồ trực quan, lọc được theo khối lớp và giới tính.",
+          "tts": "Số liệu được trình bày bằng biểu đồ trực quan, lọc được theo khối lớp và giới tính."
+        }
+      ]
+    },
+    {
+      "id": "holland",
+      "sentences": [
+        {
+          "text": "Học sinh có thể làm trắc nghiệm Holland 36 câu, khoảng 5 phút, để khám phá nhóm sở thích nghề nghiệp.",
+          "tts": "Học sinh có thể làm trắc nghiệm Hô-lần ba mươi sáu câu, khoảng năm phút, để khám phá nhóm sở thích nghề nghiệp."
+        },
+        {
+          "text": "Kết quả gồm mã Holland, biểu đồ radar, gợi ý ngành và tải về được dạng PDF.",
+          "tts": "Kết quả gồm mã Hô-lần, biểu đồ ra-đa, gợi ý ngành, và tải về được dạng Pi Đi Ép."
+        }
+      ]
+    },
+    {
+      "id": "chatbot",
+      "sentences": [
+        {
+          "text": "Trợ lý AI giải thích kết quả và giải đáp thắc mắc về ngành nghề bất cứ lúc nào.",
+          "tts": "Trợ lý Ây Ai giải thích kết quả và giải đáp thắc mắc về ngành nghề bất cứ lúc nào."
+        },
+        {
+          "text": "AI chỉ để tham khảo, không thay thế thầy cô và cố vấn hướng nghiệp.",
+          "tts": "Ây Ai chỉ để tham khảo, không thay thế thầy cô và cố vấn hướng nghiệp."
+        }
+      ]
+    },
+    {
+      "id": "ket",
+      "sentences": [
+        {
+          "text": "Hiểu mình, chọn đúng hướng.",
+          "tts": "Hiểu mình, chọn đúng hướng."
+        },
+        {
+          "text": "Truy cập careerassistantai.online",
+          "tts": "Truy cập kơ-ríơ ơ-sít-tần ây ai chấm on-lai."
+        }
+      ]
+    }
+  ],
+  "rate": 200
+}

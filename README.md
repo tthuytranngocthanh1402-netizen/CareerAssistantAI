@@ -39,6 +39,18 @@ api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commi
 - **Tải dữ liệu**: đặt `admin_password` trong `api/config.php`, rồi mở `https://<tên-miền>/api/holland_export.php` (tên đăng nhập `admin`) để tải CSV. Hoặc tải trực tiếp `api/storage/holland.jsonl` qua File Manager của hPanel.
 - Vì đối tượng là học sinh THPT, nên xin phép nhà trường/phụ huynh theo quy định trước khi thu thập dữ liệu.
 
+## Video giới thiệu
+
+Trang `video/` là video tự chạy (khoảng 68 giây) gồm 7 cảnh, phụ đề và giọng đọc tiếng Việt. Số liệu trong video đọc trực tiếp từ `data/survey.json`, `data/holland.json`, `data/data.json`.
+
+- Sửa lời thuyết minh trong `video/script.json` (`text` là phụ đề, `tts` là chữ để giọng đọc; viết số bằng chữ và phiên âm từ tiếng Anh cho dễ nghe), rồi tạo lại âm thanh và bảng thời gian (cần macOS):
+
+  ```bash
+  ruby tools/build_video.rb
+  ```
+- Hình ảnh từng cảnh nằm trong `video/video.js`, được điều khiển hoàn toàn theo thời gian của file `narration.m4a` nên tạm dừng và tua luôn khớp.
+- Để có file MP4: mở `video/`, chọn toàn màn hình, quay màn hình (Cmd + Shift + 5), rồi ghép với `video/narration.m4a` trong iMovie hoặc CapCut.
+
 ## 2. Chạy thử trên máy
 
 Không mở trực tiếp file `index.html` (trình duyệt sẽ chặn đọc `data.json`). Chạy máy chủ tĩnh:

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Video giới thiệu – CareerAssistantAI</title>
+  <meta name="description" content="Video giới thiệu website của đề tài nghiên cứu khoa học CareerAssistantAI: số liệu khảo sát, trắc nghiệm Holland và chatbot AI.">
+  <link rel="icon" href="../assets/img/favicon.svg?v=20260920c" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="video.css?v=3">
+  <script src="video.js?v=2" defer></script>
+</head>
+<body>
+  <main class="wrap">
+    <h1 class="sr-only">Video giới thiệu CareerAssistantAI</h1>
+
+    <div class="frame" id="frame">
+      <div class="stage" id="stage" aria-label="Video giới thiệu CareerAssistantAI"></div>
+      <button class="start" id="startBtn" type="button">
+        <span class="start-icon" aria-hidden="true">▶</span>
+        <span id="startLabel">Phát video</span>
+      </button>
+    </div>
+
+    <div class="controls" id="controls">
+      <button class="cbtn" id="playBtn" type="button" aria-label="Phát / tạm dừng">▶</button>
+      <button class="cbtn" id="restartBtn" type="button" aria-label="Phát lại từ đầu">↺</button>
+      <input class="seek" id="seek" type="range" min="0" max="1000" value="0" aria-label="Tua video">
+      <span class="time" id="time" aria-live="off">0:00 / 0:00</span>
+      <button class="cbtn" id="muteBtn" type="button" aria-label="Bật / tắt tiếng">🔊</button>
+      <button class="cbtn" id="fsBtn" type="button" aria-label="Toàn màn hình">⛶</button>
+    </div>
+
+    <details class="help">
+      <summary>Cách lưu video thành file MP4</summary>
+      <ol>
+        <li>Bấm <b>⛶ Toàn màn hình</b>, rồi nhấn <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>5</kbd> và chọn <b>Quay toàn bộ màn hình</b>.</li>
+        <li>Bấm <b>Phát video</b> và chờ đến hết. File quay sẽ là video <b>không tiếng</b> (macOS không thu âm thanh hệ thống).</li>
+        <li>Mở file quay cùng <a href="narration.m4a" download>file giọng đọc narration.m4a</a> trong iMovie hoặc CapCut, đặt âm thanh bắt đầu cùng lúc với hình, rồi xuất MP4.</li>
+      </ol>
+    </details>
+
+    <p class="back"><a href="../">← Về trang chủ CareerAssistantAI</a></p>
+  </main>
+
+  <audio id="audio" preload="auto" src="narration.m4a"></audio>
+</body>
+</html>
