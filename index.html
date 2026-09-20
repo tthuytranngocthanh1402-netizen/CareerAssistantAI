@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CareerAssistantAI – Trợ lý AI hướng nghiệp cho sinh viên</title>
+  <meta name="description" content="Đề tài nghiên cứu khoa học: trợ lý AI giúp sinh viên định hướng nghề nghiệp, xây dựng lộ trình kỹ năng và chuẩn bị hồ sơ ứng tuyển.">
+  <meta name="theme-color" content="#4f46e5">
+  <meta property="og:title" content="CareerAssistantAI – Trợ lý AI hướng nghiệp cho sinh viên">
+  <meta property="og:description" content="Sản phẩm của đề tài nghiên cứu khoa học: số liệu khảo sát, góc nhìn sinh viên – chuyên gia và chatbot AI.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Bỏ qua điều hướng</a>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="nav" aria-label="Thanh bên">
+      <a class="brand" href="#trang-chu" aria-label="CareerAssistantAI – về đầu trang">
+        <img src="assets/img/favicon.svg" alt="" width="30" height="30">
+        <span>Career<b>AI</b></span>
+      </a>
+
+      <p class="side-label">Chính</p>
+      <nav class="side-nav" aria-label="Điều hướng chính">
+        <a class="side-link" href="#trang-chu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>
+          <span>Trang chủ</span>
+        </a>
+        <a class="side-link" href="#so-lieu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>
+          <span>Số liệu thống kê</span>
+        </a>
+        <a class="side-link" href="#goc-nhin">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.2 14.4c2 .8 3.3 2.6 3.3 5.6"/></svg>
+          <span>Góc nhìn</span>
+        </a>
+        <a class="side-link" href="#chatbot">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Chatbot AI</span>
+        </a>
+      </nav>
+
+      <hr class="side-rule">
+
+      <p class="side-label">Khác</p>
+      <nav class="side-nav" aria-label="Liên kết khác">
+        <a class="side-link" href="#lien-he">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span>Nhóm nghiên cứu</span>
+        </a>
+        <button class="side-link js-theme" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <span>Giao diện sáng / tối</span>
+        </button>
+      </nav>
+
+      <p class="side-foot">Đề tài nghiên cứu khoa học sinh viên</p>
+    </aside>
+    <div class="scrim" id="scrim" hidden></div>
+
+    <div class="content">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <button id="menuToggle" class="icon-btn menu-btn" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <p class="crumb"><span>CareerAssistantAI</span> <i aria-hidden="true">/</i> <strong id="crumb">Trang chủ</strong></p>
+        <form class="search" id="askForm" role="search" autocomplete="off">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <label for="askInput" class="sr-only">Hỏi trợ lý AI</label>
+          <input id="askInput" type="search" maxlength="500" placeholder="Hỏi trợ lý về đề tài…">
+        </form>
+        <div class="top-actions">
+          <button class="icon-btn js-theme" type="button" aria-label="Đổi giao diện sáng/tối">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          </button>
+          <a class="icon-btn has-dot" href="#chatbot" aria-label="Đi tới chatbot AI">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </a>
+          <span class="avatar-me" aria-hidden="true">CA</span>
+        </div>
+      </header>
+
+      <main id="main">
+        <!-- TRANG CHỦ -->
+        <section id="trang-chu" class="page-section" aria-labelledby="hello-title">
+          <div class="page-head">
+            <h1 id="hello-title">Chào mừng bạn đến với CareerAssistantAI <span aria-hidden="true">👋</span></h1>
+            <p class="muted">Tổng quan về đề tài nghiên cứu khoa học và sản phẩm.</p>
+          </div>
+
+          <div class="card hero">
+            <div class="hero-copy">
+              <p class="eyebrow">Đề tài nghiên cứu khoa học sinh viên</p>
+              <h2>Trợ lý AI đồng hành cùng sinh viên trên hành trình <span class="accent">chọn nghề</span></h2>
+              <p class="lead">Giúp sinh viên hiểu rõ ngành nghề, xác định kỹ năng cần có, xây dựng lộ trình học tập và chuẩn bị hồ sơ ứng tuyển – bằng hội thoại tự nhiên, sẵn sàng 24/7.</p>
+              <div class="cta-row">
+                <a class="btn btn-primary" href="#chatbot">Trò chuyện với AI</a>
+                <a class="btn btn-ghost" href="#so-lieu">Xem số liệu nghiên cứu</a>
+              </div>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+              <div class="mock">
+                <div class="mock-msg mock-user">Mình học Marketing, nên học thêm kỹ năng gì?</div>
+                <div class="mock-msg mock-bot">Với Marketing số, bạn nên ưu tiên: phân tích dữ liệu cơ bản, viết nội dung và quảng cáo đa kênh. Mình gợi ý lộ trình 3 tháng nhé.</div>
+                <div class="mock-chips"><span>Phân tích dữ liệu</span><span>Content</span><span>Ads</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-2 gap-top">
+            <article class="card">
+              <h3>Thách thức hiện nay</h3>
+              <ul class="checklist">
+                <li>Thông tin ngành nghề phân tán, khó kiểm chứng.</li>
+                <li>Số lượng cố vấn hướng nghiệp không đủ đáp ứng nhu cầu.</li>
+                <li>Sinh viên ngại hỏi, thiếu công cụ cá nhân hóa lộ trình.</li>
+              </ul>
+            </article>
+            <article class="card card-accent">
+              <h3>Giải pháp của đề tài</h3>
+              <p class="muted">Một trợ lý AI hội thoại, hiểu bối cảnh của từng sinh viên và đưa ra gợi ý có cơ sở, minh bạch – đóng vai trò hỗ trợ cùng cố vấn con người.</p>
+            </article>
+          </div>
+
+          <div class="features gap-top" id="features">
+            <article class="card feature">
+              <span class="feature-icon fi-1" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+              <h3>Tư vấn hội thoại</h3>
+              <p>Đặt câu hỏi bằng ngôn ngữ tự nhiên về ngành, nghề, kỹ năng bất cứ lúc nào.</p>
+            </article>
+            <article class="card feature">
+              <span class="feature-icon fi-2" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19l5-6 4 3 7-9"/><path d="M15 7h5v5"/></svg></span>
+              <h3>Lộ trình kỹ năng</h3>
+              <p>Gợi ý các mốc học tập phù hợp mục tiêu nghề nghiệp và năm học hiện tại.</p>
+            </article>
+            <article class="card feature">
+              <span class="feature-icon fi-3" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7z"/><path d="M10 12h6M10 16h6"/></svg></span>
+              <h3>Phản hồi CV</h3>
+              <p>Chỉ ra điểm mạnh, điểm cần cải thiện và cách trình bày hiệu quả hơn.</p>
+            </article>
+            <article class="card feature">
+              <span class="feature-icon fi-4" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+              <h3>Mô phỏng phỏng vấn</h3>
+              <p>Luyện trả lời các câu hỏi thường gặp và nhận góp ý tức thì.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- SỐ LIỆU -->
+        <section id="so-lieu" class="page-section" aria-labelledby="solieu-title">
+          <div class="page-head">
+            <h2 id="solieu-title" class="page-title">Số liệu thống kê</h2>
+            <p class="muted" id="sampleNote">Kết quả khảo sát</p>
+          </div>
+          <div id="kpis" class="kpis"></div>
+          <div class="dash gap-top">
+            <figure class="card chart" id="chartBeforeAfter"></figure>
+            <figure class="card chart" id="chartFeatures"></figure>
+          </div>
+          <div class="dash-2 gap-top">
+            <figure class="card chart" id="chartNeeds"></figure>
+            <div class="card" id="sampleCard"></div>
+          </div>
+          <p class="notice" role="note">Lưu ý: các số liệu trên là dữ liệu mẫu phục vụ minh họa giao diện, cần được thay bằng kết quả khảo sát thực tế của đề tài.</p>
+        </section>
+
+        <!-- GÓC NHÌN -->
+        <section id="goc-nhin" class="page-section" aria-labelledby="gocnhin-title">
+          <div class="page-head">
+            <h2 id="gocnhin-title" class="page-title">Góc nhìn sinh viên và chuyên gia</h2>
+            <p class="muted">Những ý kiến từ người dùng và chuyên gia về sản phẩm.</p>
+          </div>
+          <div class="tabs" role="tablist" aria-label="Chọn nhóm góc nhìn">
+            <button role="tab" id="tab-students" aria-controls="panel-students" aria-selected="true" class="tab is-active" type="button">Góc nhìn sinh viên</button>
+            <button role="tab" id="tab-experts" aria-controls="panel-experts" aria-selected="false" class="tab" type="button" tabindex="-1">Góc nhìn chuyên gia</button>
+          </div>
+          <div id="panel-students" role="tabpanel" aria-labelledby="tab-students" class="quotes"></div>
+          <div id="panel-experts" role="tabpanel" aria-labelledby="tab-experts" class="quotes" hidden></div>
+          <p class="notice" role="note">Các trích dẫn và tên trên là nội dung mẫu, cần thay bằng ý kiến thực tế (có sự đồng ý của người được phỏng vấn).</p>
+        </section>
+
+        <!-- CHATBOT -->
+        <section id="chatbot" class="page-section" aria-labelledby="chatbot-title">
+          <div class="page-head">
+            <h2 id="chatbot-title" class="page-title">Chatbot AI</h2>
+            <p class="muted">Hỏi đáp trực tiếp về mục tiêu, tính năng, kết quả nghiên cứu và cách sử dụng.</p>
+          </div>
+          <div class="chat-layout">
+            <div class="card chat-intro">
+              <h3>Trò chuyện với trợ lý</h3>
+              <p class="muted small" id="chatMode">Đang kiểm tra chế độ trả lời…</p>
+              <p class="muted small">Trợ lý AI có thể nhầm lẫn. Vui lòng không nhập thông tin cá nhân nhạy cảm.</p>
+              <div id="chatSuggestions" class="chat-suggestions"></div>
+            </div>
+            <div class="card chat" aria-label="Khung trò chuyện">
+              <div id="chatLog" class="chat-log" role="log" aria-live="polite"></div>
+              <form id="chatForm" class="chat-form" autocomplete="off">
+                <label for="chatInput" class="sr-only">Nhập câu hỏi</label>
+                <input id="chatInput" type="text" maxlength="500" placeholder="Nhập câu hỏi của bạn…" required>
+                <button class="btn btn-primary" type="submit">Gửi</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- NHÓM NGHIÊN CỨU -->
+        <section id="lien-he" class="page-section" aria-labelledby="team-title">
+          <div class="page-head">
+            <h2 id="team-title" class="page-title">Nhóm nghiên cứu</h2>
+            <p class="muted">Đội ngũ thực hiện đề tài.</p>
+          </div>
+          <div id="team" class="team"></div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>© <span id="year"></span> CareerAssistantAI – Đề tài nghiên cứu khoa học. Nội dung phục vụ mục đích học thuật.</p>
+      </footer>
+    </div>
+  </div>
+
+  <a id="chatFab" class="fab" href="#chatbot" aria-label="Mở chatbot AI">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </a>
+
+  <script src="assets/js/charts.js" defer></script>
+  <script src="assets/js/chatbot.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

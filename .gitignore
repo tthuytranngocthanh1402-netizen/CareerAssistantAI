@@ -1,0 +1,7 @@
+# Bí mật – tuyệt đối không commit
+api/config.php
+.env
+
+.claude/
+.DS_Store
+*.log

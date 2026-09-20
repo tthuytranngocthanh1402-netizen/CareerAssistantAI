@@ -1,0 +1,26 @@
+# TÙY CHỌN: tự động đẩy code lên Hostinger qua FTP mỗi lần push vào main.
+# Nếu bạn dùng tính năng Git trong hPanel (khuyến nghị) thì KHÔNG cần file này – có thể xóa.
+# Cần tạo 3 secrets trong GitHub: Settings > Secrets and variables > Actions
+#   FTP_SERVER, FTP_USERNAME, FTP_PASSWORD
+name: Deploy to Hostinger (FTP)
+
+on:
+  workflow_dispatch:   # chạy thủ công; đổi thành "push: branches: [main]" để tự động
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            README.md
+            api/config.php

@@ -1,0 +1,4 @@
+# Chặn truy cập trực tiếp file cấu hình chứa API key
+<FilesMatch "^config(\.sample)?\.php$">
+  Require all denied
+</FilesMatch>
