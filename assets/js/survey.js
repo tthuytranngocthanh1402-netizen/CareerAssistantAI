@@ -26,7 +26,7 @@
 
       sec.charts.forEach(function (cfg) {
         var host = document.createElement(cfg.type === 'info' ? 'div' : 'figure');
-        host.className = 'card' + (cfg.type === 'info' ? '' : ' chart') + (cfg.wide ? ' wide' : '');
+        host.className = 'card' + (cfg.type === 'info' ? '' : ' chart') + (cfg.wide ? ' wide' : '') + (cfg.flush ? ' chart-flush' : '');
         grid.appendChild(host);
         hosts.push({ cfg: cfg, host: host });
       });

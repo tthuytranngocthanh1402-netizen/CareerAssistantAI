@@ -117,7 +117,7 @@
     header(host, cfg);
     var legend = el('ul', { class: 'legend' }, [
       el('li', {}, [el('i', { class: 'dot-main' }), document.createTextNode(cfg.series[0])]),
-      el('li', {}, [el('i', { class: 'dot-sky' }), document.createTextNode(cfg.series[1])])
+      el('li', {}, [el('i', { class: 'dot-orange' }), document.createTextNode(cfg.series[1])])
     ]);
     host.appendChild(legend);
 
@@ -199,18 +199,18 @@
       var x = xAt(idx).toFixed(2);
       guide.setAttribute('x1', x);
       guide.setAttribute('x2', x);
-      guide.setAttribute('opacity', '1');
+      guide.classList.add('is-visible');
       dotsA.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
       dotsB.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
       tip.textContent = '';
       tip.appendChild(el('b', { text: r.label }));
       tip.appendChild(el('div', { class: 'trend-tip-row' }, [el('i', { class: 'dot-main' }), el('span', { text: cfg.series[0] }), el('b', { text: pct(r.a) })]));
-      tip.appendChild(el('div', { class: 'trend-tip-row' }, [el('i', { class: 'dot-sky' }), el('span', { text: cfg.series[1] }), el('b', { text: pct(r.b) })]));
+      tip.appendChild(el('div', { class: 'trend-tip-row' }, [el('i', { class: 'dot-orange' }), el('span', { text: cfg.series[1] }), el('b', { text: pct(r.b) })]));
       tip.style.left = Math.max(8, Math.min(92, (xAt(idx) / W) * 100)) + '%';
       tip.classList.add('is-visible');
     }
     function hide() {
-      guide.setAttribute('opacity', '0');
+      guide.classList.remove('is-visible');
       dotsA.forEach(function (d) { d.classList.remove('is-active'); });
       dotsB.forEach(function (d) { d.classList.remove('is-active'); });
       tip.classList.remove('is-visible');
