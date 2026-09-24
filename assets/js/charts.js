@@ -136,12 +136,6 @@
     }
 
     var svg = mk('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'trend-svg', role: 'img', 'aria-label': cfg.title });
-    var clipId = 'trendClip' + Math.random().toString(36).slice(2, 9);
-    var defs = mk('defs', {});
-    var clip = mk('clipPath', { id: clipId });
-    clip.appendChild(mk('rect', { x: padL, y: padT, width: innerW, height: innerH }));
-    defs.appendChild(clip);
-    svg.appendChild(defs);
 
     /* Chỉ vẽ lưới tham chiếu ở giữa (25/50/75); bỏ đường ở 0% và 100% để không tạo cảm giác khung
        hình chữ nhật bao quanh biểu đồ. Nhãn số trục vẫn hiện đủ 0–100% để không mất thông tin. */
@@ -155,10 +149,8 @@
 
     var ptsA = rows.map(function (r, i) { return [xAt(i), yAt(r.a)]; });
     var ptsB = rows.map(function (r, i) { return [xAt(i), yAt(r.b)]; });
-    var g = mk('g', { 'clip-path': 'url(#' + clipId + ')' });
-    g.appendChild(mk('path', { d: smoothPath(ptsB), class: 'trend-line trend-line-b', fill: 'none' }));
-    g.appendChild(mk('path', { d: smoothPath(ptsA), class: 'trend-line trend-line-a', fill: 'none' }));
-    svg.appendChild(g);
+    svg.appendChild(mk('path', { d: smoothPath(ptsB), class: 'trend-line trend-line-b', fill: 'none' }));
+    svg.appendChild(mk('path', { d: smoothPath(ptsA), class: 'trend-line trend-line-a', fill: 'none' }));
 
     var guide = mk('line', { x1: xAt(0).toFixed(2), y1: padT, x2: xAt(0).toFixed(2), y2: H - padB, class: 'trend-guide' });
     svg.appendChild(guide);
