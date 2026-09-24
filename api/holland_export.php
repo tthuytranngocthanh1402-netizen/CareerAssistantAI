@@ -36,7 +36,8 @@ header('Content-Disposition: attachment; filename="holland-' . gmdate('Ymd') . '
 header('Cache-Control: no-store');
 
 $out = fopen('php://output', 'w');
-fputcsv($out, ['date', 'grade', 'gender', 'R', 'I', 'A', 'S', 'E', 'C', 'code', 'version']);
+// mode: short = 36 câu (mỗi nhóm 6–30 điểm), full = 60 câu (mỗi nhóm 10–50 điểm); dòng cũ không có mode là short
+fputcsv($out, ['date', 'grade', 'gender', 'R', 'I', 'A', 'S', 'E', 'C', 'code', 'version', 'mode']);
 $file = __DIR__ . '/storage/holland.jsonl';
 if (is_file($file)) {
     $letters = ['R', 'I', 'A', 'S', 'E', 'C'];
@@ -54,7 +55,7 @@ if (is_file($file)) {
         foreach (array_slice($pairs, 0, 3) as $p) {
             $code .= $letters[$p['i']];
         }
-        fputcsv($out, array_merge([$r['d'] ?? '', $r['g'] ?? '', $r['s'] ?? ''], $r['r'], [$code, $r['v'] ?? '']));
+        fputcsv($out, array_merge([$r['d'] ?? '', $r['g'] ?? '', $r['s'] ?? ''], $r['r'], [$code, $r['v'] ?? '', $r['m'] ?? 'short']));
     }
 }
 fclose($out);
