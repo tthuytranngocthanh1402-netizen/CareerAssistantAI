@@ -143,9 +143,11 @@
     defs.appendChild(clip);
     svg.appendChild(defs);
 
+    /* Chỉ vẽ lưới tham chiếu ở giữa (25/50/75); bỏ đường ở 0% và 100% để không tạo cảm giác khung
+       hình chữ nhật bao quanh biểu đồ. Nhãn số trục vẫn hiện đủ 0–100% để không mất thông tin. */
     [0, 25, 50, 75, 100].forEach(function (v) {
       var y = yAt(v);
-      svg.appendChild(mk('line', { x1: padL, y1: y.toFixed(2), x2: (W - padR).toFixed(2), y2: y.toFixed(2), class: 'trend-grid' }));
+      if (v !== 0 && v !== 100) svg.appendChild(mk('line', { x1: padL, y1: y.toFixed(2), x2: (W - padR).toFixed(2), y2: y.toFixed(2), class: 'trend-grid' }));
       var t = mk('text', { x: (padL - 7).toFixed(2), y: (y + 3).toFixed(2), 'text-anchor': 'end', class: 'trend-axis' });
       t.textContent = v + '%';
       svg.appendChild(t);
