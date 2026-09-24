@@ -137,6 +137,18 @@
 
     var svg = mk('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'trend-svg', role: 'img', 'aria-label': cfg.title });
 
+    /* Gradient mờ dần cho vùng tô dưới mỗi đường (chỉ định nghĩa màu, không có hình dạng riêng nên
+       không gặp lỗi hiển thị như <clipPath> trước đây). */
+    var gid = 'trendGrad' + Math.random().toString(36).slice(2, 9);
+    var defs = mk('defs', {});
+    [['a', '#2563eb'], ['b', '#f97316']].forEach(function (pair) {
+      var grad = mk('linearGradient', { id: gid + pair[0], x1: '0', y1: '0', x2: '0', y2: '1' });
+      grad.appendChild(mk('stop', { offset: '0%', 'stop-color': pair[1], 'stop-opacity': '0.28' }));
+      grad.appendChild(mk('stop', { offset: '100%', 'stop-color': pair[1], 'stop-opacity': '0' }));
+      defs.appendChild(grad);
+    });
+    svg.appendChild(defs);
+
     /* Chỉ vẽ lưới ở 25/50/75 (không vẽ ở 0% và 100%) vì card đã có viền riêng bao quanh,
        vẽ thêm line sát viền ở hai mức này sẽ trùng lặp. Nhãn số trục vẫn hiện đủ 0–100%. */
     [0, 25, 50, 75, 100].forEach(function (v) {
@@ -150,11 +162,14 @@
     var ptsA = rows.map(function (r, i) { return [xAt(i), yAt(r.a)]; });
     var ptsB = rows.map(function (r, i) { return [xAt(i), yAt(r.b)]; });
 
-    /* Vùng tô mờ dưới đường A (chuỗi chính), neo xuống mức 0% */
+    /* Vùng tô mờ dần dưới mỗi đường, neo xuống mức 0%. Vẽ B trước, A sau (A luôn nổi lên trên). */
     var baseY = yAt(0).toFixed(2);
-    var areaD = smoothPath(ptsA) + ' L' + ptsA[ptsA.length - 1][0].toFixed(2) + ',' + baseY +
-      ' L' + ptsA[0][0].toFixed(2) + ',' + baseY + ' Z';
-    svg.appendChild(mk('path', { d: areaD, class: 'trend-area' }));
+    function areaPath(pts) {
+      return smoothPath(pts) + ' L' + pts[pts.length - 1][0].toFixed(2) + ',' + baseY +
+        ' L' + pts[0][0].toFixed(2) + ',' + baseY + ' Z';
+    }
+    svg.appendChild(mk('path', { d: areaPath(ptsB), fill: 'url(#' + gid + 'b)', stroke: 'none' }));
+    svg.appendChild(mk('path', { d: areaPath(ptsA), fill: 'url(#' + gid + 'a)', stroke: 'none' }));
 
     svg.appendChild(mk('path', { d: smoothPath(ptsB), class: 'trend-line trend-line-b', fill: 'none' }));
     svg.appendChild(mk('path', { d: smoothPath(ptsA), class: 'trend-line trend-line-a', fill: 'none' }));
