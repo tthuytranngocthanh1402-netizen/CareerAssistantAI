@@ -10,6 +10,7 @@
   var aiAvailable = null; // null = chưa biết, true/false = đã kiểm tra
   var history = [];
   var hollandScores = null; // điểm Holland của học sinh (nếu đã làm trắc nghiệm) để AI trả lời sát hơn
+  var hollandPerType = 6;   // số câu mỗi nhóm của bản đã làm (6 = bản 36 câu, 10 = bản 60 câu)
   var busy = false;
 
   function normalize(s) {
@@ -72,7 +73,7 @@
         method: 'POST',
         signal: signal,
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(hollandScores ? { messages: messages, holland: hollandScores } : { messages: messages })
+        body: JSON.stringify(hollandScores ? { messages: messages, holland: hollandScores, holland_n: hollandPerType } : { messages: messages })
       });
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
@@ -142,7 +143,7 @@
     checkAi();
   }
 
-  function setHolland(scores) { hollandScores = scores; }
+  function setHolland(scores, perType) { hollandScores = scores; hollandPerType = perType || 6; }
   function isAi() { return aiAvailable === true; }
 
   window.Chatbot = { init: init, ask: send, setHolland: setHolland, isAi: isAi };
