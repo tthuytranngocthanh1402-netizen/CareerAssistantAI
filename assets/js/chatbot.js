@@ -12,6 +12,9 @@
   var hollandScores = null; // điểm Holland của học sinh (nếu đã làm trắc nghiệm) để AI trả lời sát hơn
   var hollandPerType = 6;   // số câu mỗi nhóm của bản đã làm (6 = bản 36 câu, 10 = bản 60 câu)
   var busy = false;
+  var HISTORY_URL = 'api/history.php';
+  var user = null;    // người dùng đã đăng nhập (từ auth.js); khi có thì lịch sử trò chuyện được lưu trên máy chủ
+  var loadSeq = 0;    // đánh số lần nạp lịch sử để bỏ qua kết quả đến muộn
 
   function normalize(s) {
     return ' ' + s
@@ -45,9 +48,66 @@
   }
 
   function setMode() {
-    modeEl.textContent = aiAvailable
+    modeEl.textContent = (aiAvailable
       ? 'Chế độ: trợ lý AI đang hoạt động.'
-      : 'Chế độ: hỏi đáp có sẵn (trợ lý AI chưa được bật).';
+      : 'Chế độ: hỏi đáp có sẵn (trợ lý AI chưa được bật).')
+      + (user ? ' Lịch sử trò chuyện của bạn đang được lưu.' : ' Đăng nhập bằng Gmail (icon tròn góc phải) để lưu lịch sử trò chuyện.');
+  }
+
+  /* ---------- Lịch sử trò chuyện của người dùng đã đăng nhập ---------- */
+  function resetChat() {
+    loadSeq++;
+    history = [];
+    logEl.textContent = '';
+    addMessage('bot', cfg.welcome);
+  }
+
+  function loadHistory() {
+    var seq = ++loadSeq;
+    fetch(HISTORY_URL, { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (seq !== loadSeq || !user || !j || !Array.isArray(j.messages) || !j.messages.length) return;
+        var msgs = j.messages.filter(function (m) {
+          return m && (m.r === 'user' || m.r === 'assistant') && typeof m.c === 'string' && m.c;
+        });
+        if (!msgs.length) return;
+        logEl.textContent = '';
+        addMessage('bot', cfg.welcome);
+        var note = document.createElement('div');
+        note.className = 'msg-divider';
+        note.textContent = 'Lịch sử trò chuyện đã lưu';
+        logEl.appendChild(note);
+        msgs.forEach(function (m) { addMessage(m.r, m.c); });
+        var sep = document.createElement('div');
+        sep.className = 'msg-divider';
+        sep.textContent = 'Cuộc trò chuyện mới';
+        logEl.appendChild(sep);
+        history = msgs.slice(-MAX_HISTORY).map(function (m) { return { role: m.r, content: m.c }; });
+        // Tin nhắn đầu tiên gửi cho AI phải là của người dùng
+        while (history.length && history[0].role !== 'user') history.shift();
+        logEl.scrollTop = logEl.scrollHeight;
+      })
+      .catch(function () {});
+  }
+
+  function saveExchange(question, answer) {
+    if (!user) return;
+    fetch(HISTORY_URL, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ action: 'add', q: question, a: answer })
+    }).catch(function () {});
+  }
+
+  function onAuthChange(u) {
+    var was = user;
+    user = u || null;
+    if (!cfg) return; // init sẽ đọc lại window.Auth.user
+    setMode();
+    if (user && (!was || was.email !== user.email)) { resetChat(); loadHistory(); }
+    else if (!user && was) resetChat();
   }
 
   function withTimeout(promiseFactory) {
@@ -112,6 +172,7 @@
     }).then(function () {
       busy = false;
       logEl.scrollTop = logEl.scrollHeight;
+      saveExchange(question, typing.textContent);
     });
   }
 
@@ -139,6 +200,10 @@
       inputEl.value = '';
       send(v);
     });
+
+    window.addEventListener('auth:change', function (e) { onAuthChange(e.detail && e.detail.user); });
+    window.addEventListener('auth:history-cleared', function () { if (user) resetChat(); });
+    if (window.Auth && window.Auth.user) { user = window.Auth.user; loadHistory(); }
 
     checkAi();
   }
