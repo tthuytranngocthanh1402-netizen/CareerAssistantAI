@@ -1,6 +1,10 @@
 {
-  "_note": "Bộ câu hỏi Holland (RIASEC) do nhóm nghiên cứu soạn, cần được giáo viên hướng dẫn duyệt. Mỗi câu thuộc một nhóm (t) và được chấm 1–5; điểm mỗi nhóm = tổng 6 câu (6–30).",
-  "version": "1",
+  "_note": "Bộ câu hỏi Holland (RIASEC) do nhóm nghiên cứu soạn, cần được giáo viên hướng dẫn duyệt. Mỗi câu thuộc một nhóm (t) và được chấm 1–5. Có 2 chế độ: bản rút gọn 36 câu (chỉ các câu không có f; điểm mỗi nhóm = tổng 6 câu, 6–30) và bản đầy đủ 60 câu (thêm 24 câu đánh dấu f:1; điểm mỗi nhóm = tổng 10 câu, 10–50).",
+  "version": "2",
+  "modes": {
+    "short": { "label": "Bản rút gọn", "perType": 6, "minutes": 5 },
+    "full": { "label": "Bản đầy đủ", "perType": 10, "minutes": 10 }
+  },
   "scale": ["Hoàn toàn không thích", "Không thích", "Bình thường", "Thích", "Rất thích"],
   "consent": "Em đồng ý gửi ẩn danh kết quả (6 điểm số, cùng khối và giới tính nếu em chọn) cho nhóm nghiên cứu để phục vụ nghiên cứu khoa học. Không gửi họ tên, địa chỉ IP hay bất kỳ thông tin nhận dạng nào. Em có thể bỏ qua bước này mà vẫn xem đầy đủ kết quả.",
   "types": [
@@ -88,6 +92,31 @@
     { "t": "A", "q": "Tham quan bảo tàng, triển lãm hoặc xem phim nghệ thuật." },
     { "t": "S", "q": "Chăm sóc người lớn tuổi hoặc trẻ nhỏ." },
     { "t": "E", "q": "Nhận thử thách có rủi ro nhưng có thể mang lại thành tựu lớn." },
-    { "t": "C", "q": "Quản lý sổ sách, hồ sơ và giấy tờ." }
+    { "t": "C", "q": "Quản lý sổ sách, hồ sơ và giấy tờ." },
+
+    { "t": "R", "f": 1, "q": "Lắp đặt hoặc sửa chữa hệ thống điện, nước đơn giản trong nhà." },
+    { "t": "I", "f": 1, "q": "Tìm hiểu cách cơ thể con người, động vật hoặc thực vật hoạt động." },
+    { "t": "A", "f": 1, "q": "Thiết kế áp phích, logo hoặc giao diện cho một ứng dụng, trang web." },
+    { "t": "S", "f": 1, "q": "Dạy kiến thức hoặc kỹ năng cho các em nhỏ hơn." },
+    { "t": "E", "f": 1, "q": "Thay mặt nhóm, lớp hoặc câu lạc bộ đi thương lượng, làm việc với người lạ." },
+    { "t": "C", "f": 1, "q": "Nhập, kiểm tra và đối chiếu số liệu trong bảng tính hoặc phần mềm quản lý." },
+    { "t": "R", "f": 1, "q": "Vận hành máy móc, thiết bị như máy khoan, máy cắt hoặc máy in 3D." },
+    { "t": "I", "f": 1, "q": "Lập trình hoặc nghĩ thuật toán để giải một bài toán khó." },
+    { "t": "A", "f": 1, "q": "Trang trí, sắp xếp lớp học hoặc không gian sống cho đẹp mắt." },
+    { "t": "S", "f": 1, "q": "Hòa giải khi bạn bè hoặc người thân có mâu thuẫn." },
+    { "t": "E", "f": 1, "q": "Tìm cách quảng bá một sản phẩm, sự kiện hoặc ý tưởng đến thật nhiều người." },
+    { "t": "C", "f": 1, "q": "Lập danh sách việc cần làm và đánh dấu từng việc khi hoàn thành." },
+    { "t": "R", "f": 1, "q": "Đóng đồ gỗ, hàn, xây hoặc làm mô hình bằng vật liệu thật." },
+    { "t": "I", "f": 1, "q": "Đặt câu hỏi “tại sao” rồi tự tra cứu, thử nghiệm để tìm câu trả lời." },
+    { "t": "A", "f": 1, "q": "Thể hiện cảm xúc, suy nghĩ của mình qua tranh, ảnh hoặc âm nhạc." },
+    { "t": "S", "f": 1, "q": "Trò chuyện, chia sẻ để giúp ai đó chọn hướng đi cho mình." },
+    { "t": "E", "f": 1, "q": "Đặt mục tiêu cao và đứng ra dẫn dắt mọi người cùng đạt được." },
+    { "t": "C", "f": 1, "q": "Soạn văn bản, biểu mẫu hoặc báo cáo đúng định dạng quy định." },
+    { "t": "R", "f": 1, "q": "Làm những công việc chân tay, vận động nhiều hơn là ngồi một chỗ." },
+    { "t": "I", "f": 1, "q": "Xem chương trình về khoa học, vũ trụ hoặc công nghệ mới." },
+    { "t": "A", "f": 1, "q": "Làm việc tự do sáng tạo, không bị ràng buộc bởi quy tắc cứng nhắc." },
+    { "t": "S", "f": 1, "q": "Tổ chức hoạt động sinh hoạt, vui chơi cho cả nhóm hoặc lớp." },
+    { "t": "E", "f": 1, "q": "Đưa ra quyết định quan trọng và chịu trách nhiệm về kết quả." },
+    { "t": "C", "f": 1, "q": "Giữ tài liệu, tệp máy tính luôn ngăn nắp theo từng thư mục." }
   ]
 }
