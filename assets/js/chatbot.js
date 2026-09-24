@@ -51,7 +51,7 @@
     modeEl.textContent = (aiAvailable
       ? 'Chế độ: trợ lý AI đang hoạt động.'
       : 'Chế độ: hỏi đáp có sẵn (trợ lý AI chưa được bật).')
-      + (user ? ' Lịch sử trò chuyện của bạn đang được lưu.' : ' Đăng nhập bằng Gmail (icon tròn góc phải) để lưu lịch sử trò chuyện.');
+      + (user ? ' Lịch sử trò chuyện của bạn đang được lưu.' : ' Đăng nhập hoặc tạo tài khoản (icon tròn góc phải) để lưu lịch sử trò chuyện.');
   }
 
   /* ---------- Lịch sử trò chuyện của người dùng đã đăng nhập ---------- */
@@ -106,7 +106,7 @@
     user = u || null;
     if (!cfg) return; // init sẽ đọc lại window.Auth.user
     setMode();
-    if (user && (!was || was.email !== user.email)) { resetChat(); loadHistory(); }
+    if (user && (!was || was.name !== user.name)) { resetChat(); loadHistory(); }
     else if (!user && was) resetChat();
   }
 

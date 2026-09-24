@@ -12,8 +12,9 @@ api/config.php
 
 # Dữ liệu trắc nghiệm ẩn danh trên server (không commit)
 api/storage/*.jsonl
-# Khóa ký phiên đăng nhập và lịch sử trò chuyện của người dùng (không commit)
+# Khóa ký phiên, tài khoản (mật khẩu đã băm) và lịch sử trò chuyện của người dùng (không commit)
 api/storage/*.key
+api/storage/accounts/
 api/storage/users/
 
 # Ghi âm giọng thật (chỉ dùng cục bộ để tạo narration.m4a)

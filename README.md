@@ -14,7 +14,7 @@ data/survey.json      Số liệu khảo sát tổng hợp (tạo bằng tools/b
 data/data.json        Chatbot FAQ, trích dẫn, nhóm nghiên cứu
 tools/build_survey.rb Script tổng hợp file Excel khảo sát → survey.json
 api/chat.php          Proxy gọi Claude API (giữ API key phía server)
-api/auth.php          Đăng nhập Google (kiểm tra token, cấp cookie phiên)
+api/auth.php          Đăng ký / đăng nhập bằng tên đăng nhập + mật khẩu (cấp cookie phiên)
 api/history.php       Lưu / đọc / xóa lịch sử trò chuyện của người dùng đã đăng nhập
 api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commit)
 .htaccess             HTTPS, header bảo mật, cache (Apache/LiteSpeed của Hostinger)
@@ -42,24 +42,21 @@ api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commi
 - **Tải dữ liệu**: đặt `admin_password` trong `api/config.php`, rồi mở `https://<tên-miền>/api/holland_export.php` (tên đăng nhập `admin`) để tải CSV. Hoặc tải trực tiếp `api/storage/holland.jsonl` qua File Manager của hPanel.
 - Vì đối tượng là học sinh THPT, nên xin phép nhà trường/phụ huynh theo quy định trước khi thu thập dữ liệu.
 
-## Đăng nhập bằng Gmail và lịch sử trò chuyện
+## Tài khoản (tên đăng nhập + mật khẩu) và lịch sử trò chuyện
 
-Bấm icon tròn ở góc phải thanh trên để đăng nhập bằng tài khoản Google. Khi đã đăng nhập, mọi lượt hỏi – đáp với chatbot được lưu trên máy chủ và tự hiện lại lần sau (trên mọi thiết bị). Bảng tài khoản có nút **Xóa lịch sử trò chuyện** và **Đăng xuất**. Chưa đăng nhập thì chatbot vẫn dùng bình thường, chỉ không lưu lịch sử.
+Bấm icon tròn ở góc phải thanh trên để **tạo tài khoản** hoặc **đăng nhập**. Người dùng tự chọn tên đăng nhập và mật khẩu, không cần email hay dịch vụ bên ngoài. Khi đã đăng nhập, mọi lượt hỏi – đáp với chatbot được lưu trên máy chủ và tự hiện lại lần sau (trên mọi thiết bị); bảng tài khoản có nút **Xóa lịch sử trò chuyện** và **Đăng xuất**. Chưa đăng nhập thì chatbot vẫn dùng bình thường, chỉ không lưu lịch sử.
 
-**Bật tính năng (làm một lần):**
+**Bật tính năng:** không cần cấu hình gì thêm. Chỉ cần PHP chạy được và thư mục `api/storage/` ghi được (giống phần trắc nghiệm Holland). Lần đầu có người đăng ký/đăng nhập, máy chủ tự tạo khóa ký phiên `api/storage/session.key`. Nếu thư mục không ghi được, bảng tài khoản sẽ báo "chưa được bật".
 
-1. Vào [Google Cloud Console](https://console.cloud.google.com/) → tạo project → **APIs & Services → OAuth consent screen**: chọn *External*, điền tên ứng dụng và email hỗ trợ, rồi bấm **Publish app** (nếu để *Testing* thì chỉ các email trong danh sách Test users đăng nhập được).
-2. **APIs & Services → Credentials → Create credentials → OAuth client ID** → loại **Web application**. Ở *Authorized JavaScript origins* thêm `https://<tên-miền-của-bạn>` (không có dấu `/` ở cuối). Không cần điền *Redirect URIs*.
-3. Sao chép **Client ID** (dạng `xxxx.apps.googleusercontent.com`) vào `api/config.php`, dòng `'google_client_id'` (mẫu ở `api/config.sample.php`). Client ID không phải bí mật.
-4. Cần PHP có `curl` và thư mục `api/storage/` ghi được (giống phần trắc nghiệm Holland). Lần đăng nhập đầu tiên máy chủ tự tạo khóa ký phiên `api/storage/session.key`.
-
-**Cách hoạt động và dữ liệu lưu:**
-- Trình duyệt chỉ nhận mã xác thực từ Google rồi gửi cho `api/auth.php`; máy chủ kiểm tra mã với Google (đúng Client ID, còn hạn, email đã xác minh) rồi cấp cookie phiên ký HMAC, `HttpOnly`, `SameSite=Lax`, hiệu lực 30 ngày. Không lưu mật khẩu Google.
-- `api/history.php` lưu tối đa 200 tin nhắn gần nhất của mỗi tài khoản vào `api/storage/users/<mã băm>.json`. File chỉ chứa nội dung trò chuyện (không chứa tên hay email); thư mục `storage/` bị chặn truy cập từ web và không được commit.
-- Script của Google chỉ được tải khi người dùng mở bảng đăng nhập. `.htaccess` đã mở CSP cho `accounts.google.com` và ảnh đại diện `googleusercontent.com`.
-- Đăng xuất chỉ xóa cookie trên trình duyệt đó; muốn hủy hiệu lực mọi phiên đang có, xóa file `api/storage/session.key` (mọi người sẽ phải đăng nhập lại).
-- Người dùng là học sinh THPT: nên thông báo cho nhà trường/phụ huynh về việc lưu nội dung trò chuyện, tương tự phần trắc nghiệm Holland.
-- Chạy thử trên máy: cần `php -S localhost:8000` (không dùng `python -m http.server`) và thêm `http://localhost:8000` vào *Authorized JavaScript origins*.
+**Quy tắc và cách hoạt động:**
+- Tên đăng nhập 3–30 ký tự (chữ cái không dấu, số, `.`, `_`, `-`), không phân biệt hoa/thường. Mật khẩu 8–72 ký tự và không trùng tên đăng nhập.
+- `api/auth.php` chỉ lưu **mật khẩu đã băm bằng bcrypt** (`password_hash`), không lưu bản gốc, vào `api/storage/accounts/<mã băm>.json`. Đăng nhập thành công cấp cookie phiên ký HMAC, `HttpOnly`, `SameSite=Lax`, hiệu lực 30 ngày.
+- Chống dò mật khẩu: tối đa 10 lần thử / 10 phút mỗi IP và 6 lần / 10 phút mỗi cặp IP + tên đăng nhập; đăng ký tối đa 5 tài khoản / giờ mỗi IP. Sai tên hay sai mật khẩu đều báo chung một thông báo.
+- `api/history.php` lưu tối đa 200 tin nhắn gần nhất mỗi tài khoản vào `api/storage/users/<mã băm>.json` (chỉ nội dung chat, không kèm tên đăng nhập). Thư mục `storage/` bị chặn truy cập từ web và không được commit.
+- **Chưa có "quên mật khẩu"** (vì không thu email). Nếu học sinh quên, quản trị viên xóa file tài khoản tương ứng trong `api/storage/accounts/` để bạn ấy đăng ký lại (lịch sử cũ sẽ mất).
+- Đăng xuất chỉ xóa cookie trên trình duyệt đó; muốn buộc mọi người đăng nhập lại, xóa `api/storage/session.key`.
+- Người dùng là học sinh THPT: nên thông báo cho nhà trường/phụ huynh về việc lưu tài khoản và nội dung trò chuyện, tương tự phần trắc nghiệm Holland.
+- Chạy thử trên máy cần PHP: `php -S localhost:8000` (không dùng `python -m http.server`).
 
 ## Video giới thiệu
 

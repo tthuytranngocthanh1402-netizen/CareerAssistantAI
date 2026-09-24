@@ -1,20 +1,20 @@
-/* Đăng nhập bằng Gmail (Google Identity Services) qua icon tròn ở góc phải thanh trên.
-   Trình duyệt chỉ nhận mã xác thực từ Google rồi gửi cho api/auth.php kiểm tra và tạo phiên (cookie).
-   Script của Google chỉ được tải khi người dùng mở bảng đăng nhập lần đầu.
+/* Tài khoản bằng tên đăng nhập + mật khẩu do người dùng tự đặt, mở từ icon tròn ở góc phải thanh trên.
+   Gửi tới api/auth.php (mật khẩu chỉ được lưu dạng băm trên máy chủ, phiên là cookie HttpOnly).
    Thông báo cho phần còn lại của trang bằng sự kiện 'auth:change' (detail.user) và 'auth:history-cleared'. */
 (function () {
   'use strict';
 
   var AUTH_URL = 'api/auth.php';
   var HISTORY_URL = 'api/history.php';
-  var GSI_SRC = 'https://accounts.google.com/gsi/client';
   var USER_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+  var USERNAME_RE = /^[A-Za-z0-9._-]{3,30}$/;
+  var PASSWORD_MIN = 8;
+  var PASSWORD_MAX = 72; // byte, giới hạn của bcrypt
 
   var btn, panel;
-  var state = { ready: false, enabled: false, clientId: '' };
-  var status = ''; // dòng thông báo trong bảng (lỗi đăng nhập, đã xóa lịch sử…)
-  var gsiPromise = null;
-  var gsiInitialised = false;
+  var state = { ready: false, enabled: false };
+  var formMode = 'login'; // 'login' | 'register'
+  var status = '';        // thông báo trong bảng khi đã đăng nhập (đã xóa lịch sử…)
 
   function el(tag, props, children) {
     var node = document.createElement(tag);
@@ -32,6 +32,7 @@
   function postJson(url, body) {
     return fetch(url, {
       method: 'POST',
+      credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(body)
     }).then(function (r) {
@@ -39,20 +40,10 @@
     });
   }
 
-  function initials(name) {
-    var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
-    if (!parts.length) return '?';
-    var first = parts[0].charAt(0);
-    var last = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
-    return (first + last).toUpperCase();
-  }
+  function byteLength(s) { return new TextEncoder().encode(s).length; }
 
-  /* Ảnh đại diện Google hoặc chữ cái đầu của tên */
   function avatarNode(user, cls) {
-    if (user.picture) {
-      return el('img', { class: cls, src: user.picture, alt: '', referrerpolicy: 'no-referrer', width: '40', height: '40' });
-    }
-    return el('span', { class: cls + ' avatar-initials', text: initials(user.name) });
+    return el('span', { class: cls + ' avatar-initials', text: String(user.name || '?').slice(0, 2).toUpperCase() });
   }
 
   function setUser(user) {
@@ -72,7 +63,7 @@
       btn.classList.add('is-signed-in');
     } else {
       btn.innerHTML = USER_ICON;
-      btn.setAttribute('aria-label', 'Tài khoản: đăng nhập bằng Gmail');
+      btn.setAttribute('aria-label', 'Tài khoản: đăng nhập hoặc tạo tài khoản');
       btn.classList.remove('is-signed-in');
     }
   }
@@ -84,7 +75,8 @@
     panel.hidden = false;
     btn.setAttribute('aria-expanded', 'true');
     renderPanel();
-    panel.focus({ preventScroll: true });
+    var first = panel.querySelector('input');
+    (first || panel).focus({ preventScroll: true });
   }
 
   function close(returnFocus) {
@@ -92,10 +84,6 @@
     btn.setAttribute('aria-expanded', 'false');
     status = '';
     if (returnFocus) btn.focus();
-  }
-
-  function addStatus() {
-    if (status) panel.appendChild(el('p', { class: 'account-status small', role: 'status', text: status }));
   }
 
   function renderPanel() {
@@ -114,87 +102,107 @@
       avatarNode(user, 'account-avatar'),
       el('div', { class: 'account-who' }, [
         el('strong', { text: user.name }),
-        el('span', { class: 'muted small', text: user.email })
+        el('span', { class: 'muted small', text: 'Đã đăng nhập' })
       ])
     ]));
     panel.appendChild(el('p', { class: 'muted small', text: 'Lịch sử trò chuyện với trợ lý AI của bạn đang được lưu và sẽ hiện lại mỗi khi bạn đăng nhập.' }));
     panel.appendChild(el('div', { class: 'account-actions' }, [clear, out]));
-    addStatus();
+    if (status) panel.appendChild(el('p', { class: 'account-status small', role: 'status', text: status }));
   }
 
   function renderSignedOut() {
-    panel.appendChild(el('h3', { text: 'Đăng nhập' }));
-    panel.appendChild(el('p', { class: 'muted small', text: 'Đăng nhập bằng Gmail để lưu lịch sử trò chuyện với trợ lý AI và xem lại lúc nào cũng được.' }));
-
     if (!state.ready) {
       panel.appendChild(el('p', { class: 'muted small', text: 'Đang kiểm tra…' }));
-    } else if (!state.enabled) {
-      panel.appendChild(el('p', { class: 'notice', text: 'Tính năng đăng nhập chưa được bật trên máy chủ này. Bạn vẫn dùng trợ lý bình thường, nhưng lịch sử sẽ không được lưu.' }));
-    } else {
-      var host = el('div', { class: 'gsi-host' });
-      panel.appendChild(host);
-      showGoogleButton(host);
+      return;
     }
-    addStatus();
-    if (state.enabled) {
-      panel.appendChild(el('p', { class: 'muted small account-privacy', text: 'Chúng mình chỉ lưu tên, email và nội dung trò chuyện của bạn để hiển thị lại. Bạn có thể xóa lịch sử hoặc đăng xuất bất cứ lúc nào.' }));
+    if (!state.enabled) {
+      panel.appendChild(el('h3', { text: 'Tài khoản' }));
+      panel.appendChild(el('p', { class: 'notice', text: 'Tính năng tài khoản chưa được bật trên máy chủ này. Bạn vẫn dùng trợ lý bình thường, nhưng lịch sử sẽ không được lưu.' }));
+      return;
     }
+
+    var isReg = formMode === 'register';
+
+    function tab(mode, label) {
+      var t = el('button', { class: 'account-tab' + (formMode === mode ? ' is-active' : ''), type: 'button', role: 'tab', 'aria-selected': String(formMode === mode), text: label });
+      t.addEventListener('click', function () { formMode = mode; renderPanel(); var i = panel.querySelector('input'); if (i) i.focus(); });
+      return t;
+    }
+    panel.appendChild(el('div', { class: 'account-tabs', role: 'tablist' }, [tab('login', 'Đăng nhập'), tab('register', 'Tạo tài khoản')]));
+    panel.appendChild(el('p', { class: 'muted small', text: isReg
+      ? 'Tự chọn tên đăng nhập và mật khẩu để lưu lịch sử trò chuyện với trợ lý AI.'
+      : 'Đăng nhập để xem lại và lưu lịch sử trò chuyện với trợ lý AI.' }));
+
+    var userIn = el('input', { id: 'authUser', name: 'username', type: 'text', autocomplete: 'username', maxlength: '30', required: '', autocapitalize: 'none', spellcheck: 'false' });
+    var passIn = el('input', { id: 'authPass', name: 'password', type: 'password', autocomplete: isReg ? 'new-password' : 'current-password', maxlength: String(PASSWORD_MAX), required: '' });
+    var pass2In = isReg ? el('input', { id: 'authPass2', name: 'password2', type: 'password', autocomplete: 'new-password', maxlength: String(PASSWORD_MAX), required: '' }) : null;
+    var show = el('input', { id: 'authShow', type: 'checkbox' });
+    show.addEventListener('change', function () {
+      var t = show.checked ? 'text' : 'password';
+      passIn.type = t;
+      if (pass2In) pass2In.type = t;
+    });
+    var errEl = el('p', { class: 'account-error small', role: 'alert' });
+    var submit = el('button', { class: 'btn btn-primary', type: 'submit', text: isReg ? 'Tạo tài khoản' : 'Đăng nhập' });
+
+    var form = el('form', { class: 'account-form', novalidate: '' }, [
+      el('label', { for: 'authUser' }, [document.createTextNode('Tên đăng nhập'), userIn]),
+      isReg ? el('p', { class: 'muted small account-hint', text: '3–30 ký tự: chữ cái không dấu, số, dấu chấm, gạch dưới hoặc gạch ngang.' }) : null,
+      el('label', { for: 'authPass' }, [document.createTextNode('Mật khẩu'), passIn]),
+      isReg ? el('p', { class: 'muted small account-hint', text: 'Từ 8 ký tự trở lên. Không dùng lại mật khẩu email hay mạng xã hội của bạn.' }) : null,
+      isReg ? el('label', { for: 'authPass2' }, [document.createTextNode('Nhập lại mật khẩu'), pass2In]) : null,
+      el('label', { class: 'account-show', for: 'authShow' }, [show, document.createTextNode(' Hiện mật khẩu')]),
+      errEl,
+      submit
+    ]);
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var username = userIn.value.trim();
+      var password = passIn.value;
+      var problem = '';
+      if (!USERNAME_RE.test(username)) problem = 'Tên đăng nhập gồm 3–30 ký tự: chữ cái không dấu, số, dấu chấm, gạch dưới hoặc gạch ngang.';
+      else if (isReg && (byteLength(password) < PASSWORD_MIN || byteLength(password) > PASSWORD_MAX)) problem = 'Mật khẩu cần từ ' + PASSWORD_MIN + ' đến ' + PASSWORD_MAX + ' ký tự.';
+      else if (isReg && password.toLowerCase() === username.toLowerCase()) problem = 'Mật khẩu không được trùng với tên đăng nhập.';
+      else if (isReg && password !== pass2In.value) problem = 'Hai lần nhập mật khẩu chưa giống nhau.';
+      else if (!isReg && !password) problem = 'Vui lòng nhập mật khẩu.';
+      if (problem) { errEl.textContent = problem; return; }
+
+      errEl.textContent = '';
+      submit.disabled = true;
+      submit.textContent = 'Đang xử lý…';
+      postJson(AUTH_URL, { action: formMode, username: username, password: password }).then(function (r) {
+        if (r.ok && r.body && r.body.user && typeof r.body.user.name === 'string') {
+          setUser(r.body.user);
+          close(true);
+          return;
+        }
+        errEl.textContent = errorMessage(r.status, r.body && r.body.error);
+        submit.disabled = false;
+        submit.textContent = isReg ? 'Tạo tài khoản' : 'Đăng nhập';
+      }).catch(function () {
+        errEl.textContent = 'Chưa kết nối được, vui lòng kiểm tra mạng rồi thử lại.';
+        submit.disabled = false;
+        submit.textContent = isReg ? 'Tạo tài khoản' : 'Đăng nhập';
+      });
+    });
+
+    panel.appendChild(form);
+    panel.appendChild(el('p', { class: 'muted small account-privacy', text: 'Mật khẩu được mã hóa một chiều trên máy chủ, chúng mình không đọc được. Hiện chưa có chức năng quên mật khẩu, bạn hãy ghi nhớ mật khẩu của mình nhé.' }));
   }
 
-  /* ---------- Nút Google ---------- */
-  function loadGsi() {
-    if (gsiPromise) return gsiPromise;
-    gsiPromise = new Promise(function (resolve, reject) {
-      var s = document.createElement('script');
-      s.src = GSI_SRC;
-      s.async = true;
-      s.onload = resolve;
-      s.onerror = function () { gsiPromise = null; reject(new Error('gsi_load')); };
-      document.head.appendChild(s);
-    });
-    return gsiPromise;
-  }
-
-  function showGoogleButton(host) {
-    loadGsi().then(function () {
-      if (!window.google || !window.google.accounts || !window.google.accounts.id) throw new Error('gsi_missing');
-      if (!gsiInitialised) {
-        window.google.accounts.id.initialize({ client_id: state.clientId, callback: onCredential, ux_mode: 'popup' });
-        gsiInitialised = true;
-      }
-      if (!host.isConnected) return;
-      var width = Math.max(200, Math.min(300, panel.clientWidth - 40));
-      window.google.accounts.id.renderButton(host, { theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with', locale: 'vi', width: width });
-    }).catch(function () {
-      if (host.isConnected) host.appendChild(el('p', { class: 'account-status small', role: 'alert', text: 'Không tải được nút đăng nhập của Google. Vui lòng kiểm tra kết nối mạng rồi thử lại.' }));
-    });
-  }
-
-  function onCredential(response) {
-    if (!response || !response.credential) return;
-    status = 'Đang đăng nhập…';
-    if (isOpen()) renderPanel();
-    postJson(AUTH_URL, { action: 'login', credential: response.credential }).then(function (r) {
-      if (r.ok && r.body && r.body.user) {
-        status = '';
-        setUser(r.body.user);
-        close(true);
-        return;
-      }
-      status = r.status === 429 ? 'Bạn đăng nhập quá nhiều lần, vui lòng thử lại sau ít phút.'
-        : r.status === 401 ? 'Không xác thực được tài khoản Google. Vui lòng thử lại.'
-        : r.status === 503 ? 'Tính năng đăng nhập chưa được cấu hình xong trên máy chủ.'
-        : 'Chưa đăng nhập được, vui lòng thử lại sau.';
-      if (isOpen()) renderPanel();
-    }).catch(function () {
-      status = 'Chưa đăng nhập được, vui lòng kiểm tra kết nối rồi thử lại.';
-      if (isOpen()) renderPanel();
-    });
+  function errorMessage(status, code) {
+    if (status === 429) return 'Bạn thử quá nhiều lần, vui lòng đợi ít phút rồi thử lại.';
+    if (status === 401) return 'Sai tên đăng nhập hoặc mật khẩu.';
+    if (status === 409) return 'Tên đăng nhập này đã có người dùng, hãy chọn tên khác.';
+    if (code === 'bad_username') return 'Tên đăng nhập gồm 3–30 ký tự: chữ cái không dấu, số, dấu chấm, gạch dưới hoặc gạch ngang.';
+    if (code === 'bad_password') return 'Mật khẩu cần từ ' + PASSWORD_MIN + ' đến ' + PASSWORD_MAX + ' ký tự và không trùng tên đăng nhập.';
+    if (status === 503) return 'Máy chủ chưa lưu được tài khoản, vui lòng thử lại sau.';
+    return 'Chưa thực hiện được, vui lòng thử lại sau.';
   }
 
   function logout() {
     postJson(AUTH_URL, { action: 'logout' }).catch(function () {}).then(function () {
-      if (window.google && window.google.accounts && window.google.accounts.id) window.google.accounts.id.disableAutoSelect();
       status = '';
       setUser(null);
       close(true);
@@ -225,8 +233,10 @@
     panel.setAttribute('tabindex', '-1');
 
     btn.addEventListener('click', function () { if (isOpen()) close(false); else open(); });
+    var wrap = btn.closest('.account');
     document.addEventListener('click', function (e) {
-      if (isOpen() && !e.target.closest('.account')) close(false);
+      // composedPath được chốt lúc bắt đầu sự kiện, nên vẫn đúng khi nút vừa bấm đã bị vẽ lại khỏi DOM
+      if (isOpen() && e.composedPath().indexOf(wrap) === -1) close(false);
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && isOpen()) close(true);
@@ -238,11 +248,10 @@
       .then(function (j) {
         state.ready = true;
         if (j && typeof j === 'object') {
-          state.enabled = j.enabled === true && typeof j.client_id === 'string' && j.client_id !== '';
-          state.clientId = state.enabled ? j.client_id : '';
+          state.enabled = j.enabled === true;
           if (j.user && typeof j.user.name === 'string') setUser(j.user);
         }
-        if (isOpen()) renderPanel();
+        if (isOpen() && !window.Auth.user) renderPanel();
       });
   }
 

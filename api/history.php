@@ -4,7 +4,7 @@
  *   GET                                  -> {messages:[{r:"user"|"assistant", c:"...", t:<unix>}]}
  *   POST {action:"add", q:"...", a:"..."} -> thêm một cặp hỏi – đáp
  *   POST {action:"clear"}                 -> xóa toàn bộ lịch sử của tài khoản
- * File chỉ chứa nội dung trò chuyện, không lưu tên hay email; tên file là dấu băm của mã tài khoản Google.
+ * File chỉ chứa nội dung trò chuyện, không lưu tên đăng nhập; tên file là dấu băm của mã tài khoản nội bộ.
  */
 declare(strict_types=1);
 

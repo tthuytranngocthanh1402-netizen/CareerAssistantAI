@@ -1,10 +1,10 @@
 <?php
 /**
- * Hàm dùng chung cho đăng nhập Google và lịch sử trò chuyện (auth.php, history.php).
+ * Hàm dùng chung cho đăng nhập và lịch sử trò chuyện (auth.php, history.php).
  * File này chỉ khai báo hàm, không được gọi trực tiếp từ web (bị chặn trong api/.htaccess).
  *
  * Phiên đăng nhập là một cookie đã ký HMAC (không cần cơ sở dữ liệu). Khóa ký được tạo tự động
- * trong api/storage/session.key ở lần đăng nhập đầu tiên; thư mục storage bị chặn truy cập từ web.
+ * trong api/storage/session.key ở lần đăng nhập/đăng ký đầu tiên; thư mục storage bị chặn truy cập từ web.
  */
 declare(strict_types=1);
 
@@ -19,27 +19,6 @@ function ca_respond(int $status, array $body): void
     header('X-Content-Type-Options: nosniff');
     echo json_encode($body, JSON_UNESCAPED_UNICODE);
     exit;
-}
-
-function ca_config(): array
-{
-    static $config = null;
-    if ($config === null) {
-        $file = __DIR__ . '/config.php';
-        $loaded = is_file($file) ? require $file : null;
-        $config = is_array($loaded) ? $loaded : [];
-    }
-    return $config;
-}
-
-/** Google OAuth Client ID; chuỗi rỗng nghĩa là tính năng đăng nhập chưa được bật. */
-function ca_client_id(): string
-{
-    $id = trim((string)(ca_config()['google_client_id'] ?? ''));
-    if ($id === '' || strpos($id, 'DAN_') === 0) {
-        return '';
-    }
-    return $id;
 }
 
 function ca_storage_dir(): string
@@ -58,7 +37,7 @@ function ca_b64u_decode(string $text): string
     return $decoded === false ? '' : $decoded;
 }
 
-/** Khóa ký cookie. $create = true chỉ dùng khi đăng nhập: tạo khóa mới nếu chưa có. */
+/** Khóa ký cookie. $create = true chỉ dùng khi đăng nhập/đăng ký: tạo khóa mới nếu chưa có. */
 function ca_secret(bool $create = false): ?string
 {
     $file = ca_storage_dir() . '/session.key';
@@ -100,14 +79,13 @@ function ca_set_cookie(string $value, int $expires): void
     ]);
 }
 
+/** $user = ['sub' => mã tài khoản nội bộ, 'name' => tên đăng nhập] */
 function ca_issue_session(array $user, string $secret): void
 {
     $expires = time() + CA_SESSION_DAYS * 86400;
     $payload = ca_b64u(json_encode([
         'sub' => $user['sub'],
         'name' => $user['name'],
-        'email' => $user['email'],
-        'picture' => $user['picture'],
         'exp' => $expires,
     ], JSON_UNESCAPED_UNICODE));
     $sig = ca_b64u(hash_hmac('sha256', $payload, $secret, true));
@@ -123,7 +101,7 @@ function ca_clear_session(): void
 function ca_current_user(): ?array
 {
     $raw = $_COOKIE[CA_COOKIE] ?? '';
-    if (!is_string($raw) || strpos($raw, '.') === false || strlen($raw) > 4000) {
+    if (!is_string($raw) || strpos($raw, '.') === false || strlen($raw) > 2000) {
         return null;
     }
     [$payload, $sig] = explode('.', $raw, 2);
@@ -138,18 +116,13 @@ function ca_current_user(): ?array
     if (!is_array($data) || !isset($data['sub'], $data['exp']) || (int)$data['exp'] < time() || (string)$data['sub'] === '') {
         return null;
     }
-    return [
-        'sub' => (string)$data['sub'],
-        'name' => (string)($data['name'] ?? ''),
-        'email' => (string)($data['email'] ?? ''),
-        'picture' => (string)($data['picture'] ?? ''),
-    ];
+    return ['sub' => (string)$data['sub'], 'name' => (string)($data['name'] ?? '')];
 }
 
 /** Phần thông tin được gửi về trình duyệt (không có mã định danh nội bộ). */
 function ca_public_user(array $user): array
 {
-    return ['name' => $user['name'], 'email' => $user['email'], 'picture' => $user['picture']];
+    return ['name' => $user['name']];
 }
 
 /** Yêu cầu ghi dữ liệu (POST): cùng domain và là JSON, để chống giả mạo yêu cầu từ trang khác. */
@@ -173,7 +146,7 @@ function ca_require_post_json(): array
     if (stripos((string)($_SERVER['CONTENT_TYPE'] ?? ''), 'application/json') === false) {
         ca_respond(415, ['error' => 'json_required']);
     }
-    $raw = file_get_contents('php://input', false, null, 0, 12000);
+    $raw = file_get_contents('php://input', false, null, 0, 4000);
     $data = json_decode((string)$raw, true);
     if (!is_array($data)) {
         ca_respond(400, ['error' => 'bad_request']);
@@ -199,47 +172,4 @@ function ca_rate_limit(string $key, int $limit, int $window): bool
     $hits[] = $now;
     @file_put_contents($file, json_encode($hits), LOCK_EX);
     return true;
-}
-
-/** Kiểm tra mã ID token của Google (qua tokeninfo) và trả về thông tin người dùng, hoặc null nếu không hợp lệ. */
-function ca_verify_google_token(string $idToken, string $clientId): ?array
-{
-    $ch = curl_init('https://oauth2.googleapis.com/tokeninfo?id_token=' . rawurlencode($idToken));
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 10,
-        CURLOPT_HTTPHEADER => ['Accept: application/json'],
-    ]);
-    $response = curl_exec($ch);
-    $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    if ($response === false || $status !== 200) {
-        return null;
-    }
-    $d = json_decode((string)$response, true);
-    if (!is_array($d)) {
-        return null;
-    }
-    if (($d['aud'] ?? '') !== $clientId
-        || !in_array($d['iss'] ?? '', ['accounts.google.com', 'https://accounts.google.com'], true)
-        || (int)($d['exp'] ?? 0) < time()
-        || !in_array($d['email_verified'] ?? '', ['true', true], true)
-        || empty($d['sub']) || empty($d['email'])) {
-        return null;
-    }
-    $email = mb_substr((string)$d['email'], 0, 120);
-    $name = trim((string)($d['name'] ?? ''));
-    if ($name === '') {
-        $name = strstr($email, '@', true) ?: $email;
-    }
-    $picture = (string)($d['picture'] ?? '');
-    if (strpos($picture, 'https://') !== 0 || strlen($picture) > 400) {
-        $picture = '';
-    }
-    return [
-        'sub' => mb_substr((string)$d['sub'], 0, 64),
-        'name' => mb_substr($name, 0, 80),
-        'email' => $email,
-        'picture' => $picture,
-    ];
 }

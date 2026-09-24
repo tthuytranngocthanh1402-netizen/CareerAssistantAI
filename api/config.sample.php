@@ -8,10 +8,6 @@ return [
     // Lấy tại https://console.anthropic.com/
     'api_key' => 'DAN_API_KEY_CUA_BAN_VAO_DAY',
 
-    // Đăng nhập bằng Gmail (tùy chọn): Client ID của Google OAuth (dạng ...apps.googleusercontent.com).
-    // Cách lấy: xem mục "Đăng nhập bằng Gmail" trong README. Để trống hoặc giữ nguyên = tắt đăng nhập.
-    'google_client_id' => 'DAN_GOOGLE_CLIENT_ID_VAO_DAY',
-
     // Mật khẩu để tải kết quả trắc nghiệm Holland ẩn danh (CSV) tại /api/holland_export.php
     // Tên đăng nhập: admin. Hãy đặt mật khẩu dài, khó đoán.
     'admin_password' => 'DAT_MAT_KHAU_QUAN_TRI',
