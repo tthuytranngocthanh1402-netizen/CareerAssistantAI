@@ -116,7 +116,7 @@
   function trend(host, cfg, values) {
     header(host, cfg);
     var legend = el('ul', { class: 'legend' }, [
-      el('li', {}, [el('i', { class: 'dot-main' }), document.createTextNode(cfg.series[0])]),
+      el('li', {}, [el('i', { class: 'dot-blue' }), document.createTextNode(cfg.series[0])]),
       el('li', {}, [el('i', { class: 'dot-orange' }), document.createTextNode(cfg.series[1])])
     ]);
     host.appendChild(legend);
@@ -149,6 +149,13 @@
 
     var ptsA = rows.map(function (r, i) { return [xAt(i), yAt(r.a)]; });
     var ptsB = rows.map(function (r, i) { return [xAt(i), yAt(r.b)]; });
+
+    /* Vùng tô mờ dưới đường A (chuỗi chính), neo xuống mức 0% */
+    var baseY = yAt(0).toFixed(2);
+    var areaD = smoothPath(ptsA) + ' L' + ptsA[ptsA.length - 1][0].toFixed(2) + ',' + baseY +
+      ' L' + ptsA[0][0].toFixed(2) + ',' + baseY + ' Z';
+    svg.appendChild(mk('path', { d: areaD, class: 'trend-area' }));
+
     svg.appendChild(mk('path', { d: smoothPath(ptsB), class: 'trend-line trend-line-b', fill: 'none' }));
     svg.appendChild(mk('path', { d: smoothPath(ptsA), class: 'trend-line trend-line-a', fill: 'none' }));
 
@@ -196,7 +203,7 @@
       dotsB.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
       tip.textContent = '';
       tip.appendChild(el('b', { text: r.label }));
-      tip.appendChild(el('div', { class: 'trend-tip-row' }, [el('i', { class: 'dot-main' }), el('span', { text: cfg.series[0] }), el('b', { text: pct(r.a) })]));
+      tip.appendChild(el('div', { class: 'trend-tip-row' }, [el('i', { class: 'dot-blue' }), el('span', { text: cfg.series[0] }), el('b', { text: pct(r.a) })]));
       tip.appendChild(el('div', { class: 'trend-tip-row' }, [el('i', { class: 'dot-orange' }), el('span', { text: cfg.series[1] }), el('b', { text: pct(r.b) })]));
       tip.style.left = Math.max(8, Math.min(92, (xAt(idx) / W) * 100)) + '%';
       tip.classList.add('is-visible');
