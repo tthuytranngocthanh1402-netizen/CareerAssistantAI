@@ -32,10 +32,11 @@ api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commi
 
 ## Trắc nghiệm Holland
 
-- Bộ 36 câu, mô tả nhóm tính cách và gợi ý ngành nằm trong `data/holland.json` (nhóm tự soạn, **cần giáo viên hướng dẫn duyệt**). Điểm được chấm ngay trên trình duyệt.
-- **Phân tích bằng AI**: dùng `api/chat.php` (chỉ nhận 6 điểm số 6–30, không nhận văn bản tự do). Cần đã bật chatbot AI.
+- **Hai chế độ** (học sinh chọn ở màn hình đầu): **bản rút gọn 36 câu** (mỗi nhóm 6 câu, điểm 6–30, khoảng 5 phút) và **bản đầy đủ 60 câu** (mỗi nhóm 10 câu, điểm 10–50, khoảng 10 phút). 36 câu của bản rút gọn nằm trọn trong bản đầy đủ; 24 câu thêm được đánh dấu `"f": 1` trong `data/holland.json`. Biểu đồ luôn quy về thang 0–100% nên hai bản xem được như nhau.
+- Bộ câu hỏi, mô tả nhóm tính cách và gợi ý ngành nằm trong `data/holland.json` (nhóm tự soạn, **cần giáo viên hướng dẫn duyệt**). Điểm được chấm ngay trên trình duyệt.
+- **Phân tích bằng AI**: dùng `api/chat.php` (chỉ nhận 6 điểm số nguyên và số câu mỗi nhóm `holland_n` = 6 hoặc 10, không nhận văn bản tự do). Cần đã bật chatbot AI.
 - **Xuất PDF**: nút "Tải kết quả (PDF)" mở hộp thoại in, chọn "Lưu dưới dạng PDF".
-- **Gửi ẩn danh cho nghiên cứu** (chỉ khi học sinh tích đồng ý): `api/holland.php` ghi vào `api/storage/holland.jsonl` gồm ngày, khối, giới tính (nếu chọn), 6 điểm số. Không lưu tên, IP hay user-agent. Thư mục `api/storage/` bị chặn truy cập từ web và file dữ liệu không được commit.
+- **Gửi ẩn danh cho nghiên cứu** (chỉ khi học sinh tích đồng ý): `api/holland.php` ghi vào `api/storage/holland.jsonl` gồm ngày, khối, giới tính (nếu chọn), chế độ (`short`/`full`), 6 điểm số. Điểm của hai chế độ khác thang nên khi phân tích cần tách theo cột `mode` (hoặc quy về %). Không lưu tên, IP hay user-agent. Thư mục `api/storage/` bị chặn truy cập từ web và file dữ liệu không được commit.
 - **Tải dữ liệu**: đặt `admin_password` trong `api/config.php`, rồi mở `https://<tên-miền>/api/holland_export.php` (tên đăng nhập `admin`) để tải CSV. Hoặc tải trực tiếp `api/storage/holland.jsonl` qua File Manager của hPanel.
 - Vì đối tượng là học sinh THPT, nên xin phép nhà trường/phụ huynh theo quy định trước khi thu thập dữ liệu.
 
