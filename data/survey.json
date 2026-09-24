@@ -232,9 +232,9 @@
         },
         {
           "id": "q8_21",
-          "type": "pairs",
+          "type": "trend",
           "title": "Nhóm ngành quan tâm và nhóm ngành được cho là bị AI tác động",
-          "caption": "Câu 8 và 21 · chọn nhiều đáp án, % học sinh",
+          "caption": "Câu 8 và 21 · chọn nhiều đáp án, % học sinh · rê chuột hoặc chạm để xem từng nhóm ngành",
           "options": [
             "Kinh tế – Kinh doanh",
             "Y tế – Sức khỏe",

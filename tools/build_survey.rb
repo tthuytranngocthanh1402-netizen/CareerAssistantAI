@@ -177,7 +177,7 @@ sections = [
       { 'id' => 'q19', 'type' => 'hbars', 'title' => 'AI có thể ảnh hưởng đến nghề nghiệp theo cách nào?', 'caption' => 'Câu 19 · chọn nhiều đáp án, % học sinh', 'options' => Q19, 'suffix' => '%' },
       { 'id' => 'q26', 'type' => 'hbars', 'title' => 'Yếu tố giúp công việc thích ứng tốt với AI', 'caption' => 'Câu 26 · chọn nhiều đáp án, % học sinh', 'options' => Q26, 'suffix' => '%' },
       { 'id' => 'q20', 'type' => 'strip', 'title' => 'Đã tìm hiểu ngành nghề chịu tác động của AI chưa?', 'caption' => 'Câu 20 · % học sinh', 'options' => Q20, 'wide' => true },
-      { 'id' => 'q8_21', 'type' => 'pairs', 'title' => 'Nhóm ngành quan tâm và nhóm ngành được cho là bị AI tác động', 'caption' => 'Câu 8 và 21 · chọn nhiều đáp án, % học sinh',
+      { 'id' => 'q8_21', 'type' => 'trend', 'title' => 'Nhóm ngành quan tâm và nhóm ngành được cho là bị AI tác động', 'caption' => 'Câu 8 và 21 · chọn nhiều đáp án, % học sinh · rê chuột hoặc chạm để xem từng nhóm ngành',
         'options' => GROUPS, 'series' => ['Quan tâm (câu 8)', 'Bị AI tác động (câu 21)'], 'suffix' => '%', 'wide' => true }
     ] },
   { 'id' => 'san-pham', 'title' => 'Nhu cầu với sản phẩm của đề tài',

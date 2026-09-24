@@ -86,6 +86,146 @@
     host.appendChild(wrap);
   }
 
+  /* Rút gọn nhãn dài "Nhóm A – Nhóm B" thành "Nhóm A" để vừa trục hoành */
+  function abbreviate(label) {
+    var i = label.indexOf(' – ');
+    return i === -1 ? label : label.slice(0, i);
+  }
+
+  /* Catmull-Rom -> Bezier: đường cong mượt đi qua mọi điểm dữ liệu */
+  function smoothPath(pts) {
+    if (pts.length < 2) return '';
+    var d = 'M' + pts[0][0].toFixed(2) + ',' + pts[0][1].toFixed(2);
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i - 1] || pts[i];
+      var p1 = pts[i];
+      var p2 = pts[i + 1];
+      var p3 = pts[i + 2] || p2;
+      var c1x = p1[0] + (p2[0] - p0[0]) / 6;
+      var c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      var c2x = p2[0] - (p3[0] - p1[0]) / 6;
+      var c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += ' C' + c1x.toFixed(2) + ',' + c1y.toFixed(2) + ' ' + c2x.toFixed(2) + ',' + c2y.toFixed(2) + ' ' + p2[0].toFixed(2) + ',' + p2[1].toFixed(2);
+    }
+    return d;
+  }
+
+  /* Biểu đồ đường mượt hai chuỗi (kiểu "Balance"): so sánh 2 chỉ số theo từng danh mục, có chạm/di
+     chuột để xem giá trị. cfg.options giữ nguyên thứ tự (không xếp hạng lại) để đường không đổi hình
+     dạng khi người dùng đổi bộ lọc. values = [mảngA, mảngB], cùng độ dài với cfg.options. */
+  function trend(host, cfg, values) {
+    header(host, cfg);
+    var legend = el('ul', { class: 'legend' }, [
+      el('li', {}, [el('i', { class: 'dot-main' }), document.createTextNode(cfg.series[0])]),
+      el('li', {}, [el('i', { class: 'dot-sky' }), document.createTextNode(cfg.series[1])])
+    ]);
+    host.appendChild(legend);
+
+    var rows = cfg.options.map(function (label, i) { return { label: label, a: values[0][i], b: values[1][i] }; });
+    var n = rows.length;
+    var W = 760, H = 230, padL = 32, padR = 10, padT = 10, padB = 10;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
+    function xAt(i) { return n > 1 ? padL + (innerW * i) / (n - 1) : padL + innerW / 2; }
+    function yAt(v) { return padT + innerH * (1 - Math.max(0, Math.min(100, v)) / 100); }
+
+    var NS = 'http://www.w3.org/2000/svg';
+    function mk(tag, attrs) {
+      var node = document.createElementNS(NS, tag);
+      Object.keys(attrs || {}).forEach(function (k) { node.setAttribute(k, attrs[k]); });
+      return node;
+    }
+
+    var svg = mk('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'trend-svg', role: 'img', 'aria-label': cfg.title });
+    var clipId = 'trendClip' + Math.random().toString(36).slice(2, 9);
+    var defs = mk('defs', {});
+    var clip = mk('clipPath', { id: clipId });
+    clip.appendChild(mk('rect', { x: padL, y: padT, width: innerW, height: innerH }));
+    defs.appendChild(clip);
+    svg.appendChild(defs);
+
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      var y = yAt(v);
+      svg.appendChild(mk('line', { x1: padL, y1: y.toFixed(2), x2: (W - padR).toFixed(2), y2: y.toFixed(2), class: 'trend-grid' }));
+      var t = mk('text', { x: (padL - 7).toFixed(2), y: (y + 3).toFixed(2), 'text-anchor': 'end', class: 'trend-axis' });
+      t.textContent = v + '%';
+      svg.appendChild(t);
+    });
+
+    var ptsA = rows.map(function (r, i) { return [xAt(i), yAt(r.a)]; });
+    var ptsB = rows.map(function (r, i) { return [xAt(i), yAt(r.b)]; });
+    var g = mk('g', { 'clip-path': 'url(#' + clipId + ')' });
+    g.appendChild(mk('path', { d: smoothPath(ptsB), class: 'trend-line trend-line-b', fill: 'none' }));
+    g.appendChild(mk('path', { d: smoothPath(ptsA), class: 'trend-line trend-line-a', fill: 'none' }));
+    svg.appendChild(g);
+
+    var guide = mk('line', { x1: xAt(0).toFixed(2), y1: padT, x2: xAt(0).toFixed(2), y2: H - padB, class: 'trend-guide' });
+    svg.appendChild(guide);
+    var dotsA = ptsA.map(function (p) {
+      var c = mk('circle', { cx: p[0].toFixed(2), cy: p[1].toFixed(2), r: 3, class: 'trend-dot trend-dot-a' });
+      svg.appendChild(c);
+      return c;
+    });
+    var dotsB = ptsB.map(function (p) {
+      var c = mk('circle', { cx: p[0].toFixed(2), cy: p[1].toFixed(2), r: 3, class: 'trend-dot trend-dot-b' });
+      svg.appendChild(c);
+      return c;
+    });
+    var overlay = mk('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent', class: 'trend-overlay' });
+    svg.appendChild(overlay);
+
+    var tip = el('div', { class: 'trend-tip' });
+    var wrap = el('div', { class: 'trend' }, [svg, tip]);
+
+    var labels = el('div', { class: 'trend-labels' });
+    rows.forEach(function (r) {
+      labels.appendChild(el('span', { text: abbreviate(r.label), title: r.label }));
+    });
+
+    /* Trên màn hình hẹp, giữ bề rộng tối thiểu và cuộn ngang thay vì bóp nhãn quá nhỏ */
+    var inner = el('div', { class: 'trend-inner' }, [wrap, labels]);
+    host.appendChild(el('div', { class: 'trend-scroll' }, [inner]));
+
+    var srRows = rows.map(function (r) {
+      return r.label + ': ' + cfg.series[0] + ' ' + pct(r.a) + ', ' + cfg.series[1] + ' ' + pct(r.b);
+    });
+    host.appendChild(el('p', { class: 'sr-only', text: srRows.join('. ') }));
+    if (cfg.note) noteEnd(host, cfg.note);
+
+    function setIndex(idx) {
+      idx = Math.max(0, Math.min(n - 1, idx));
+      var r = rows[idx];
+      var x = xAt(idx).toFixed(2);
+      guide.setAttribute('x1', x);
+      guide.setAttribute('x2', x);
+      guide.setAttribute('opacity', '1');
+      dotsA.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
+      dotsB.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
+      tip.textContent = '';
+      tip.appendChild(el('b', { text: r.label }));
+      tip.appendChild(el('div', { class: 'trend-tip-row' }, [el('i', { class: 'dot-main' }), el('span', { text: cfg.series[0] }), el('b', { text: pct(r.a) })]));
+      tip.appendChild(el('div', { class: 'trend-tip-row' }, [el('i', { class: 'dot-sky' }), el('span', { text: cfg.series[1] }), el('b', { text: pct(r.b) })]));
+      tip.style.left = Math.max(8, Math.min(92, (xAt(idx) / W) * 100)) + '%';
+      tip.classList.add('is-visible');
+    }
+    function hide() {
+      guide.setAttribute('opacity', '0');
+      dotsA.forEach(function (d) { d.classList.remove('is-active'); });
+      dotsB.forEach(function (d) { d.classList.remove('is-active'); });
+      tip.classList.remove('is-visible');
+    }
+    function fromClientX(clientX) {
+      var rect = svg.getBoundingClientRect();
+      if (!rect.width) return;
+      var xUnits = ((clientX - rect.left) / rect.width) * W;
+      setIndex(Math.round(((xUnits - padL) / innerW) * (n - 1)));
+    }
+    overlay.addEventListener('mousemove', function (e) { fromClientX(e.clientX); });
+    overlay.addEventListener('mouseleave', hide);
+    overlay.addEventListener('touchstart', function (e) { fromClientX(e.touches[0].clientX); }, { passive: true });
+    overlay.addEventListener('touchmove', function (e) { fromClientX(e.touches[0].clientX); }, { passive: true });
+    overlay.addEventListener('touchend', hide);
+  }
+
   /* Biểu đồ radar (lục giác Holland): labels[i] là nhãn trục, values[i] trong khoảng 0–100 */
   function radar(host, labels, values, title) {
     var NS = "http://www.w3.org/2000/svg";
@@ -260,6 +400,6 @@
   }
 
   window.Charts = {
-    hbars: hbars, radar: radar, pairs: pairs, meters: meters, strip: strip, dist: dist, info: info, kpis: kpis, reveal: reveal, fmt: num, pct: pct
+    hbars: hbars, radar: radar, pairs: pairs, trend: trend, meters: meters, strip: strip, dist: dist, info: info, kpis: kpis, reveal: reveal, fmt: num, pct: pct
   };
 })();
