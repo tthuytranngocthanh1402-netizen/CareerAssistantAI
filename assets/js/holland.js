@@ -4,11 +4,21 @@
   'use strict';
 
   var ORDER = ['R', 'I', 'A', 'S', 'E', 'C'];
-  var PER_TYPE = 6;
-  var MIN = PER_TYPE * 1;
-  var SPAN = PER_TYPE * 4; // điểm nhóm từ 6 (toàn 1) đến 30 (toàn 5)
+  /* Hai chế độ: 'short' (36 câu, 6 câu/nhóm) và 'full' (60 câu, 10 câu/nhóm).
+     Điểm mỗi nhóm nằm từ perType (toàn 1) đến perType * 5 (toàn 5). */
+  var DEFAULT_MODES = {
+    short: { label: 'Bản rút gọn', perType: 6, minutes: 5 },
+    full: { label: 'Bản đầy đủ', perType: 10, minutes: 10 }
+  };
+  var MODE_NOTE = {
+    short: 'Nhanh gọn, phù hợp để khám phá ban đầu.',
+    full: 'Mỗi nhóm 10 câu nên kết quả ổn định và đáng tin cậy hơn.'
+  };
 
   var cfg, app;
+  var mode = 'short';
+  var qs = [];      // danh sách câu của chế độ đang chọn
+  var perType = 6;  // số câu mỗi nhóm của chế độ đang chọn
   var answers = [];
   var index = 0;
   var sums = null;
@@ -28,6 +38,18 @@
     }
     (children || []).forEach(function (c) { if (c) node.appendChild(c); });
     return node;
+  }
+
+  function modes() { return cfg.modes || DEFAULT_MODES; }
+
+  function questionsFor(m) {
+    return cfg.questions.filter(function (q) { return m === 'full' || !q.f; });
+  }
+
+  function setMode(m) {
+    mode = m;
+    qs = questionsFor(m);
+    perType = modes()[m].perType;
   }
 
   function typeOf(code) {
@@ -50,7 +72,7 @@
   function compute() {
     var totals = {};
     ORDER.forEach(function (c) { totals[c] = 0; });
-    cfg.questions.forEach(function (q, i) { totals[q.t] += answers[i]; });
+    qs.forEach(function (q, i) { totals[q.t] += answers[i]; });
     return ORDER.map(function (c) { return totals[c]; });
   }
 
@@ -59,7 +81,7 @@
       .sort(function (a, b) { return (b.score - a.score) || (a.i - b.i); });
   }
 
-  function percent(score) { return Math.round(((score - MIN) / SPAN) * 1000) / 10; }
+  function percent(score) { return Math.round(((score - perType) / (perType * 4)) * 1000) / 10; }
 
   /* ---------- Màn hình giới thiệu ---------- */
   function showIntro() {
@@ -70,26 +92,39 @@
     if (window.Chatbot) window.Chatbot.setHolland(null);
 
     var list = el('ul', { class: 'checklist' }, [
-      el('li', { text: cfg.questions.length + ' câu, khoảng 5 phút.' }),
       el('li', { text: 'Không có đáp án đúng hay sai – hãy chọn theo cảm nhận thật của bạn.' }),
       el('li', { text: 'Kết quả chỉ để tham khảo và khám phá bản thân, không phải kết luận cuối cùng.' })
     ]);
-    var start = el('button', { class: 'btn btn-primary', type: 'button', text: 'Bắt đầu làm bài' });
-    start.addEventListener('click', showQuestion);
+
+    var modeGrid = el('div', { class: 'mode-grid', role: 'group', 'aria-label': 'Chọn bản trắc nghiệm' });
+    ['short', 'full'].forEach(function (m) {
+      if (m === 'full' && questionsFor('full').length <= questionsFor('short').length) return; // dữ liệu chưa có câu bổ sung
+      var info = modes()[m];
+      var card = el('button', { class: 'mode-card', type: 'button', 'data-mode': m }, [
+        el('span', { class: 'mode-name', text: info.label }),
+        el('span', { class: 'mode-count', text: questionsFor(m).length + ' câu' }),
+        el('span', { class: 'mode-meta', text: 'Khoảng ' + info.minutes + ' phút · mỗi nhóm ' + info.perType + ' câu' }),
+        el('span', { class: 'muted small', text: MODE_NOTE[m] }),
+        el('span', { class: 'mode-go', text: 'Bắt đầu làm bài →' })
+      ]);
+      card.addEventListener('click', function () { setMode(m); index = 0; showQuestion(); });
+      modeGrid.appendChild(card);
+    });
 
     setView([el('div', { class: 'card holland-intro' }, [
       el('h3', { text: 'Trắc nghiệm sở thích nghề nghiệp Holland (RIASEC)' }),
       el('p', { class: 'muted', text: 'Theo lý thuyết Holland, sở thích nghề nghiệp chia thành 6 nhóm: Kỹ thuật (R), Nghiên cứu (I), Nghệ thuật (A), Xã hội (S), Quản lý – Kinh doanh (E) và Nghiệp vụ (C). Trả lời các câu hỏi để xem nhóm nào nổi bật ở bạn.' }),
       list,
-      el('p', { class: 'muted small', text: 'Điểm được tính ngay trên trình duyệt của bạn và không tự động gửi đi đâu.' }),
-      start
+      el('h4', { class: 'mode-title', text: 'Chọn bản trắc nghiệm' }),
+      modeGrid,
+      el('p', { class: 'muted small', text: 'Điểm được tính ngay trên trình duyệt của bạn và không tự động gửi đi đâu.' })
     ])]);
   }
 
   /* ---------- Màn hình câu hỏi ---------- */
   function showQuestion() {
-    var total = cfg.questions.length;
-    var q = cfg.questions[index];
+    var total = qs.length;
+    var q = qs[index];
 
     var fill = el('div', { class: 'q-fill' });
     fill.style.width = (index / total) * 100 + '%';
@@ -150,13 +185,13 @@
     });
     setTimeout(function () {
       choosing = false;
-      if (index < cfg.questions.length - 1) { index++; showQuestion(); } else { finish(); }
+      if (index < qs.length - 1) { index++; showQuestion(); } else { finish(); }
     }, 220);
   }
 
   function finish() {
     sums = compute();
-    if (window.Chatbot) window.Chatbot.setHolland(sums);
+    if (window.Chatbot) window.Chatbot.setHolland(sums, perType);
     showResult();
     app.scrollIntoView({ block: 'start' });
   }
@@ -187,7 +222,7 @@
         el('div', { class: 'holland-code', text: code }),
         el('p', { class: 'muted', text: top.map(function (r) { return typeOf(r.code).name; }).join(' · ') })
       ]),
-      el('p', { class: 'muted small res-date', text: 'Ngày làm bài: ' + fmtDate() })
+      el('p', { class: 'muted small res-date', text: 'Ngày làm bài: ' + fmtDate() + ' · ' + modes()[mode].label + ' (' + qs.length + ' câu)' })
     ]);
 
     /* Biểu đồ */
@@ -198,12 +233,12 @@
     var barsHost = el('figure', { class: 'card chart is-visible' });
     window.Charts.hbars(barsHost, {
       title: 'Điểm từng nhóm',
-      caption: 'Thang 0–100% (từ điểm 6 đến 30 của mỗi nhóm)',
+      caption: 'Thang 0–100% (từ điểm ' + perType + ' đến ' + perType * 5 + ' của mỗi nhóm)',
       options: cfg.types.map(function (t) { return t.code + ' – ' + t.name; }),
       sort: false
     }, pcts);
 
-    var flat = spread <= 4 ? el('p', { class: 'notice' }, [document.createTextNode('Điểm các nhóm khá gần nhau nên mã Holland chưa phân hoá rõ. Bạn có thể làm lại và cân nhắc kỹ hơn, hoặc xem cả các nhóm xếp sau.')]) : null;
+    var flat = spread <= perType * 2 / 3 ? el('p', { class: 'notice' }, [document.createTextNode('Điểm các nhóm khá gần nhau nên mã Holland chưa phân hoá rõ. Bạn có thể làm lại và cân nhắc kỹ hơn, hoặc xem cả các nhóm xếp sau.')]) : null;
 
     /* Ba nhóm nổi bật */
     var cards = el('div', { class: 'res-types' });
@@ -283,7 +318,8 @@
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         messages: [{ role: 'user', content: 'Hãy phân tích kết quả trắc nghiệm Holland của mình (mã ' + code + ') và gợi ý hướng đi phù hợp.' }],
-        holland: sums
+        holland: sums,
+        holland_n: perType
       })
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
@@ -345,7 +381,7 @@
       fetch('api/holland.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ scores: sums, grade: gradeSel.value, gender: genderSel.value, consent: true, v: cfg.version })
+        body: JSON.stringify({ scores: sums, mode: mode, grade: gradeSel.value, gender: genderSel.value, consent: true, v: cfg.version })
       }).then(function (r) {
         if (r.ok) {
           submitted = true;
