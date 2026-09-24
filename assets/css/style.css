@@ -416,6 +416,14 @@ main { padding: 32px 32px 8px; }
 /* ===== Trắc nghiệm Holland ===== */
 .holland-intro { max-width: 720px; }
 .holland-intro .btn { margin-top: 8px; }
+.mode-title { margin: 22px 0 12px; font-size: 1rem; font-weight: 600; }
+.mode-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 16px; }
+.mode-card { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 18px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease, transform .15s ease; }
+.mode-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.mode-name { font-weight: 600; }
+.mode-count { font-size: 1.9rem; font-weight: 800; line-height: 1.15; background: var(--g-indigo); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.mode-meta { font-size: .85rem; color: var(--muted); }
+.mode-go { margin-top: 8px; font-size: .9rem; font-weight: 600; color: var(--primary-strong); }
 .holland-quiz { max-width: 760px; }
 .q-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .q-count { font-size: .88rem; font-weight: 600; color: var(--muted); }
@@ -469,6 +477,7 @@ main { padding: 32px 32px 8px; }
 @media (max-width: 1180px) { .res-types { grid-template-columns: 1fr; } }
 @media (max-width: 720px) {
   .res-grid { grid-template-columns: 1fr; }
+  .mode-grid { grid-template-columns: 1fr; }
   .q-options { grid-template-columns: 1fr; }
   .q-opt { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 10px 14px; font-size: .92rem; text-align: left; }
   .q-text { min-height: 0; }
