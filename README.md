@@ -14,6 +14,7 @@ data/survey.json      Số liệu khảo sát tổng hợp (tạo bằng tools/b
 data/data.json        Chatbot FAQ, trích dẫn, nhóm nghiên cứu
 tools/build_survey.rb Script tổng hợp file Excel khảo sát → survey.json
 api/chat.php          Proxy gọi Claude API (giữ API key phía server)
+api/admin.php         Trang quản trị tài khoản (thống kê, đặt lại mật khẩu, xóa)
 api/auth.php          Đăng ký / đăng nhập bằng tên đăng nhập + mật khẩu (cấp cookie phiên)
 api/history.php       Lưu / đọc / xóa lịch sử trò chuyện của người dùng đã đăng nhập
 api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commit)
@@ -53,7 +54,8 @@ Bấm icon tròn ở góc phải thanh trên để **tạo tài khoản** hoặc
 - `api/auth.php` chỉ lưu **mật khẩu đã băm bằng bcrypt** (`password_hash`), không lưu bản gốc, vào `api/storage/accounts/<mã băm>.json`. Đăng nhập thành công cấp cookie phiên ký HMAC, `HttpOnly`, `SameSite=Lax`, hiệu lực 30 ngày.
 - Chống dò mật khẩu: tối đa 10 lần thử / 10 phút mỗi IP và 6 lần / 10 phút mỗi cặp IP + tên đăng nhập; đăng ký tối đa 5 tài khoản / giờ mỗi IP. Sai tên hay sai mật khẩu đều báo chung một thông báo.
 - `api/history.php` lưu tối đa 200 tin nhắn gần nhất mỗi tài khoản vào `api/storage/users/<mã băm>.json` (chỉ nội dung chat, không kèm tên đăng nhập). Thư mục `storage/` bị chặn truy cập từ web và không được commit.
-- **Chưa có "quên mật khẩu"** (vì không thu email). Nếu học sinh quên, quản trị viên xóa file tài khoản tương ứng trong `api/storage/accounts/` để bạn ấy đăng ký lại (lịch sử cũ sẽ mất).
+- **Trang quản trị** `https://<tên-miền>/api/admin.php` (tên đăng nhập `admin`, mật khẩu là `admin_password` trong `api/config.php`, như trang tải CSV Holland). Hiển thị số tài khoản, và với mỗi tài khoản: tên đăng nhập, ngày tạo, số tin nhắn, lần trò chuyện gần nhất. **Không hiển thị mật khẩu (chỉ lưu bản băm) và không hiển thị nội dung trò chuyện.** Có hai thao tác: **Đặt lại mật khẩu** (tạo mật khẩu tạm mới, hiện một lần để gửi cho học sinh) và **Xóa** (kèm lịch sử trò chuyện). Cả hai có hiệu lực ngay, phiên đăng nhập cũ của tài khoản đó bị thoát. Nhập sai mật khẩu quản trị quá 10 lần / 10 phút sẽ bị khóa tạm.
+- **Chưa có "quên mật khẩu" tự động** (vì không thu email): học sinh quên thì nhờ quản trị viên đặt lại mật khẩu ở trang trên.
 - Đăng xuất chỉ xóa cookie trên trình duyệt đó; muốn buộc mọi người đăng nhập lại, xóa `api/storage/session.key`.
 - Người dùng là học sinh THPT: nên thông báo cho nhà trường/phụ huynh về việc lưu tài khoản và nội dung trò chuyện, tương tự phần trắc nghiệm Holland.
 - Chạy thử trên máy cần PHP: `php -S localhost:8000` (không dùng `python -m http.server`).

@@ -385,12 +385,12 @@
       }).then(function (r) {
         if (r.ok) {
           submitted = true;
-          status.textContent = 'Cảm ơn em! Kết quả đã được gửi ẩn danh cho nhóm nghiên cứu.';
+          status.textContent = 'Cảm ơn bạn! Kết quả đã được gửi ẩn danh cho nhóm nghiên cứu.';
         } else if (r.status === 429) {
           status.textContent = 'Đã gửi quá nhiều lần, vui lòng thử lại sau.';
           send.disabled = false;
         } else {
-          status.textContent = 'Chưa gửi được, vui lòng thử lại sau. Kết quả của em vẫn được giữ trên màn hình.';
+          status.textContent = 'Chưa gửi được, vui lòng thử lại sau. Kết quả của bạn vẫn được giữ trên màn hình.';
           send.disabled = false;
         }
       }).catch(function () {

@@ -202,7 +202,7 @@
     });
   }
 
-  Promise.all([getJson('data/data.json'), getJson('data/survey.json'), getJson('data/holland.json?v=2')])
+  Promise.all([getJson('data/data.json'), getJson('data/survey.json'), getJson('data/holland.json?v=3')])
     .then(function (res) {
       var data = res[0], survey = res[1], holland = res[2];
 

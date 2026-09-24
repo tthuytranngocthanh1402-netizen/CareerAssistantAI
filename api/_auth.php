@@ -26,6 +26,18 @@ function ca_storage_dir(): string
     return __DIR__ . '/storage';
 }
 
+/** File tài khoản (không phân biệt hoa/thường): api/storage/accounts/<sha256>.json */
+function ca_account_file(string $username): string
+{
+    return ca_storage_dir() . '/accounts/' . hash('sha256', 'ca-user|' . strtolower($username)) . '.json';
+}
+
+/** File lịch sử trò chuyện của một tài khoản (theo mã nội bộ): api/storage/users/<sha256>.json */
+function ca_history_file(string $sub): string
+{
+    return ca_storage_dir() . '/users/' . hash('sha256', 'ca-history|' . $sub) . '.json';
+}
+
 function ca_b64u(string $raw): string
 {
     return rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');
@@ -79,13 +91,14 @@ function ca_set_cookie(string $value, int $expires): void
     ]);
 }
 
-/** $user = ['sub' => mã tài khoản nội bộ, 'name' => tên đăng nhập] */
+/** $user = ['sub' => mã tài khoản nội bộ, 'name' => tên đăng nhập, 'v' => phiên bản mật khẩu (đổi khi đặt lại mật khẩu)] */
 function ca_issue_session(array $user, string $secret): void
 {
     $expires = time() + CA_SESSION_DAYS * 86400;
     $payload = ca_b64u(json_encode([
         'sub' => $user['sub'],
         'name' => $user['name'],
+        'v' => (string)($user['v'] ?? ''),
         'exp' => $expires,
     ], JSON_UNESCAPED_UNICODE));
     $sig = ca_b64u(hash_hmac('sha256', $payload, $secret, true));
@@ -116,7 +129,14 @@ function ca_current_user(): ?array
     if (!is_array($data) || !isset($data['sub'], $data['exp']) || (int)$data['exp'] < time() || (string)$data['sub'] === '') {
         return null;
     }
-    return ['sub' => (string)$data['sub'], 'name' => (string)($data['name'] ?? '')];
+    // Phiên chỉ hợp lệ khi tài khoản còn tồn tại và chưa bị đặt lại mật khẩu (để xóa/đặt lại có hiệu lực ngay)
+    $name = (string)($data['name'] ?? '');
+    $account = json_decode((string)@file_get_contents(ca_account_file($name)), true);
+    if (!is_array($account) || (string)($account['id'] ?? '') !== (string)$data['sub']
+        || (string)($account['v'] ?? '') !== (string)($data['v'] ?? '')) {
+        return null;
+    }
+    return ['sub' => (string)$data['sub'], 'name' => (string)$account['u']];
 }
 
 /** Phần thông tin được gửi về trình duyệt (không có mã định danh nội bộ). */

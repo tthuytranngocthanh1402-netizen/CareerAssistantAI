@@ -6,7 +6,7 @@
     "full": { "label": "Bản đầy đủ", "perType": 10, "minutes": 10 }
   },
   "scale": ["Hoàn toàn không thích", "Không thích", "Bình thường", "Thích", "Rất thích"],
-  "consent": "Em đồng ý gửi ẩn danh kết quả (6 điểm số, cùng khối và giới tính nếu em chọn) cho nhóm nghiên cứu để phục vụ nghiên cứu khoa học. Không gửi họ tên, địa chỉ IP hay bất kỳ thông tin nhận dạng nào. Em có thể bỏ qua bước này mà vẫn xem đầy đủ kết quả.",
+  "consent": "Bạn đồng ý gửi ẩn danh kết quả (6 điểm số, cùng khối và giới tính nếu bạn chọn) cho nhóm nghiên cứu để phục vụ nghiên cứu khoa học. Không gửi họ tên, địa chỉ IP hay bất kỳ thông tin nhận dạng nào. Bạn có thể bỏ qua bước này mà vẫn xem đầy đủ kết quả.",
   "types": [
     {
       "code": "R", "name": "Kỹ thuật", "en": "Realistic",

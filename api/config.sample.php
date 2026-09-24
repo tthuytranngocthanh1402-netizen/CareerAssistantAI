@@ -8,7 +8,8 @@ return [
     // Lấy tại https://console.anthropic.com/
     'api_key' => 'DAN_API_KEY_CUA_BAN_VAO_DAY',
 
-    // Mật khẩu để tải kết quả trắc nghiệm Holland ẩn danh (CSV) tại /api/holland_export.php
+    // Mật khẩu quản trị, dùng cho: tải kết quả trắc nghiệm Holland ẩn danh (CSV) tại /api/holland_export.php
+    // và quản lý tài khoản người dùng tại /api/admin.php
     // Tên đăng nhập: admin. Hãy đặt mật khẩu dài, khó đoán.
     'admin_password' => 'DAT_MAT_KHAU_QUAN_TRI',
 

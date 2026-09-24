@@ -18,11 +18,6 @@ const PASSWORD_MAX = 72; // bcrypt chỉ dùng 72 byte đầu của mật khẩu
 
 $storageOk = is_dir(ca_storage_dir()) && is_writable(ca_storage_dir());
 
-function account_file(string $username): string
-{
-    return ca_storage_dir() . '/accounts/' . hash('sha256', 'ca-user|' . strtolower($username)) . '.json';
-}
-
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
     $user = ca_current_user();
     ca_respond(200, ['enabled' => $storageOk, 'user' => $user ? ca_public_user($user) : null]);
@@ -66,14 +61,16 @@ if ($action === 'register') {
         ca_respond(503, ['error' => 'not_configured']);
     }
 
-    $file = account_file($username);
+    $file = ca_account_file($username);
     $handle = @fopen($file, 'x'); // 'x': thất bại nếu tên đã tồn tại, nên hai người đăng ký cùng lúc không ghi đè nhau
     if ($handle === false) {
         ca_respond(is_file($file) ? 409 : 503, ['error' => is_file($file) ? 'username_taken' : 'storage_unavailable']);
     }
     $id = bin2hex(random_bytes(16));
+    $v = bin2hex(random_bytes(4));
     fwrite($handle, json_encode([
         'id' => $id,
+        'v' => $v,
         'u' => $username,
         'h' => password_hash($password, PASSWORD_DEFAULT),
         'c' => gmdate('Y-m-d'),
@@ -81,7 +78,7 @@ if ($action === 'register') {
     fclose($handle);
     @chmod($file, 0600);
 
-    $user = ['sub' => $id, 'name' => $username];
+    $user = ['sub' => $id, 'name' => $username, 'v' => $v];
     ca_issue_session($user, $secret);
     ca_respond(200, ['user' => ca_public_user($user)]);
 }
@@ -93,8 +90,8 @@ if (!ca_rate_limit('login|' . $ip, 10, 600) || !ca_rate_limit('login|' . $ip . '
 }
 
 $account = null;
-if (preg_match(USERNAME_PATTERN, $username) && strlen($password) <= PASSWORD_MAX && is_file(account_file($username))) {
-    $data = json_decode((string)file_get_contents(account_file($username)), true);
+if (preg_match(USERNAME_PATTERN, $username) && strlen($password) <= PASSWORD_MAX && is_file(ca_account_file($username))) {
+    $data = json_decode((string)file_get_contents(ca_account_file($username)), true);
     if (is_array($data) && isset($data['id'], $data['u'], $data['h'])) {
         $account = $data;
     }
@@ -113,6 +110,6 @@ $secret = ca_secret(true);
 if ($secret === null) {
     ca_respond(503, ['error' => 'not_configured']);
 }
-$user = ['sub' => (string)$account['id'], 'name' => (string)$account['u']];
+$user = ['sub' => (string)$account['id'], 'name' => (string)$account['u'], 'v' => (string)($account['v'] ?? '')];
 ca_issue_session($user, $secret);
 ca_respond(200, ['user' => ca_public_user($user)]);

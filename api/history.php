@@ -22,7 +22,7 @@ $dir = ca_storage_dir() . '/users';
 if (!is_dir($dir) && !(is_dir(ca_storage_dir()) && is_writable(ca_storage_dir()) && @mkdir($dir, 0700))) {
     ca_respond(503, ['error' => 'storage_unavailable']);
 }
-$file = $dir . '/' . hash('sha256', 'ca-history|' . $user['sub']) . '.json';
+$file = ca_history_file($user['sub']);
 
 /** Đọc-sửa-ghi file lịch sử có khóa, để hai yêu cầu cùng lúc không làm mất dữ liệu. */
 function history_update(string $file, callable $change): array
