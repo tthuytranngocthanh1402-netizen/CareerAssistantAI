@@ -6,6 +6,7 @@
 
   var AUTH_URL = 'api/auth.php';
   var HISTORY_URL = 'api/history.php';
+  var RESULTS_URL = 'api/results.php';
   var USER_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
   var USERNAME_RE = /^[A-Za-z0-9._-]{3,30}$/;
   var PASSWORD_MIN = 8;
@@ -97,6 +98,8 @@
     out.addEventListener('click', logout);
     var clear = el('button', { class: 'btn btn-ghost', type: 'button', text: 'Xóa lịch sử trò chuyện' });
     clear.addEventListener('click', clearHistory);
+    var clearRes = el('button', { class: 'btn btn-ghost', type: 'button', text: 'Xóa kết quả Holland đã lưu' });
+    clearRes.addEventListener('click', clearResults);
 
     panel.appendChild(el('div', { class: 'account-user' }, [
       avatarNode(user, 'account-avatar'),
@@ -105,8 +108,8 @@
         el('span', { class: 'muted small', text: 'Đã đăng nhập' })
       ])
     ]));
-    panel.appendChild(el('p', { class: 'muted small', text: 'Lịch sử trò chuyện với trợ lý AI của bạn đang được lưu và sẽ hiện lại mỗi khi bạn đăng nhập.' }));
-    panel.appendChild(el('div', { class: 'account-actions' }, [clear, out]));
+    panel.appendChild(el('p', { class: 'muted small', text: 'Lịch sử trò chuyện với trợ lý AI và kết quả trắc nghiệm Holland của bạn đang được lưu, và sẽ hiện lại mỗi khi bạn đăng nhập.' }));
+    panel.appendChild(el('div', { class: 'account-actions' }, [clear, clearRes, out]));
     if (status) panel.appendChild(el('p', { class: 'account-status small', role: 'status', text: status }));
   }
 
@@ -130,8 +133,8 @@
     }
     panel.appendChild(el('div', { class: 'account-tabs', role: 'tablist' }, [tab('login', 'Đăng nhập'), tab('register', 'Tạo tài khoản')]));
     panel.appendChild(el('p', { class: 'muted small', text: isReg
-      ? 'Tự chọn tên đăng nhập và mật khẩu để lưu lịch sử trò chuyện với trợ lý AI.'
-      : 'Đăng nhập để xem lại và lưu lịch sử trò chuyện với trợ lý AI.' }));
+      ? 'Tự chọn tên đăng nhập và mật khẩu để lưu lịch sử trò chuyện với trợ lý AI và kết quả trắc nghiệm Holland.'
+      : 'Đăng nhập để xem lại lịch sử trò chuyện và các kết quả Holland đã lưu.' }));
 
     var userIn = el('input', { id: 'authUser', name: 'username', type: 'text', autocomplete: 'username', maxlength: '30', required: '', autocapitalize: 'none', spellcheck: 'false' });
     var passIn = el('input', { id: 'authPass', name: 'password', type: 'password', autocomplete: isReg ? 'new-password' : 'current-password', maxlength: String(PASSWORD_MAX), required: '' });
@@ -225,6 +228,22 @@
     });
   }
 
+  function clearResults() {
+    if (!window.confirm('Xóa toàn bộ kết quả trắc nghiệm Holland đã lưu trong tài khoản của bạn? Thao tác này không thể hoàn tác.')) return;
+    postJson(RESULTS_URL, { action: 'clear' }).then(function (r) {
+      if (r.ok) {
+        status = 'Đã xóa kết quả Holland đã lưu.';
+        window.dispatchEvent(new CustomEvent('auth:results-cleared'));
+      } else {
+        status = 'Chưa xóa được kết quả, vui lòng thử lại.';
+      }
+      if (isOpen()) renderPanel();
+    }).catch(function () {
+      status = 'Chưa xóa được kết quả, vui lòng kiểm tra kết nối rồi thử lại.';
+      if (isOpen()) renderPanel();
+    });
+  }
+
   /* ---------- Khởi tạo ---------- */
   function init() {
     btn = document.getElementById('accountBtn');
@@ -255,6 +274,6 @@
       });
   }
 
-  window.Auth = { user: null, init: init };
+  window.Auth = { user: null, init: init, open: function () { setTimeout(function () { if (btn && !isOpen()) open(); }, 0); } }; // hoãn để cú bấm gọi hàm này không bị coi là bấm ra ngoài bảng
   init();
 })();

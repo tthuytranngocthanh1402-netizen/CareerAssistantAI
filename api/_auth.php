@@ -38,6 +38,12 @@ function ca_history_file(string $sub): string
     return ca_storage_dir() . '/users/' . hash('sha256', 'ca-history|' . $sub) . '.json';
 }
 
+/** File kết quả trắc nghiệm Holland đã lưu của một tài khoản: api/storage/users/<sha256>.json */
+function ca_results_file(string $sub): string
+{
+    return ca_storage_dir() . '/users/' . hash('sha256', 'ca-results|' . $sub) . '.json';
+}
+
 function ca_b64u(string $raw): string
 {
     return rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');

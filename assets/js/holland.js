@@ -26,6 +26,9 @@
   var canCollect = false;
   var submitted = false;
   var keyHandler = null;
+  var view = 'intro';   // 'intro' | 'quiz' | 'result': màn hình đang hiển thị
+  var saveNote = null;  // dòng thông báo lưu kết quả vào tài khoản trên màn hình kết quả
+  var RESULTS_URL = 'api/results.php';
 
   function el(tag, props, children) {
     var node = document.createElement(tag);
@@ -56,8 +59,8 @@
     return cfg.types.filter(function (t) { return t.code === code; })[0];
   }
 
-  function fmtDate() {
-    var d = new Date();
+  function fmtDate(d) {
+    d = d || new Date();
     function p(n) { return (n < 10 ? '0' : '') + n; }
     return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear();
   }
@@ -85,6 +88,7 @@
 
   /* ---------- Màn hình giới thiệu ---------- */
   function showIntro() {
+    view = 'intro';
     answers = [];
     index = 0;
     sums = null;
@@ -111,18 +115,109 @@
       modeGrid.appendChild(card);
     });
 
+    var savedHost = el('div', { class: 'saved-host' });
+
     setView([el('div', { class: 'card holland-intro' }, [
       el('h3', { text: 'Trắc nghiệm sở thích nghề nghiệp Holland (RIASEC)' }),
       el('p', { class: 'muted', text: 'Theo lý thuyết Holland, sở thích nghề nghiệp chia thành 6 nhóm: Kỹ thuật (R), Nghiên cứu (I), Nghệ thuật (A), Xã hội (S), Quản lý – Kinh doanh (E) và Nghiệp vụ (C). Trả lời các câu hỏi để xem nhóm nào nổi bật ở bạn.' }),
       list,
       el('h4', { class: 'mode-title', text: 'Chọn bản trắc nghiệm' }),
       modeGrid,
-      el('p', { class: 'muted small', text: 'Điểm được tính ngay trên trình duyệt của bạn và không tự động gửi đi đâu.' })
+      el('p', { class: 'muted small', text: 'Điểm được tính ngay trên trình duyệt của bạn. Nếu bạn đã đăng nhập, kết quả sẽ được lưu vào tài khoản để xem lại; ngoài ra không tự động gửi đi đâu.' }),
+      savedHost
     ])]);
+    loadSaved(savedHost);
+  }
+
+  /* ---------- Kết quả đã lưu trong tài khoản ---------- */
+  function signedIn() { return !!(window.Auth && window.Auth.user); }
+
+  function validSaved(r) {
+    if (!r || typeof r.t !== 'number' || !modes()[r.m] || !Array.isArray(r.s) || r.s.length !== 6) return false;
+    var per = modes()[r.m].perType;
+    return r.s.every(function (v) { return typeof v === 'number' && v >= per && v <= per * 5; });
+  }
+
+  function savedCode(r) {
+    return rankedTypes(r.s).slice(0, 3).map(function (x) { return x.code; }).join('');
+  }
+
+  function loadSaved(host) {
+    if (!signedIn()) return;
+    fetch(RESULTS_URL, { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j || !Array.isArray(j.results) || !host.isConnected) return;
+        var list = j.results.filter(validSaved).reverse(); // mới nhất trước
+        if (list.length) renderSaved(host, list);
+      })
+      .catch(function () {});
+  }
+
+  function renderSaved(host, list) {
+    host.textContent = '';
+    host.appendChild(el('h4', { class: 'mode-title', text: 'Kết quả đã lưu của bạn (' + list.length + ')' }));
+    var ul = el('ul', { class: 'saved-list' });
+    list.forEach(function (r) {
+      var info = modes()[r.m];
+      var open = el('button', { class: 'btn btn-ghost', type: 'button', text: 'Xem' });
+      open.addEventListener('click', function () { showSaved(r); app.scrollIntoView({ block: 'start' }); });
+      var del = el('button', { class: 'link-btn', type: 'button', text: 'Xóa' });
+      del.addEventListener('click', function () {
+        if (!window.confirm('Xóa kết quả này khỏi tài khoản của bạn?')) return;
+        del.disabled = true;
+        fetch(RESULTS_URL, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ action: 'delete', t: r.t })
+        }).then(function (res) {
+          if (!res.ok) { del.disabled = false; return; }
+          var left = list.filter(function (x) { return x !== r; });
+          if (left.length) renderSaved(host, left); else host.textContent = '';
+        }).catch(function () { del.disabled = false; });
+      });
+      ul.appendChild(el('li', { class: 'saved-item' }, [
+        el('span', { class: 'saved-code', text: savedCode(r) }),
+        el('span', { class: 'saved-meta' }, [
+          el('span', { text: fmtDate(new Date(r.t * 1000)) }),
+          el('span', { class: 'muted small', text: info.label + ' (' + (info.perType * 6) + ' câu)' })
+        ]),
+        el('span', { class: 'saved-actions' }, [open, del])
+      ]));
+    });
+    host.appendChild(ul);
+  }
+
+  /* Lưu kết quả vừa làm vào tài khoản (nếu đã đăng nhập) */
+  function saveResult() {
+    if (!saveNote) return;
+    if (!signedIn()) return;
+    saveNote.textContent = 'Đang lưu kết quả vào tài khoản…';
+    fetch(RESULTS_URL, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ action: 'add', mode: mode, scores: sums })
+    }).then(function (r) {
+      saveNote.textContent = r.ok
+        ? 'Đã lưu kết quả này vào tài khoản của bạn. Lần sau đăng nhập, bạn xem lại được ở màn hình đầu của trắc nghiệm.'
+        : 'Chưa lưu được kết quả vào tài khoản, vui lòng thử lại sau. Kết quả vẫn hiển thị trên màn hình.';
+    }).catch(function () {
+      saveNote.textContent = 'Chưa lưu được kết quả vào tài khoản, vui lòng kiểm tra kết nối rồi thử lại.';
+    });
+  }
+
+  function showSaved(r) {
+    setMode(r.m);
+    sums = r.s.slice();
+    if (window.Chatbot) window.Chatbot.setHolland(sums, perType);
+    showResult({ savedAt: r.t });
   }
 
   /* ---------- Màn hình câu hỏi ---------- */
   function showQuestion() {
+    view = 'quiz';
     var total = qs.length;
     var q = qs[index];
 
@@ -192,7 +287,8 @@
   function finish() {
     sums = compute();
     if (window.Chatbot) window.Chatbot.setHolland(sums, perType);
-    showResult();
+    showResult({});
+    saveResult();
     app.scrollIntoView({ block: 'start' });
   }
 
@@ -208,7 +304,9 @@
     return Object.keys(weight).sort(function (a, b) { return (weight[b] - weight[a]) || (firstSeen[a] - firstSeen[b]); }).slice(0, 4);
   }
 
-  function showResult() {
+  function showResult(opts) {
+    opts = opts || {};
+    view = 'result';
     var ranked = rankedTypes(sums);
     var top = ranked.slice(0, 3);
     var code = top.map(function (r) { return r.code; }).join('');
@@ -222,7 +320,7 @@
         el('div', { class: 'holland-code', text: code }),
         el('p', { class: 'muted', text: top.map(function (r) { return typeOf(r.code).name; }).join(' · ') })
       ]),
-      el('p', { class: 'muted small res-date', text: 'Ngày làm bài: ' + fmtDate() + ' · ' + modes()[mode].label + ' (' + qs.length + ' câu)' })
+      el('p', { class: 'muted small res-date', text: 'Ngày làm bài: ' + fmtDate(opts.savedAt ? new Date(opts.savedAt * 1000) : new Date()) + ' · ' + modes()[mode].label + ' (' + qs.length + ' câu)' })
     ]);
 
     /* Biểu đồ */
@@ -293,15 +391,30 @@
     again.addEventListener('click', function () { showIntro(); app.scrollIntoView({ block: 'start' }); });
     var actions = el('div', { class: 'cta-row no-print' }, [pdf, hasAi ? chat : null, again]);
 
+    /* Ghi chú về việc lưu kết quả vào tài khoản */
+    saveNote = null;
+    var noteNode = null;
+    if (opts.savedAt) {
+      noteNode = el('p', { class: 'notice no-print', text: 'Đây là kết quả bạn đã lưu trong tài khoản.' });
+    } else if (signedIn()) {
+      saveNote = el('p', { class: 'notice no-print', role: 'status', 'aria-live': 'polite', text: '' });
+      noteNode = saveNote;
+    } else if (window.Auth && window.Auth.open) {
+      var login = el('button', { class: 'link-btn', type: 'button', text: 'Đăng nhập hoặc tạo tài khoản' });
+      login.addEventListener('click', function () { window.Auth.open(); });
+      noteNode = el('p', { class: 'notice no-print' }, [login, document.createTextNode(' để lưu kết quả này và xem lại các lần làm bài sau.')]);
+    }
+
     setView([el('div', { id: 'hollandResult', class: 'holland-result' }, [
       el('div', { class: 'card res-top' }, [head]),
+      noteNode,
       flat,
       el('div', { class: 'res-grid' }, [radarHost, barsHost]),
       cards,
       el('div', { class: 'res-grid' }, [suggest, aiBox]),
       disclaimer,
       actions,
-      canCollect ? consentBox() : null
+      canCollect && !opts.savedAt ? consentBox() : null
     ])]);
   }
 
@@ -424,6 +537,9 @@
     app = document.getElementById('hollandApp');
     if (!app) return;
     showIntro();
+    // Đăng nhập, đăng xuất hoặc xóa kết quả đã lưu khi đang ở màn hình đầu: vẽ lại để danh sách kết quả đã lưu đúng
+    window.addEventListener('auth:change', function () { if (view === 'intro') showIntro(); });
+    window.addEventListener('auth:results-cleared', function () { if (view === 'intro') showIntro(); });
     probe('api/chat.php?ping=1', function (j) { return j.ai === true; }).then(function (ok) { hasAi = ok; });
     probe('api/holland.php', function (j) { return j.ok === true; }).then(function (ok) { canCollect = ok; });
   }

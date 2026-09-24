@@ -213,6 +213,13 @@ a { color: var(--primary-strong); }
 .account-hint { margin: -6px 0 0 !important; }
 .account-error { min-height: 1.2em; margin: 0 !important; color: #dc2626; }
 .account-form .btn { width: 100%; justify-content: center; }
+.saved-host:empty { display: none; }
+.saved-list { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 8px; }
+.saved-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.saved-code { min-width: 3.4em; font-size: 1.15rem; font-weight: 800; letter-spacing: .1em; color: var(--primary-strong); }
+.saved-meta { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.35; }
+.saved-actions { display: flex; align-items: center; gap: 10px; }
+.saved-actions .btn { padding: 6px 14px; }
 .msg-divider { align-self: center; padding: 2px 12px; font-size: .74rem; color: var(--muted); border-radius: 999px; background: var(--surface-2); }
 .menu-btn { display: none; }
 

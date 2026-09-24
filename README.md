@@ -17,6 +17,7 @@ api/chat.php          Proxy gọi Claude API (giữ API key phía server)
 api/admin.php         Trang quản trị tài khoản (thống kê, đặt lại mật khẩu, xóa)
 api/auth.php          Đăng ký / đăng nhập bằng tên đăng nhập + mật khẩu (cấp cookie phiên)
 api/history.php       Lưu / đọc / xóa lịch sử trò chuyện của người dùng đã đăng nhập
+api/results.php       Lưu / đọc / xóa các lần làm trắc nghiệm Holland của người dùng đã đăng nhập
 api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commit)
 .htaccess             HTTPS, header bảo mật, cache (Apache/LiteSpeed của Hostinger)
 ```
@@ -45,7 +46,7 @@ api/config.sample.php Mẫu cấu hình (config.php thật KHÔNG được commi
 
 ## Tài khoản (tên đăng nhập + mật khẩu) và lịch sử trò chuyện
 
-Bấm icon tròn ở góc phải thanh trên để **tạo tài khoản** hoặc **đăng nhập**. Người dùng tự chọn tên đăng nhập và mật khẩu, không cần email hay dịch vụ bên ngoài. Khi đã đăng nhập, mọi lượt hỏi – đáp với chatbot được lưu trên máy chủ và tự hiện lại lần sau (trên mọi thiết bị); bảng tài khoản có nút **Xóa lịch sử trò chuyện** và **Đăng xuất**. Chưa đăng nhập thì chatbot vẫn dùng bình thường, chỉ không lưu lịch sử.
+Bấm icon tròn ở góc phải thanh trên để **tạo tài khoản** hoặc **đăng nhập**. Người dùng tự chọn tên đăng nhập và mật khẩu, không cần email hay dịch vụ bên ngoài. Khi đã đăng nhập, mọi lượt hỏi – đáp với chatbot **và mọi lần làm trắc nghiệm Holland** được lưu trên máy chủ và tự hiện lại lần sau (trên mọi thiết bị); bảng tài khoản có nút **Xóa lịch sử trò chuyện**, **Xóa kết quả Holland đã lưu** và **Đăng xuất**. Chưa đăng nhập thì chatbot vẫn dùng bình thường, chỉ không lưu lịch sử.
 
 **Bật tính năng:** không cần cấu hình gì thêm. Chỉ cần PHP chạy được và thư mục `api/storage/` ghi được (giống phần trắc nghiệm Holland). Lần đầu có người đăng ký/đăng nhập, máy chủ tự tạo khóa ký phiên `api/storage/session.key`. Nếu thư mục không ghi được, bảng tài khoản sẽ báo "chưa được bật".
 
@@ -53,8 +54,9 @@ Bấm icon tròn ở góc phải thanh trên để **tạo tài khoản** hoặc
 - Tên đăng nhập 3–30 ký tự (chữ cái không dấu, số, `.`, `_`, `-`), không phân biệt hoa/thường. Mật khẩu 8–72 ký tự và không trùng tên đăng nhập.
 - `api/auth.php` chỉ lưu **mật khẩu đã băm bằng bcrypt** (`password_hash`), không lưu bản gốc, vào `api/storage/accounts/<mã băm>.json`. Đăng nhập thành công cấp cookie phiên ký HMAC, `HttpOnly`, `SameSite=Lax`, hiệu lực 30 ngày.
 - Chống dò mật khẩu: tối đa 10 lần thử / 10 phút mỗi IP và 6 lần / 10 phút mỗi cặp IP + tên đăng nhập; đăng ký tối đa 5 tài khoản / giờ mỗi IP. Sai tên hay sai mật khẩu đều báo chung một thông báo.
+- **Kết quả Holland đã lưu:** khi đã đăng nhập, làm xong bài (bản 36 hoặc 60 câu) là tự lưu vào tài khoản qua `api/results.php` (ngày, bản làm bài, 6 điểm số), tối đa 50 lần gần nhất. Ở màn hình đầu của trắc nghiệm có danh sách "Kết quả đã lưu" để xem lại (kèm biểu đồ, gợi ý ngành) hoặc xóa từng lần. Chưa đăng nhập thì kết quả chỉ nằm trên màn hình, có lời mời đăng nhập để lưu. Việc lưu này **tách biệt** với "Gửi kết quả ẩn danh cho nghiên cứu" (`api/holland.php`): bản gửi ẩn danh vẫn không gắn với tài khoản.
 - `api/history.php` lưu tối đa 200 tin nhắn gần nhất mỗi tài khoản vào `api/storage/users/<mã băm>.json` (chỉ nội dung chat, không kèm tên đăng nhập). Thư mục `storage/` bị chặn truy cập từ web và không được commit.
-- **Trang quản trị** `https://<tên-miền>/api/admin.php` (tên đăng nhập `admin`, mật khẩu là `admin_password` trong `api/config.php`, như trang tải CSV Holland). Hiển thị số tài khoản, và với mỗi tài khoản: tên đăng nhập, ngày tạo, số tin nhắn, lần trò chuyện gần nhất. **Không hiển thị mật khẩu (chỉ lưu bản băm) và không hiển thị nội dung trò chuyện.** Có hai thao tác: **Đặt lại mật khẩu** (tạo mật khẩu tạm mới, hiện một lần để gửi cho học sinh) và **Xóa** (kèm lịch sử trò chuyện). Cả hai có hiệu lực ngay, phiên đăng nhập cũ của tài khoản đó bị thoát. Nhập sai mật khẩu quản trị quá 10 lần / 10 phút sẽ bị khóa tạm.
+- **Trang quản trị** `https://<tên-miền>/api/admin.php` (tên đăng nhập `admin`, mật khẩu là `admin_password` trong `api/config.php`, như trang tải CSV Holland). Hiển thị số tài khoản, và với mỗi tài khoản: tên đăng nhập, ngày tạo, số tin nhắn, số lần làm bài Holland đã lưu, lần trò chuyện gần nhất. **Không hiển thị mật khẩu (chỉ lưu bản băm), nội dung trò chuyện và điểm Holland của từng người.** Có hai thao tác: **Đặt lại mật khẩu** (tạo mật khẩu tạm mới, hiện một lần để gửi cho học sinh) và **Xóa** (kèm lịch sử trò chuyện và kết quả Holland đã lưu). Cả hai có hiệu lực ngay, phiên đăng nhập cũ của tài khoản đó bị thoát. Nhập sai mật khẩu quản trị quá 10 lần / 10 phút sẽ bị khóa tạm.
 - **Chưa có "quên mật khẩu" tự động** (vì không thu email): học sinh quên thì nhờ quản trị viên đặt lại mật khẩu ở trang trên.
 - Đăng xuất chỉ xóa cookie trên trình duyệt đó; muốn buộc mọi người đăng nhập lại, xóa `api/storage/session.key`.
 - Người dùng là học sinh THPT: nên thông báo cho nhà trường/phụ huynh về việc lưu tài khoản và nội dung trò chuyện, tương tự phần trắc nghiệm Holland.

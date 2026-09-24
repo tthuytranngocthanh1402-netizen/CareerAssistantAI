@@ -3,8 +3,8 @@
  * Trang quản trị tài khoản người dùng (chỉ dành cho nhóm nghiên cứu).
  * Đăng nhập: tên "admin", mật khẩu là 'admin_password' trong api/config.php (giống trang tải CSV Holland).
  *
- * Xem được: tên đăng nhập, ngày tạo, số tin nhắn và thời điểm trò chuyện gần nhất.
- * KHÔNG xem được: mật khẩu (chỉ lưu bản băm) và nội dung trò chuyện (trang này không hiển thị).
+ * Xem được: tên đăng nhập, ngày tạo, số tin nhắn, số lần làm bài Holland đã lưu và thời điểm trò chuyện gần nhất.
+ * KHÔNG xem được: mật khẩu (chỉ lưu bản băm), nội dung trò chuyện và điểm Holland của từng người (trang này không hiển thị).
  * Thao tác: đặt lại mật khẩu (tạo mật khẩu tạm mới, hiện một lần) và xóa tài khoản (kèm lịch sử trò chuyện).
  * Cả hai thao tác có hiệu lực ngay: phiên đăng nhập cũ của tài khoản đó không còn dùng được.
  */
@@ -99,8 +99,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         $noticeClass = 'err';
     } elseif ($action === 'delete') {
         @unlink(ca_history_file((string)$account['id']));
+        @unlink(ca_results_file((string)$account['id']));
         @unlink($file);
-        $notice = 'Đã xóa tài khoản "' . $account['u'] . '" cùng lịch sử trò chuyện của tài khoản này.';
+        $notice = 'Đã xóa tài khoản "' . $account['u'] . '" cùng lịch sử trò chuyện và kết quả Holland đã lưu của tài khoản này.';
     } elseif ($action === 'reset') {
         $alphabet = 'abcdefghjkmnpqrstuvwxyz23456789'; // bỏ các ký tự dễ nhầm: i, l, o, 0, 1
         $temp = '';
@@ -138,12 +139,18 @@ foreach ((array)glob($accountsDir . '/*.json') as $path) {
             $last = max($last, (int)($m['t'] ?? 0));
         }
     }
-    $rows[] = ['u' => (string)$a['u'], 'c' => (string)($a['c'] ?? ''), 'n' => $count, 'last' => $last];
+    $tests = 0;
+    $resultsFile = ca_results_file((string)$a['id']);
+    if (is_file($resultsFile)) {
+        $tests = count((array)(read_json($resultsFile)['results'] ?? []));
+    }
+    $rows[] = ['u' => (string)$a['u'], 'c' => (string)($a['c'] ?? ''), 'n' => $count, 'last' => $last, 'h' => $tests];
 }
 // Mới tạo lên trước; cùng ngày thì xếp theo tên
 usort($rows, static fn($x, $y) => strcmp($y['c'], $x['c']) ?: strcasecmp($x['u'], $y['u']));
 $totalMessages = array_sum(array_column($rows, 'n'));
 $withChat = count(array_filter($rows, static fn($r) => $r['n'] > 0));
+$totalTests = array_sum(array_column($rows, 'h'));
 
 header('Content-Type: text/html; charset=utf-8');
 ?>
@@ -159,7 +166,7 @@ header('Content-Type: text/html; charset=utf-8');
 <body>
 <main>
   <h1>Quản lý tài khoản</h1>
-  <p class="muted">Trang này chỉ hiển thị thống kê. Mật khẩu và nội dung trò chuyện của người dùng không được hiển thị.</p>
+  <p class="muted">Trang này chỉ hiển thị thống kê. Mật khẩu, nội dung trò chuyện và điểm Holland của từng người dùng không được hiển thị.</p>
 
   <?php if ($notice !== ''): ?>
     <p class="notice <?= h($noticeClass) ?>" role="status"><?= h($notice) ?></p>
@@ -169,6 +176,7 @@ header('Content-Type: text/html; charset=utf-8');
     <li><b><?= count($rows) ?></b> tài khoản</li>
     <li><b><?= $withChat ?></b> tài khoản đã trò chuyện</li>
     <li><b><?= $totalMessages ?></b> tin nhắn đã lưu</li>
+    <li><b><?= $totalTests ?></b> lần làm bài Holland đã lưu</li>
   </ul>
 
   <?php if (!$rows): ?>
@@ -177,7 +185,7 @@ header('Content-Type: text/html; charset=utf-8');
   <div class="table-wrap">
     <table>
       <thead>
-        <tr><th>Tên đăng nhập</th><th>Ngày tạo</th><th class="num">Số tin nhắn</th><th>Trò chuyện gần nhất</th><th>Thao tác</th></tr>
+        <tr><th>Tên đăng nhập</th><th>Ngày tạo</th><th class="num">Số tin nhắn</th><th class="num">Bài Holland</th><th>Trò chuyện gần nhất</th><th>Thao tác</th></tr>
       </thead>
       <tbody>
       <?php foreach ($rows as $r): ?>
@@ -185,6 +193,7 @@ header('Content-Type: text/html; charset=utf-8');
           <td><?= h($r['u']) ?></td>
           <td><?= h($r['c'] !== '' ? date('d/m/Y', (int)strtotime($r['c'] . ' 12:00:00 UTC')) : '–') ?></td>
           <td class="num"><?= $r['n'] ?></td>
+          <td class="num"><?= $r['h'] ?></td>
           <td><?= $r['last'] > 0 ? h(date('d/m/Y H:i', $r['last'])) : '–' ?></td>
           <td class="actions">
             <form method="post" onsubmit="return confirm('Đặt lại mật khẩu cho &quot;<?= h($r['u']) ?>&quot;? Mật khẩu cũ sẽ không dùng được nữa và mọi phiên đăng nhập của tài khoản này sẽ bị thoát.');">
