@@ -104,9 +104,11 @@ if (!$clean || end($clean)['role'] !== 'user') {
     respond(400, ['error' => 'bad_request']);
 }
 
-// Kết quả trắc nghiệm Holland (tùy chọn): chỉ nhận đúng 6 số nguyên 6–30, không nhận văn bản tự do
+// Kết quả trắc nghiệm Holland (tùy chọn): chỉ nhận đúng 6 số nguyên, không nhận văn bản tự do.
+// holland_n = số câu mỗi nhóm: 6 (bản 36 câu, điểm 6–30) hoặc 10 (bản 60 câu, điểm 10–50); mặc định 6.
 $maxTokens = (int)($config['max_tokens'] ?? 500);
 $hollandBlock = '';
+$hollandN = isset($input['holland_n']) && $input['holland_n'] === 10 ? 10 : 6;
 if (isset($input['holland']) && is_array($input['holland']) && count($input['holland']) === 6) {
     $scores = [];
     foreach ($input['holland'] as $v) {
@@ -115,7 +117,7 @@ if (isset($input['holland']) && is_array($input['holland']) && count($input['hol
             break;
         }
         $v = (int)round($v);
-        if ($v < 6 || $v > 30) {
+        if ($v < $hollandN || $v > $hollandN * 5) {
             $scores = [];
             break;
         }
@@ -136,9 +138,10 @@ if (isset($input['holland']) && is_array($input['holland']) && count($input['hol
         }
         $lines = [];
         foreach ($scores as $i => $s) {
-            $lines[] = $letters[$i] . ' – ' . $names[$i] . ': ' . $s . '/30';
+            $lines[] = $letters[$i] . ' – ' . $names[$i] . ': ' . $s . '/' . ($hollandN * 5);
         }
-        $hollandBlock = "\n\nHọc sinh vừa làm trắc nghiệm sở thích nghề nghiệp Holland (RIASEC, 36 câu, mỗi nhóm từ 6 đến 30 điểm).\n"
+        $hollandBlock = "\n\nHọc sinh vừa làm trắc nghiệm sở thích nghề nghiệp Holland (RIASEC, " . ($hollandN * 6) . " câu, mỗi nhóm từ "
+            . $hollandN . " đến " . ($hollandN * 5) . " điểm).\n"
             . "Điểm từng nhóm:\n" . implode("\n", $lines) . "\nMã Holland (3 nhóm cao nhất): " . $code . "\n"
             . "Khi trả lời: giải thích ngắn gọn ý nghĩa mã Holland này, gợi ý 2–3 nhóm ngành (chọn trong: Kinh tế – Kinh doanh; Y tế – Sức khỏe; "
             . "Công nghệ thông tin – AI; Kỹ thuật – Công nghệ; Khoa học tự nhiên – Môi trường – Nông nghiệp; Giáo dục; Du lịch – Dịch vụ – Logistics; "
