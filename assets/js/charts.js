@@ -149,11 +149,10 @@
     });
     svg.appendChild(defs);
 
-    /* Chỉ vẽ lưới ở 25/50/75 (không vẽ ở 0% và 100%) vì card đã có viền riêng bao quanh,
-       vẽ thêm line sát viền ở hai mức này sẽ trùng lặp. Nhãn số trục vẫn hiện đủ 0–100%. */
+    /* Lưới ngang nét đứt ở đủ các mốc 0–100%. */
     [0, 25, 50, 75, 100].forEach(function (v) {
       var y = yAt(v);
-      if (v !== 0 && v !== 100) svg.appendChild(mk('line', { x1: padL, y1: y.toFixed(2), x2: (W - padR).toFixed(2), y2: y.toFixed(2), class: 'trend-grid' }));
+      svg.appendChild(mk('line', { x1: padL, y1: y.toFixed(2), x2: (W - padR).toFixed(2), y2: y.toFixed(2), class: 'trend-grid' }));
       var t = mk('text', { x: (padL - 7).toFixed(2), y: (y + 3).toFixed(2), 'text-anchor': 'end', class: 'trend-axis' });
       t.textContent = v + '%';
       svg.appendChild(t);
