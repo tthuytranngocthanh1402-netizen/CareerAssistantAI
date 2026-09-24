@@ -66,9 +66,15 @@ $scores = $in['scores'] ?? null;
 if (!is_array($scores) || count($scores) !== 6) {
     respond(400, ['error' => 'bad_scores']);
 }
+// Chế độ: 'short' (36 câu, mỗi nhóm 6–30 điểm) hoặc 'full' (60 câu, mỗi nhóm 10–50 điểm). Thiếu thì coi là 'short'.
+$mode = (string)($in['mode'] ?? 'short');
+$perType = ['short' => 6, 'full' => 10][$mode] ?? null;
+if ($perType === null) {
+    respond(400, ['error' => 'bad_mode']);
+}
 $clean = [];
 foreach ($scores as $v) {
-    if (!is_int($v) || $v < 6 || $v > 30) {
+    if (!is_int($v) || $v < $perType || $v > $perType * 5) {
         respond(400, ['error' => 'bad_scores']);
     }
     $clean[] = $v;
@@ -81,7 +87,7 @@ if (!in_array($grade, ['', '10', '11', '12'], true) || !in_array($gender, ['', '
 }
 $version = preg_replace('/[^0-9A-Za-z._-]/', '', substr((string)($in['v'] ?? ''), 0, 10));
 
-$row = ['d' => gmdate('Y-m-d'), 'g' => $grade, 's' => $gender, 'r' => $clean, 'v' => $version];
+$row = ['d' => gmdate('Y-m-d'), 'g' => $grade, 's' => $gender, 'm' => $mode, 'r' => $clean, 'v' => $version];
 $ok = @file_put_contents($file, json_encode($row) . "\n", FILE_APPEND | LOCK_EX);
 if ($ok === false) {
     respond(500, ['error' => 'write_failed']);
