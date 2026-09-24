@@ -5,7 +5,7 @@
 #   ruby tools/build_music.rb          (cần macOS: dùng `afconvert` để nén sang m4a; mất 1–3 phút)
 #
 # Nhạc được tổng hợp bằng code (không dùng mẫu âm thanh có sẵn), phong cách sôi động, hồi hộp, huyền bí:
-# giọng La thứ, hòa âm Am – F – Dm – E; drone trầm, chuông vang xa, piano điện rải nốt dồn dập,
+# giọng La thứ, hòa âm Am – F – Dm – E; chuông vang xa, piano điện rải nốt dồn dập,
 # bass nhịp 8, trống dồn, tiếng vút tăng dần và cú nổ ở mỗi lần chuyển đoạn. Bố cục bám theo 7 cảnh
 # của video (mở đầu bí ẩn, căng dần, cao trào ở trắc nghiệm Holland, kết bằng hợp âm chủ La thứ).
 # Nhịp độ được chọn để các điểm chuyển cảnh rơi vào đầu ô nhịp.
@@ -20,8 +20,8 @@ ROOT = File.expand_path('..', __dir__)
 SR = 32_000
 INTENSITY = [0, 2, 3, 3, 4, 3, 4].freeze # theo thứ tự cảnh: mở đầu, vấn đề, khảo sát, số liệu, Holland, chatbot, kết
 TEMPO_RANGE = (112..140)
-AMP = { pad: 0.10, key: 0.10, melody: 0.13, bass: 0.20, kick: 0.55, hat: 0.05, clap: 0.18,
-        tom: 0.40, bell: 0.05, drone: 0.07, tick: 0.035 }.freeze
+AMP = { pad: 0.0, key: 0.10, melody: 0.13, bass: 0.20, kick: 0.55, hat: 0.05, clap: 0.18,
+        tom: 0.40, bell: 0.05, drone: 0.0, tick: 0.035 }.freeze
 
 tl_path = File.join(ROOT, 'video/timeline.json')
 tl = JSON.parse(File.read(tl_path, encoding: 'UTF-8'))
@@ -294,15 +294,17 @@ BARS.times do |b|
   final = b == BARS - 1
   sixteenth = BEAT / 4.0
 
-  # Drone trầm kéo dài suốt bài (huyền bí) + pad
-  pad(ch[:bass] + 12, t0 - 0.4, t0 + BAR, AMP[:drone] * (inten <= 1 ? 1.4 : 1.0))
-  ch[:pad].each { |m| pad(m, t0 - 0.25, t0 + BAR, AMP[:pad] * (1.15 - 0.05 * inten)) }
-  pad(ch[:pad][0] + 12, t0 - 0.25, t0 + BAR, AMP[:pad] * 0.5) if inten >= 3
+  # Drone trầm và pad (âm kéo dài liên tục): đang tắt (biên độ 0). Muốn bật lại thì tăng AMP[:drone], AMP[:pad].
+  pad(ch[:bass] + 12, t0 - 0.4, t0 + BAR, AMP[:drone] * (inten <= 1 ? 1.4 : 1.0)) if AMP[:drone] > 0
+  if AMP[:pad] > 0
+    ch[:pad].each { |m| pad(m, t0 - 0.25, t0 + BAR, AMP[:pad] * (1.15 - 0.05 * inten)) }
+    pad(ch[:pad][0] + 12, t0 - 0.25, t0 + BAR, AMP[:pad] * 0.5) if inten >= 3
+  end
 
   # Chuông vang xa (rất thưa, nhiều reverb) ở đoạn nhẹ và vừa
   if inten <= 2 && !final
-    key(ch[:tones][5] + 12, t0 + 0.5 * BEAT, AMP[:bell], -0.5 + (b % 3) * 0.5, 1.3, 2.4)
-    key(ch[:tones][3] + 12, t0 + 2.5 * BEAT, AMP[:bell] * 0.8, 0.5 - (b % 3) * 0.5, 1.1, 2.4) if b.odd?
+    key(ch[:tones][5] + 12, t0 + 0.5 * BEAT, AMP[:bell] * (inten.zero? ? 1.8 : 1.0), -0.5 + (b % 3) * 0.5, 1.3, 2.4)
+    key(ch[:tones][3] + 12, t0 + 2.5 * BEAT, AMP[:bell] * (inten.zero? ? 1.8 : 1.0) * 0.8, 0.5 - (b % 3) * 0.5, 1.1, 2.4) if b.odd?
   end
 
   # Tiếng tíc đồng hồ ở đoạn nhẹ
@@ -329,7 +331,7 @@ BARS.times do |b|
     (ch[:pad] + [ch[:pad][0] + 12]).each_with_index { |m, k| key(m, t0 + k * 0.02, AMP[:key] * 0.9, (k - 1.5) / 4.0, 1.8, 1.2) }
   elsif inten == 0
     [0, 2, 4, 2].each_with_index do |ti, k|
-      key(ch[:tones][ti], t0 + k * BEAT + RNG.rand * 0.006, AMP[:key] * 0.7, (ti - 2.5) / 6.0, 0.9, 1.0)
+      key(ch[:tones][ti], t0 + k * BEAT + RNG.rand * 0.006, AMP[:key] * 1.3, (ti - 2.5) / 6.0, 0.9, 1.0)
     end
   elsif inten >= 3
     ARP16.each_with_index do |ti, k|
