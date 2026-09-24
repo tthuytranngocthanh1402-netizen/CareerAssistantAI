@@ -4,10 +4,11 @@
 #
 #   ruby tools/build_music.rb          (cần macOS: dùng `afconvert` để nén sang m4a; mất 1–3 phút)
 #
-# Nhạc được tổng hợp bằng code (không dùng mẫu âm thanh có sẵn): piano điện, dàn dây (pad), bass,
-# trống nhẹ, hòa âm C – G – Am – F quen thuộc trong nhạc thuyết trình/doanh nghiệp. Bố cục bám theo
-# 7 cảnh của video (mở đầu nhẹ, tăng dần, cao trào ở trắc nghiệm Holland, lắng lại ở chatbot,
-# kết bằng hợp âm chủ). Nhịp độ được chọn để các điểm chuyển cảnh rơi vào đầu ô nhịp.
+# Nhạc được tổng hợp bằng code (không dùng mẫu âm thanh có sẵn), phong cách sôi động, hồi hộp, huyền bí:
+# giọng La thứ, hòa âm Am – F – Dm – E; drone trầm, chuông vang xa, piano điện rải nốt dồn dập,
+# bass nhịp 8, trống dồn, tiếng vút tăng dần và cú nổ ở mỗi lần chuyển đoạn. Bố cục bám theo 7 cảnh
+# của video (mở đầu bí ẩn, căng dần, cao trào ở trắc nghiệm Holland, kết bằng hợp âm chủ La thứ).
+# Nhịp độ được chọn để các điểm chuyển cảnh rơi vào đầu ô nhịp.
 #
 # Chỉnh phong cách: sửa mảng INTENSITY (độ dày nhạc từng cảnh, 0–4), TEMPO_RANGE và các biên độ AMP.
 require 'json'
@@ -17,9 +18,10 @@ Encoding.default_external = Encoding::UTF_8
 
 ROOT = File.expand_path('..', __dir__)
 SR = 32_000
-INTENSITY = [0, 1, 2, 3, 3, 2, 4].freeze # theo thứ tự cảnh: mở đầu, vấn đề, khảo sát, số liệu, Holland, chatbot, kết
-TEMPO_RANGE = (84..126)
-AMP = { pad: 0.10, key: 0.10, melody: 0.13, bass: 0.20, kick: 0.55, hat: 0.05, clap: 0.15 }.freeze
+INTENSITY = [0, 2, 3, 3, 4, 3, 4].freeze # theo thứ tự cảnh: mở đầu, vấn đề, khảo sát, số liệu, Holland, chatbot, kết
+TEMPO_RANGE = (112..140)
+AMP = { pad: 0.10, key: 0.10, melody: 0.13, bass: 0.20, kick: 0.55, hat: 0.05, clap: 0.18,
+        tom: 0.40, bell: 0.05, drone: 0.07, tick: 0.035 }.freeze
 
 tl_path = File.join(ROOT, 'video/timeline.json')
 tl = JSON.parse(File.read(tl_path, encoding: 'UTF-8'))
@@ -187,6 +189,41 @@ def clap(t0, amp)
   end
 end
 
+def tom(t0, amp, f0)
+  n0 = (t0 * SR).to_i
+  ph = 0.0
+  (0...(0.32 * SR).to_i).each do |k|
+    i = n0 + k
+    break if i >= TOTAL
+    t = k.to_f / SR
+    f = f0 * (1 + 0.6 * Math.exp(-t / 0.05))
+    v = Math.sin(ph) * Math.exp(-t / 0.13) * amp
+    DL[i] += v
+    DR[i] += v
+    WL[i] += v * 0.25
+    WR[i] += v * 0.25
+    ph += 2 * Math::PI * f / SR
+  end
+end
+
+# Tiếng "tíc" khô như đồng hồ đếm ngược, tạo cảm giác hồi hộp ở đoạn nhẹ
+def tick(t0, amp, pan)
+  n0 = (t0 * SR).to_i
+  gl, gr = gains(pan)
+  ph = 0.0
+  (0...(0.05 * SR).to_i).each do |k|
+    i = n0 + k
+    break if i >= TOTAL
+    t = k.to_f / SR
+    v = Math.sin(ph) * Math.exp(-t / 0.008) * amp
+    DL[i] += v * gl
+    DR[i] += v * gr
+    WL[i] += v * gl * 0.5
+    WR[i] += v * gr * 0.5
+    ph += 2 * Math::PI * 2200 / SR
+  end
+end
+
 # Tiếng "vút" tăng dần trước khi vào đoạn dày hơn, và tiếng chũm chọe nhẹ ở đầu đoạn
 def swell(t0, dur, amp)
   n0 = (t0 * SR).to_i
@@ -218,27 +255,29 @@ def crash(t0, amp)
 end
 
 # ---- Hòa âm và giai điệu ----
+# Giọng La thứ: Am – F – Dm – E (E trưởng, có nốt Sol thăng, tạo cảm giác căng và huyền bí)
 CHORDS = {
-  'C' => { pad: [60, 64, 67], bass: 36, tones: [60, 64, 67, 72, 76, 79] },
-  'G' => { pad: [59, 62, 67], bass: 43, tones: [59, 62, 67, 71, 74, 79] },
   'Am' => { pad: [57, 60, 64], bass: 45, tones: [57, 60, 64, 69, 72, 76] },
-  'F' => { pad: [57, 60, 65], bass: 41, tones: [57, 60, 65, 69, 72, 77] }
+  'F' => { pad: [57, 60, 65], bass: 41, tones: [57, 60, 65, 69, 72, 77] },
+  'Dm' => { pad: [57, 62, 65], bass: 38, tones: [57, 62, 65, 69, 74, 77] },
+  'E' => { pad: [56, 59, 64], bass: 40, tones: [56, 59, 64, 68, 71, 76] }
 }.freeze
-CYCLE = %w[C G Am F].freeze
-ENDING = %w[F G C C].freeze
+CYCLE = %w[Am F Dm E].freeze
+ENDING = %w[Dm E Am Am].freeze
 MOTIF = {
-  'C' => [[0, 76, 1.5], [1.5, 79, 0.5], [2, 79, 2]],
-  'G' => [[0, 74, 1.5], [1.5, 71, 0.5], [2, 74, 2]],
-  'Am' => [[0, 72, 1.5], [1.5, 76, 0.5], [2, 81, 2]],
-  'F' => [[0, 77, 1.5], [1.5, 72, 0.5], [2, 69, 2]]
+  'Am' => [[0, 69, 1], [1, 72, 1], [2, 71, 1], [3, 69, 1]],
+  'F' => [[0, 77, 1], [1, 76, 0.5], [1.5, 72, 0.5], [2, 69, 2]],
+  'Dm' => [[0, 74, 1.5], [1.5, 77, 0.5], [2, 76, 1], [3, 74, 1]],
+  'E' => [[0, 71, 1], [1, 68, 1], [2, 71, 0.5], [2.5, 72, 0.5], [3, 71, 1]]
 }.freeze
 END_MOTIF = [
-  [[0, 72, 2], [2, 69, 2]],
-  [[0, 74, 2], [2, 71, 2]],
-  [[0, 76, 2], [2, 79, 2]],
-  [[0, 84, 4]]
+  [[0, 74, 2], [2, 77, 2]],
+  [[0, 71, 2], [2, 68, 2]],
+  [[0, 72, 2], [2, 76, 2]],
+  [[0, 81, 4]]
 ].freeze
-ARP = [0, 2, 4, 5, 4, 2, 3, 1].freeze
+ARP = [0, 2, 4, 5, 4, 2, 3, 1].freeze                                   # nốt móc đơn (8 nốt/ô nhịp)
+ARP16 = [0, 2, 4, 5, 4, 2, 4, 2, 0, 2, 4, 5, 4, 3, 2, 1].freeze        # nốt móc kép dồn dập (16 nốt/ô nhịp)
 
 def intensity_at(t, starts)
   idx = starts.rindex { |s| s <= t + 0.05 } || 0
@@ -253,65 +292,102 @@ BARS.times do |b|
   ch = CHORDS[name]
   inten = last4 ? 4 : intensity_at(t0, starts)
   final = b == BARS - 1
+  sixteenth = BEAT / 4.0
 
-  # Pad
-  ch[:pad].each { |m| pad(m, t0 - 0.25, t0 + BAR, AMP[:pad] * (1 + 0.15 * inten)) }
+  # Drone trầm kéo dài suốt bài (huyền bí) + pad
+  pad(ch[:bass] + 12, t0 - 0.4, t0 + BAR, AMP[:drone] * (inten <= 1 ? 1.4 : 1.0))
+  ch[:pad].each { |m| pad(m, t0 - 0.25, t0 + BAR, AMP[:pad] * (1.15 - 0.05 * inten)) }
   pad(ch[:pad][0] + 12, t0 - 0.25, t0 + BAR, AMP[:pad] * 0.5) if inten >= 3
 
-  # Bass
-  if inten >= 1
-    if final
-      bass(ch[:bass], t0, BAR * 0.95, AMP[:bass])
-    else
-      bass(ch[:bass], t0, BEAT * 1.4, AMP[:bass])
-      bass(ch[:bass], t0 + 2 * BEAT, BEAT * 1.4, AMP[:bass] * 0.9)
-      bass(ch[:bass] + 12, t0 + 3.5 * BEAT, BEAT * 0.4, AMP[:bass] * 0.55) if inten >= 3
+  # Chuông vang xa (rất thưa, nhiều reverb) ở đoạn nhẹ và vừa
+  if inten <= 2 && !final
+    key(ch[:tones][5] + 12, t0 + 0.5 * BEAT, AMP[:bell], -0.5 + (b % 3) * 0.5, 1.3, 2.4)
+    key(ch[:tones][3] + 12, t0 + 2.5 * BEAT, AMP[:bell] * 0.8, 0.5 - (b % 3) * 0.5, 1.1, 2.4) if b.odd?
+  end
+
+  # Tiếng tíc đồng hồ ở đoạn nhẹ
+  if inten <= 2 && !final
+    4.times { |k| tick(t0 + k * BEAT, AMP[:tick] * (k.zero? ? 1.3 : 1.0), k.even? ? -0.4 : 0.4) }
+  end
+
+  # Bass: nhịp 8 dồn ở đoạn dày, thưa hơn ở đoạn nhẹ
+  if final
+    bass(ch[:bass], t0, BAR * 0.95, AMP[:bass])
+  elsif inten >= 3
+    8.times do |k|
+      oct = (k == 3 || k == 7) ? 12 : 0
+      bass(ch[:bass] + oct, t0 + k * BEAT / 2.0, BEAT * 0.42, AMP[:bass] * (k.even? ? 1.0 : 0.7))
     end
+  elsif inten >= 1
+    bass(ch[:bass], t0, BEAT * 1.4, AMP[:bass])
+    bass(ch[:bass], t0 + 2 * BEAT, BEAT * 1.4, AMP[:bass] * 0.9)
+    bass(ch[:bass] + 12, t0 + 3.5 * BEAT, BEAT * 0.4, AMP[:bass] * 0.55) if inten >= 2
   end
 
   # Piano điện
   if final
-    [60, 64, 67, 72].each_with_index { |m, k| key(m, t0 + k * 0.02, AMP[:key] * 0.9, (k - 1.5) / 4.0, 1.8, 1.2) }
+    (ch[:pad] + [ch[:pad][0] + 12]).each_with_index { |m, k| key(m, t0 + k * 0.02, AMP[:key] * 0.9, (k - 1.5) / 4.0, 1.8, 1.2) }
   elsif inten == 0
     [0, 2, 4, 2].each_with_index do |ti, k|
       key(ch[:tones][ti], t0 + k * BEAT + RNG.rand * 0.006, AMP[:key] * 0.7, (ti - 2.5) / 6.0, 0.9, 1.0)
     end
+  elsif inten >= 3
+    ARP16.each_with_index do |ti, k|
+      accent = (k % 4 == 0 ? 1.15 : 0.85) * (0.92 + RNG.rand * 0.16)
+      key(ch[:tones][ti], t0 + k * sixteenth + RNG.rand * 0.004, AMP[:key] * 0.75 * accent, (ti - 2.5) / 6.0, 0.28, 1.6)
+    end
   else
     ARP.each_with_index do |ti, k|
       accent = (k % 4 == 0 ? 1.15 : 0.9) * (0.92 + RNG.rand * 0.16)
-      key(ch[:tones][ti], t0 + k * BEAT / 2.0 + RNG.rand * 0.006, AMP[:key] * accent, (ti - 2.5) / 6.0, 0.55, 1.3)
+      key(ch[:tones][ti], t0 + k * BEAT / 2.0 + RNG.rand * 0.006, AMP[:key] * accent, (ti - 2.5) / 6.0, 0.4, 1.5)
     end
   end
 
   # Giai điệu
   motif = if final then END_MOTIF[3]
           elsif last4 then END_MOTIF[b - (BARS - 4)]
-          elsif inten >= 3 then MOTIF[name]
+          elsif inten >= 2 then MOTIF[name]
           end
   motif&.each do |beat, m, len|
-    key(m, t0 + beat * BEAT, AMP[:melody], 0.15, 0.55 + len * 0.28, 1.7)
+    key(m, t0 + beat * BEAT, AMP[:melody] * (inten >= 4 ? 1.1 : 1.0), 0.15, 0.55 + len * 0.28, 1.9)
+    key(m + 12, t0 + beat * BEAT, AMP[:melody] * 0.35, -0.15, 0.4 + len * 0.15, 2.2) if inten >= 4 && !final
   end
 
   # Trống
   drums = inten >= 2 && !final
   if drums
-    kick(t0, AMP[:kick])
-    kick(t0 + 2 * BEAT, AMP[:kick] * 0.9)
-    kick(t0 + 3.5 * BEAT, AMP[:kick] * 0.5) if inten >= 3 && b.odd?
-    4.times { |k| hat(t0 + (k + 0.5) * BEAT, AMP[:hat] * (k.even? ? 1.0 : 0.75), k.even? ? -0.3 : 0.3) }
     if inten >= 3
+      4.times { |k| kick(t0 + k * BEAT, AMP[:kick] * (k.even? ? 1.0 : 0.8)) }
+      kick(t0 + 3.5 * BEAT, AMP[:kick] * 0.5) if b.odd?
       clap(t0 + BEAT, AMP[:clap])
       clap(t0 + 3 * BEAT, AMP[:clap])
+      steps = inten >= 4 ? 16 : 8
+      steps.times do |k|
+        step = BAR / steps
+        hat(t0 + k * step + (steps == 8 ? step / 2.0 : 0), AMP[:hat] * (k.even? ? 1.0 : 0.7), k.even? ? -0.3 : 0.3)
+      end
+      # Trống tom dồn ở cuối mỗi 4 ô nhịp
+      if b % 4 == 3
+        [[0.0, 150], [0.25, 130], [0.5, 110], [0.75, 90]].each do |off, f|
+          tom(t0 + 3 * BEAT + off * BEAT, AMP[:tom] * (0.85 + off * 0.3), f)
+        end
+      end
+    else
+      kick(t0, AMP[:kick])
+      kick(t0 + 2 * BEAT, AMP[:kick] * 0.9)
+      clap(t0 + 3 * BEAT, AMP[:clap] * 0.7)
+      4.times { |k| hat(t0 + (k + 0.5) * BEAT, AMP[:hat] * (k.even? ? 1.0 : 0.75), k.even? ? -0.3 : 0.3) }
     end
   end
-  kick(t0, AMP[:kick] * 1.1) if final
+  kick(t0, AMP[:kick] * 1.3) if final
 
-  # Chuyển đoạn: chũm chọe ở đầu đoạn dày hơn, tiếng vút ở cuối ô nhịp trước đó
+  # Chuyển đoạn: cú nổ + chũm chọe ở đầu đoạn dày hơn, tiếng vút dài 1 ô nhịp ở trước đó
   if inten > prev_int
-    crash(t0, 0.07)
-    swell([t0 - BEAT * 2, 0].max, BEAT * 2, 0.05) if b > 0
+    crash(t0, 0.09)
+    kick(t0, AMP[:kick] * 1.4)
+    swell([t0 - BAR, 0].max, [BAR, t0].min, 0.08) if b > 0
   end
-  crash(t0, 0.09) if final
+  crash(t0, 0.11) if final
   prev_int = inten
 end
 
@@ -355,8 +431,8 @@ rev_r = schroeder(WR, [833, 885, 950, 1007], [410, 253])
 mix_l = Array.new(TOTAL)
 mix_r = Array.new(TOTAL)
 TOTAL.times do |i|
-  mix_l[i] = DL[i] + WL[i] * 0.85 + rev_l[i] * 0.16
-  mix_r[i] = DR[i] + WR[i] * 0.85 + rev_r[i] * 0.16
+  mix_l[i] = DL[i] + WL[i] * 0.85 + rev_l[i] * 0.22
+  mix_r[i] = DR[i] + WR[i] * 0.85 + rev_r[i] * 0.22
 end
 
 # Fade vào/ra
