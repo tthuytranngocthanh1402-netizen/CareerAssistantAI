@@ -178,7 +178,7 @@ sections = [
       { 'id' => 'q26', 'type' => 'hbars', 'title' => 'Yếu tố giúp công việc thích ứng tốt với AI', 'caption' => 'Câu 26 · chọn nhiều đáp án, % học sinh', 'options' => Q26, 'suffix' => '%' },
       { 'id' => 'q20', 'type' => 'strip', 'title' => 'Đã tìm hiểu ngành nghề chịu tác động của AI chưa?', 'caption' => 'Câu 20 · % học sinh', 'options' => Q20, 'wide' => true },
       { 'id' => 'q8_21', 'type' => 'trend', 'title' => 'Nhóm ngành quan tâm và nhóm ngành được cho là bị AI tác động', 'caption' => 'Câu 8 và 21 · chọn nhiều đáp án, % học sinh · rê chuột hoặc chạm để xem từng nhóm ngành',
-        'options' => GROUPS, 'series' => ['Quan tâm (câu 8)', 'Bị AI tác động (câu 21)'], 'suffix' => '%', 'wide' => true, 'flush' => true }
+        'options' => GROUPS, 'series' => ['Quan tâm (câu 8)', 'Bị AI tác động (câu 21)'], 'suffix' => '%', 'wide' => true }
     ] },
   { 'id' => 'san-pham', 'title' => 'Nhu cầu với sản phẩm của đề tài',
     'subtitle' => 'Mức quan tâm đến các kết quả của đề tài và tính năng học sinh mong muốn ở một AI hướng nghiệp.',
