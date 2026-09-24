@@ -9,11 +9,11 @@
   <meta property="og:title" content="CareerAssistantAI – Trợ lý AI hướng nghiệp cho học sinh">
   <meta property="og:description" content="Sản phẩm của đề tài nghiên cứu khoa học: số liệu khảo sát, góc nhìn học sinh – chuyên gia và chatbot AI.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="assets/img/favicon.svg?v=20260924o" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon.svg?v=20260924r" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260924o">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260924r">
   <script>
     (function () {
       try {
@@ -30,7 +30,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="nav" aria-label="Thanh bên">
       <a class="brand" href="#trang-chu" aria-label="CareerAssistantAI – về đầu trang">
-        <img src="assets/img/favicon.svg?v=20260924o" alt="" width="34" height="34">
+        <img src="assets/img/favicon.svg?v=20260924r" alt="" width="34" height="34">
         <span>CareerAssistant<b>AI</b></span>
       </a>
 
@@ -99,7 +99,12 @@
           <a class="icon-btn has-dot" href="#chatbot" aria-label="Đi tới chatbot AI">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </a>
-          <span class="avatar-me" aria-hidden="true">CA</span>
+          <div class="account">
+            <button id="accountBtn" class="avatar-me" type="button" aria-label="Tài khoản: đăng nhập bằng Gmail" aria-haspopup="dialog" aria-expanded="false" aria-controls="accountPanel">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </button>
+            <div id="accountPanel" class="account-panel" role="dialog" aria-label="Tài khoản" hidden></div>
+          </div>
         </div>
       </header>
 
@@ -275,10 +280,11 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   </a>
 
-  <script src="assets/js/charts.js?v=20260924o" defer></script>
-  <script src="assets/js/survey.js?v=20260924o" defer></script>
-  <script src="assets/js/holland.js?v=20260924o" defer></script>
-  <script src="assets/js/chatbot.js?v=20260924o" defer></script>
-  <script src="assets/js/main.js?v=20260924o" defer></script>
+  <script src="assets/js/charts.js?v=20260924r" defer></script>
+  <script src="assets/js/survey.js?v=20260924r" defer></script>
+  <script src="assets/js/holland.js?v=20260924r" defer></script>
+  <script src="assets/js/chatbot.js?v=20260924r" defer></script>
+  <script src="assets/js/auth.js?v=20260924r" defer></script>
+  <script src="assets/js/main.js?v=20260924r" defer></script>
 </body>
 </html>
