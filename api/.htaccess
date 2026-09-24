@@ -1,5 +1,5 @@
-# Chặn truy cập trực tiếp file cấu hình chứa API key
-<FilesMatch "^config(\.sample)?\.php$">
+# Chặn truy cập trực tiếp file cấu hình chứa API key và các file hàm dùng chung (bắt đầu bằng _)
+<FilesMatch "^(config(\.sample)?|_[A-Za-z0-9_]+)\.php$">
   Require all denied
 </FilesMatch>
 
